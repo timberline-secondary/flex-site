@@ -37,6 +37,23 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',  # userena
+
+    # For django-userena http://django-userena.readthedocs.io/en/latest/installation.html
+    'userena',
+    'guardian',
+    'easy_thumbnails',
+
+
+    # My custom apps
+    'accounts',
+    'events',
+)
+
+AUTHENTICATION_BACKENDS = (
+    'userena.backends.UserenaAuthenticationBackend',
+    'guardian.backends.ObjectPermissionBackend',
+    'django.contrib.auth.backends.ModelBackend',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -87,7 +104,7 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Vancouver'
 
 USE_I18N = True
 
@@ -100,3 +117,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+
+ADMIN_SITE_HEADER = 'Timberline Flex Site - Administration'
+
+# django-guardian
+ANONYMOUS_USER_ID = -1
+AUTH_PROFILE_MODULE = 'accounts.UserProfile'
+
+LOGIN_REDIRECT_URL = '/accounts/%(username)s/'
+LOGIN_URL = '/accounts/signin/'
+LOGOUT_URL = '/accounts/signout/'
+
+SITE_ID = 1
