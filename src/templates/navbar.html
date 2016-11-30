@@ -1,0 +1,63 @@
+{% load staticfiles %}
+<nav class="navbar navbar-default">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">
+        <img alt="Brand" src="{%  static 'img/logo.png' %}">
+      </a>
+      <div class="navbar-brand">Timberline Secondary</div>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active">
+          <a href="{% url 'events:list' %}">Events <span class="sr-only">(current)</span></a>
+        </li>
+        <li>
+          <a href="#">Link</a>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">One more separated link</a></li>
+          </ul>
+        </li>
+      </ul>
+      {% if not request.user.is_authenticated and not "/accounts/signin/" in request.get_full_path %}
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="{% url 'userena_signup' %}">Signup</a></li>
+      </ul>
+      <form class="navbar-form navbar-right" method="POST" action="{% url 'userena_signin' %}">{%  csrf_token %}
+        <div class="input-group input-group-unified input-group-sm">
+          <input type="text" class="form-control" name="identification" placeholder="Username" />
+          <input type="password" class="form-control" name="password" placeholder="Password" />
+          <span class="input-group-btn"><button type="submit" class="btn btn-default">Login</button></span>
+        </div>
+      </form>
+
+      {% endif %}
+      {% if request.user.is_authenticated %}
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="/admin">Admin</a></li>
+        <li><a href="{% url 'userena_profile_detail' request.user.username %}">{{ request.user.username }}</a></li>
+        <li><a href="{% url 'userena_signout' %}">Logout</a></li>
+      </ul>
+      {% endif %}
+
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>

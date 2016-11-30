@@ -1,0 +1,25 @@
+
+/* Timberline custom styling */
+
+.navbar-default {
+    background: #1a88b0 none;
+}
+
+.navbar-default .navbar-nav > li > a {
+    color: #fff;
+}
+
+.navbar-default .navbar-brand {
+    color: #fff;
+    font-weight: 700;
+}
+
+a.navbar-brand > img {
+    margin-top: -10px;
+    width: 40px;
+    height: 40px;
+}
+
+.input-group-unified input {
+    width: 50% !important;
+}

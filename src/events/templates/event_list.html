@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block style %}
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+{% endblock style %}
+
+
+{% block head_title %}Events | {{ block.super }}{% endblock %}
+
+{% block content %}
+  <h1>Events</h1>
+  <a class="btn btn-success" href="{% url 'events:create' %}">New</a>
+
+  <form id="filter_form" method="GET" action="/events/">
+  <p>Date: <input type="text"
+                  id="datepicker"
+                  name="date"
+                  placeholder="{{ date_filter }}">
+  </p>
+  </form>
+
+  <table data-toggle="table"
+         data-classes="table table-no-bordered"
+         data-search="true">
+  <thead>
+    <tr>
+      <th data-field="date">Date</th>
+      <th data-field="blocks">Blocks</th>
+      <th data-field="title">Title</th>
+      <th data-field="location">Location</th>
+      <th data-field="teachers">Teachers</th>
+      <th data-field="category">Category</th>
+      <th data-field="description">Description</th>
+
+    </tr>
+  </thead>
+  <tbody>
+  {% for obj in object_list %}
+    <tr>
+      <td>{{ obj.date }}</td>
+{#      <td>{% for block in obj.blocks.all %}{% if not forloop.first %}; {% endif %}{{ block }}{% endfor %}</td>#}
+      <td>{{ obj.blocks_str }}</td>
+      <td><b><a href='{{ obj.get_absolute_url }}'>{{ obj.title }}</a></b></td>
+      <td>{{ obj.location }}</td>
+      <td>{% for fac in obj.facilitators.all %}{% if not forloop.first %}; {% endif %}{{ fac.first_name }} {{ fac.last_name }}{% endfor %}
+      </td>
+      <td>{{  obj.category }}</td>
+      <td>{{ obj.description|safe }}</td>
+
+    </tr>
+  {%  endfor %}
+  </tbody>
+  </table>
+
+{% endblock content %}
+
+{% block js %}
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script>
+    function WednesdaysOnly(date) {
+      var day = date.getDay();
+      if (day == 3) //Wednesday = 3
+          return [true]
+      else
+          return [false]
+    }
+
+    $(document).ready(function() {
+      $('#datepicker').datepicker({
+        dateFormat: 'yy-mm-dd',
+        onSelect : function (dateText, inst) {
+          $('#filter_form').submit(); // <-- SUBMIT
+        },
+        beforeShowDay: WednesdaysOnly,
+      });
+    });
+  </script>
+{% endblock js %}

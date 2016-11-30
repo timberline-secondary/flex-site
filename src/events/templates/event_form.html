@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load staticfiles %}
+
+{% block style %}
+  <link rel="stylesheet" href="{%  static 'chosen_v1.6.2/chosen.css' %}">
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+  <!-- required at top for django-summernote widget.... ugh -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <!-- form.media -->
+  {{ form.media }}
+
+{% endblock style %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-sm-6 col-sm-offset-3">
+      <h1>{{ title }}</h1>
+      <form method="POST" action=""> {% csrf_token %}
+        <input class="btn btn-primary" type="submit" value="{{ btn_value }}" />
+
+        {{ form|crispy}}
+        <input class="btn btn-primary" type="submit" value="{{ btn_value }}" />
+      </form>
+
+    </div>
+  </div>
+
+
+{% endblock content %}
+
+{% block js %}
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="{% static 'chosen_v1.6.2/chosen.jquery.min.js' %}"></script>
+  <script>
+    $(document).ready(function() {
+      $("#id_facilitators").chosen();
+    });
+  </script>
+
+  <script>
+    function WednesdaysOnly(date) {
+      var day = date.getDay();
+      if (day == 3) //Wednesday = 3
+          return [true]
+      else
+          return [false]
+    }
+
+    $(document).ready(function() {
+      $('#id_date').datepicker({
+        dateFormat: 'yy-mm-dd',
+        beforeShowDay: WednesdaysOnly,
+      });
+    });
+  </script>
+{% endblock js %}
