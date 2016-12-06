@@ -1,11 +1,21 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Event, Block, Location, Category
+from .models import Event, Block, Location, Category, Registration
+
+
+class RegistrationAdmin(admin.ModelAdmin):
+    list_display = ["event", "student"]
+
+    class Meta:
+        model = Registration
 
 
 class BlockAdmin(admin.ModelAdmin):
     list_display = ["name", "start_time", "end_time"]
+
+    class Meta:
+        model = Block
 
 
 class EventAdmin(admin.ModelAdmin):
@@ -34,3 +44,4 @@ admin.site.register(Event, EventAdmin)
 admin.site.register(Location)
 admin.site.register(Block, BlockAdmin)
 admin.site.register(Category)
+admin.site.register(Registration, RegistrationAdmin)

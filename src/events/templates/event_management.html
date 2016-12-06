@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% load staticfiles %}
-{% load crispy_forms_tags %}
 
 {% block style %}
   <link rel="stylesheet" href="{% static 'chosen_v1.6.2/chosen.css' %}">
@@ -8,11 +7,11 @@
 {% endblock style %}
 
 
-{% block head_title %}Events | {{ block.super }}{% endblock %}
+{% block head_title %}Event Management | {{ block.super }}{% endblock %}
 
 {% block content %}
 
-  <h1>Flex Events
+  <h1>Manage Your Events
     {% if user.is_staff %}
       <a class="btn btn-success pull-right" href="{% url 'events:create' %}">Create New</a>
       <a class="btn btn-success pull-right" href="{% url 'events:manage' %}">Manage Your Events</a>
@@ -20,35 +19,14 @@
   </h1>
 
 
-  <form id="filter_form" method="GET" action="">
-    <p>Date: <input type="text"
-                    id="datepicker"
-                    name="date"
-                    placeholder="{{ date_filter }}"
-                    style="color:black">
-    </p>
-  </form>
-
-  <div class="panel panel-default">
-    <div class="panel-body" id="register-prompt">
-      <div class="row">
-        <div class="col-sm-6">
-          <h3 id="register-heading">Your Events for {{ date_object|date:"j F Y" }}:</h3>
-          <form method="POST" action=""> {% csrf_token %}
-            {{ register_form|crispy }}
-            <input class="btn btn-danger" type="submit" value="Save Selections"/>
-            <a id="clear-selections" class="btn btn-default">Clear Selections</a>
-          </form>
-        </div>
-        <div class="col-sm-6">
-
-          <a class="btn btn-info pull-right" href="{% url 'events:registrations_list' %}">View All Your Events</a>
-          <p>Registration status:</p>
-          <p id="registration-status">You have not registered for any events.</p>
-        </div>
-      </div>
-    </div>
-  </div>
+{#  <form id="filter_form" method="GET" action="">#}
+{#    <p>Date: <input type="text"#}
+{#                    id="datepicker"#}
+{#                    name="date"#}
+{#                    placeholder="{{ date_filter }}"#}
+{#                    style="color:black">#}
+{#    </p>#}
+{#  </form>#}
 
 
 
@@ -62,8 +40,8 @@
     <thead>
     <tr>
       {#      <th data-field="state" data-checkbox="true"></th>#}
-      <th data-field="id" data-visible="true">ID</th>
-      <th data-field="date" data-visible="false">Date</th>
+      <th data-field="id" data-visible="false">ID</th>
+      <th data-field="date" data-visible="true">Date</th>
       <th data-field="blocks">Blocks</th>
 {#      <th data-field="flex1" data-visible="false">Flex 1</th>#}
 {#      <th data-field="flex2" data-visible="false">Flex 1</th>#}
@@ -99,31 +77,17 @@
         <td>{{ obj.location }}</td>
         <td>{{ obj.facilitator_string|safe }} </td>
         <td>{{ obj.category }}</td>
-        <td>{{ obj.description|safe }}</td>
+        <td>{{ obj.description|safe }}
+
+          <a class="btn btn-success pull-right" href="{% url 'events:update' obj.id %}">Edit</a>
+          <a class="btn btn-success pull-right" href="{% url 'events:attendance' obj.id %}">Attendance</a>
+        </td>
 
       </tr>
     {% endfor %}
     </tbody>
   </table>
-
-  <div id="block-confirmation-modal" class="modal fade" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-              aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title">Asparagus</h4>
-        </div>
-        <div class="modal-body">
-          <p>Tetris rulz</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" id="btn-confirm-cancel" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="button" id="btn-confirm-flex-1" class="btn btn-primary" data-dismiss="modal">Flex 1</button>
-          <button type="button" id="btn-confirm-flex-2" class="btn btn-primary" data-dismiss="modal">Flex 2</button>
-        </div>
-      </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
+og -->
   </div><!-- /.modal -->
 
 {% endblock content %}
@@ -153,16 +117,6 @@
 
   </script>
 
-  {#  "Chosen" select widget #}
-  {#  <script src="{% static 'chosen_v1.6.2/chosen.jquery.min.js' %}"></script>#}
-  {#    <script>#}
-  {#    $(document).ready(function() {#}
-  {#      $("#id_flex1_event_choice").chosen();#}
-  {#    });#}
-  {#  </script>#}
-
-
   <!-- Bootstrap Tables:  http://bootstrap-table.wenzhixin.net.cn/ -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
-  <script src="{% static 'js/events-registration.js' %}"></script>
 {% endblock js %}
