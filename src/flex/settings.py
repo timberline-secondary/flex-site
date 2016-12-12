@@ -39,22 +39,26 @@ INSTALLED_APPS = (
     'django.contrib.sites',  # userena
 
     # For django-userena http://django-userena.readthedocs.io/en/latest/installation.html
-    'userena',
-    'guardian',
-    'easy_thumbnails',
+    # 'userena',
+    # 'guardian',
+    # 'easy_thumbnails',
+
+    # http://django-registration-redux.readthedocs.io/en/latest/quickstart.html#quickstart
+    # django-registration-redux
+    'registration',
 
     'crispy_forms',
 
     'django_summernote',
 
     # My custom apps
-    'accounts',
+    'profiles',
     'events',
 )
 
 AUTHENTICATION_BACKENDS = (
-    'userena.backends.UserenaAuthenticationBackend',
-    'guardian.backends.ObjectPermissionBackend',
+    #'userena.backends.UserenaAuthenticationBackend',
+    #'guardian.backends.ObjectPermissionBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -132,17 +136,21 @@ MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "media_cdn")
 ADMIN_SITE_HEADER = 'Timberline Flex Site - Administration'
 
 # django-guardian
-ANONYMOUS_USER_ID = -1
-AUTH_PROFILE_MODULE = 'accounts.UserProfile'
+# ANONYMOUS_USER_ID = -1
+# AUTH_PROFILE_MODULE = 'accounts.UserProfile'
 
 # userena
-USERENA_ACTIVATION_REQUIRED = False
-#USERENA_USE_HTTPS = True
-USERENA_DEFAULT_PRIVACY = 'closed'
-USERENA_HIDE_EMAIL = True
-LOGIN_REDIRECT_URL = '/accounts/%(username)s/'
-#LOGIN_URL = '/accounts/signin/'
-#LOGOUT_URL = '/accounts/signout/'
+# USERENA_ACTIVATION_REQUIRED = False
+# #USERENA_USE_HTTPS = True
+# USERENA_DEFAULT_PRIVACY = 'closed'
+# USERENA_HIDE_EMAIL = True
+# LOGIN_REDIRECT_URL = '/accounts/%(username)s/'
+# #LOGIN_URL = '/accounts/signin/'
+# #LOGOUT_URL = '/accounts/signout/'
+
+# django-registration-redux
+ACCOUNT_ACTIVATION_DAYS = 7
+LOGIN_REDIRECT_URL = "/"
 
 SITE_ID = 1
 

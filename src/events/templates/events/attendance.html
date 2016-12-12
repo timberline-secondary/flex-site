@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block style %}
+{% endblock style %}
+
+
+{% block head_title %}Attendance | {{ block.super }}{% endblock %}
+
+{% block content %}
+
+  <h1>Attendance - {{ event.title }} <br/>
+    <small>{{ event.date }}</small>
+  </h1>
+
+  <p>Block: {{ event.blocks_str }}</p>
+  <p>Location: {{ event.location }}</p>
+  <p>Facilitators: {{ event.facilitators.all }}</p>
+
+  {% crispy formset helper %}
+
+  <p></p>
+  <p></p>
+
+
+
+
+
+{#  {{ formset.management_form }}#}
+{#  {{ formset.non_form_errors.as_ul }}#}
+{#  <table id="formset" class="form">#}
+{#    {% for form in formset.forms %}#}
+{#      {% if forloop.first %}#}
+{#        <thead>#}
+{#        <tr>#}
+{#          {% for field in form.visible_fields %}#}
+{#            <th>{{ field.label|capfirst }}</th>#}
+{#          {% endfor %}#}
+{#        </tr>#}
+{#        </thead>#}
+{#      {% endif %}#}
+{#      <tr class="{% cycle row1,row2 %}">#}
+{#        {% for field in form.visible_fields %}#}
+{#          <td>#}
+            {# Include the hidden fields in the form #}
+{#            {% if forloop.first %}#}
+{#              {% for hidden in form.hidden_fields %}#}
+{#                {{ hidden }}#}
+{#              {% endfor %}#}
+{#            {% endif %}#}
+{#            {{ field.errors.as_ul }}#}
+{#            {{ field.value }}#}
+{#          </td>#}
+{#        {% endfor %}#}
+{#      </tr>#}
+{#    {% endfor %}#}
+{#  </table>#}
+
+{#  <table data-toggle="table"#}
+{#         data-classes="table table-no-bordered"#}
+{#         data-search="true"#}
+{#         data-id-field="id"#}
+{#         id="table">#}
+{#    <thead>#}
+{#    <tr>#}
+{#      <th data-field="id" data-visible="false">ID</th>#}
+{#      <th data-field="absent">Absent</th>#}
+{#      <th data-field="late">Late</th>#}
+{#      <th data-field="excused">Excused</th>#}
+{#      <th data-field="student">Student</th>#}
+{#      <th data-field="first-name">First</th>#}
+{#      <th data-field="last-name">Last</th>#}
+{##}
+{#    </tr>#}
+{#    </thead>#}
+{#    <tbody>#}
+{#    {% for obj in object_list %}#}
+{#      <tr>#}
+{#        <td>{{ obj.id }}</td>#}
+{#        <td>{{ obj.absent }} </td>#}
+{#        <td>{{ obj.late }}</td>#}
+{#        <td>{{ obj.excused }}</td>#}
+{#        <td>{{ obj.student }}</td>#}
+{#        <td>{{ obj.student.first_name }}</td>#}
+{#        <td>{{ obj.student.last_name }}</td>#}
+{#      </tr>#}
+{#    {% endfor %}#}
+{#    </tbody>#}
+{#  </table>#}
+
+
+{% endblock content %}
+
+{% block js %}
+  <!-- Bootstrap Tables:  http://bootstrap-table.wenzhixin.net.cn/ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
+{% endblock js %}

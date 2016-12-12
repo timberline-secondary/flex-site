@@ -27,9 +27,11 @@ urlpatterns = [
     url(r'^$', event_views.event_list, name='home'),
     # installed apps
     url(r'^summernote/', include('django_summernote.urls')),
-    url(r'^accounts/', include('userena.urls')),
+    # url(r'^accounts/', include('userena.urls')),
+    url(r'^accounts/', include('registration.backends.default.urls')),
     # custom apps
     url(r'^events/', include('events.urls', namespace='events')),
+    url(r'^profiles/', include('profiles.urls', namespace='profiles')),
 ]
 
 if settings.DEBUG:

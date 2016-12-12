@@ -1,8 +1,46 @@
+from crispy_forms.bootstrap import StrictButton
 from django import forms
+from django.forms import modelformset_factory, ModelChoiceField, TextInput
 from django.forms.widgets import CheckboxSelectMultiple
 from django_summernote.widgets import SummernoteWidget, SummernoteInplaceWidget
+from django.utils.safestring import mark_safe
 
-from .models import Event, Block
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, HTML, MultiField, Div
+
+from .models import Event, Block, Registration
+
+
+class PlainTextWidget(forms.Widget):
+    def render(self, name, value, attrs=None):
+        return mark_safe(value) if value is not None else '-'
+
+
+class AttendanceForm(forms.ModelForm):
+    class Meta:
+        model = Registration
+        fields = (
+            "absent",
+            "late",
+            "excused",
+            "student",
+        )
+
+        widgets = {
+            'student': PlainTextWidget,
+        }
+
+
+
+class AttendanceFormSetHelper(FormHelper):
+    def __init__(self, *args, **kwargs):
+        super(AttendanceFormSetHelper, self).__init__(*args, **kwargs)
+        self.form_class = 'form-inline'
+        # self.field_template = 'bootstrap3/layout/inline_field.html'
+        self.template = 'events/attendance_table_inline_formset.html'
+
+        self.add_input(Submit('submit', 'Save'))
+
 
 class RegisterForm(forms.Form):
     flex_1_event_choice = forms.ModelChoiceField(queryset=Event.objects.all(), required=False)
@@ -43,4 +81,4 @@ class EventForm(forms.ModelForm):
         super(EventForm, self).__init__(*args, **kwargs)
 
         self.fields["blocks"].widget = CheckboxSelectMultiple()
-        self.fields["facilitators"].widget.attrs.update({'class': 'chosen-select', })
+        self.fields["facilitators"].widget.attrs.update({'class': 'chosen-select',})

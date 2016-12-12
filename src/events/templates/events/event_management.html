@@ -13,8 +13,11 @@
 
   <h1>Manage Your Events
     {% if user.is_staff %}
-      <a class="btn btn-success pull-right" href="{% url 'events:create' %}">Create New</a>
-      <a class="btn btn-success pull-right" href="{% url 'events:manage' %}">Manage Your Events</a>
+      <div class="pull-right">
+        <a class="btn btn-success" href="{% url 'events:create' %}">
+          <i class="glyphicon glyphicon glyphicon-plus-sign"></i> Create New Event
+        </a>
+      </div>
     {% endif %}
   </h1>
 
@@ -78,9 +81,14 @@
         <td>{{ obj.facilitator_string|safe }} </td>
         <td>{{ obj.category }}</td>
         <td>{{ obj.description|safe }}
-
-          <a class="btn btn-success pull-right" href="{% url 'events:update' obj.id %}">Edit</a>
-          <a class="btn btn-success pull-right" href="{% url 'events:attendance' obj.id %}">Attendance</a>
+          <div class="pull-right">
+            <a class="btn btn-default" href="{% url 'events:update' obj.id %}">
+              <i class="glyphicon glyphicon-edit"></i> Edit Event
+            </a>
+            <a class="btn btn-primary" href="{% url 'events:attendance' obj.id %}">
+              <i class="glyphicon glyphicon-user"></i> Attendance
+            </a>
+          </div>
         </td>
 
       </tr>

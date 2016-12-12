@@ -1,6 +1,7 @@
 from datetime import date, datetime, timedelta
 
-from django.contrib.auth.models import User
+from django.conf import settings
+# from django.contrib.auth.models import User
 from django.db import models
 from django.core.urlresolvers import reverse
 
@@ -106,18 +107,18 @@ class Event(models.Model):
                                             help_text="If the event is running in more than one block, what restrictions"
                                                    " are there for students registering for it?"
                                             )
-    facilitators = models.ManyToManyField(User, related_name='events',
+    facilitators = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='events',
                                           limit_choices_to={'is_staff': True})
     allow_facilitators_to_modify = models.BooleanField(default=True,
                                                        help_text="If false, only the creator of the event can edit.")
-    creator = models.ForeignKey(User)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL)
     updated_timestamp = models.DateTimeField(auto_now=True, auto_now_add=False)
     created_timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
 
     objects = EventManager()
 
     class Meta:
-        ordering = ['date']
+        ordering = ['-date']
 
     def __str__(self):
         return self.title
@@ -204,11 +205,25 @@ class RegistrationManager(models.Manager):
 
 
 class Registration(models.Model):
+
+    PRESENT = 0
+    ABSENT = 1
+    LATE = 2
+    EXCUSED = 3
+
+    ATTENDANCE = (
+        (PRESENT, 'Present'),
+        (ABSENT, 'Absent'),
+        (LATE, 'Late'),
+        (EXCUSED, 'Excused')
+    )
+
     event = models.ForeignKey(Event)
-    student = models.ForeignKey(User)
-    block = models.ForeignKey(Block)
+    student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    block = models.ForeignKey(Block, on_delete=models.CASCADE)
     updated_timestamp = models.DateTimeField(auto_now=True, auto_now_add=False)
     created_timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
+    attendance = models.IntegerField(default=PRESENT, choices=ATTENDANCE)
     absent = models.BooleanField(default=False)
     late = models.BooleanField(default=False)
     excused = models.BooleanField(default=False)

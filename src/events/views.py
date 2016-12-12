@@ -2,12 +2,13 @@ from datetime import date, datetime
 
 from django.contrib import messages
 from django.core.serializers import json
+from django.forms import modelformset_factory
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 
 # Create your views here.
 from .models import Event, default_event_date, Registration, Block
-from .forms import EventForm, RegisterForm
+from .forms import EventForm, RegisterForm, AttendanceForm, AttendanceFormSetHelper
 
 
 def event_create(request):
@@ -26,7 +27,7 @@ def event_create(request):
         "form": form,
         "btn_value": "Save"
     }
-    return render(request, "event_form.html", context)
+    return render(request, "events/event_form.html", context)
 
 
 def event_detail(request, id=None):
@@ -35,7 +36,7 @@ def event_detail(request, id=None):
         "title": instance.title,
         "event": instance,
     }
-    return render(request, "event_detail.html", context)
+    return render(request, "events/event_detail.html", context)
 
 
 def event_manage(request):
@@ -51,18 +52,7 @@ def event_manage(request):
         "title": "Your Events",
         "object_list": queryset,
     }
-    return render(request, "event_management.html", context)
-
-
-def event_attendance(request, id=None):
-    event = get_object_or_404(Event, id=id)
-    queryset = Registration.objects.filter(event=event)
-
-    context = {
-        "object_list": queryset,
-        "event": event,
-    }
-    return render(request, "attendance.html", context)
+    return render(request, "events/event_management.html", context)
 
 
 def event_list(request):
@@ -99,7 +89,7 @@ def event_list(request):
         "object_list": queryset,
         "register_form": form,
     }
-    return render(request, "event_list.html", context)
+    return render(request, "events/event_list.html", context)
 
 
 def event_update(request, id=None):
@@ -121,20 +111,20 @@ def event_update(request, id=None):
         "form": form,
         "btn_value": "Save"
     }
-    return render(request, "event_form.html", context)
+    return render(request, "events/event_form.html", context)
 
 
 def event_delete(request, id=None):
     event = get_object_or_404(Event, id=id)
     event.delete()
     messages.success(request, "Successfully Deleted")
-    return redirect("events:list")
+    return redirect("events/events:list")
 
 
 def register(request):
     data = json.loads(request.body)
     print(data)
-    return redirect("events:list")
+    return redirect("events/events:list")
 
 
 ###############################################
@@ -150,7 +140,8 @@ def registrations_list(request):
     context = {
         "object_list": queryset
     }
-    return render(request, "registration_list.html", context)
+    return render(request, "events/registration_list.html", context)
+
 
 def registrations_manage(request):
     #date_query = request.GET.get("date", str(default_event_date()))
@@ -159,4 +150,31 @@ def registrations_manage(request):
     context = {
         "object_list": queryset
     }
-    return render(request, "registration_list.html", context)
+    return render(request, "events/registration_list.html", context)
+
+
+def event_attendance(request, id=None):
+    event = get_object_or_404(Event, id=id)
+    queryset = Registration.objects.filter(event=event)
+
+    # https://docs.djangoproject.com/en/1.9/topics/forms/modelforms/#model-formsets
+    AttendanceFormSet = modelformset_factory(Registration, form=AttendanceForm, extra=0)
+    helper = AttendanceFormSetHelper()
+
+    if request.method =="POST":
+        formset = AttendanceFormSet(
+            request.POST, request.FILES,
+            queryset=queryset,
+        )
+        if formset.is_valid():
+            formset.save()
+    else:
+        formset = AttendanceFormSet(queryset=queryset)
+
+    context = {
+        "object_list": queryset,
+        "event": event,
+        "formset": formset,
+        "helper": helper,
+    }
+    return render(request, "events/attendance.html", context)

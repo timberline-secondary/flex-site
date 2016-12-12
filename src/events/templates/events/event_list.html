@@ -14,8 +14,9 @@
 
   <h1>Flex Events
     {% if user.is_staff %}
-      <a class="btn btn-success pull-right" href="{% url 'events:create' %}">Create New</a>
-      <a class="btn btn-success pull-right" href="{% url 'events:manage' %}">Manage Your Events</a>
+      <a class="btn btn-primary pull-right" href="{% url 'events:manage' %}">
+        <i class="glyphicon glyphicon-tasks"></i> Manage Your Events
+      </a>
     {% endif %}
   </h1>
 
