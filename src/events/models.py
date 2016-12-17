@@ -203,27 +203,31 @@ class RegistrationManager(models.Manager):
         # do something with the book
         return reg
 
+    def get_for_user_block_date(self, student, block, event_date):
+        qs = self.get_queryset()
+        return qs.filter(student=student).filter(event__date=event_date).filter(block=block)
+
 
 class Registration(models.Model):
 
-    PRESENT = 0
-    ABSENT = 1
-    LATE = 2
-    EXCUSED = 3
-
-    ATTENDANCE = (
-        (PRESENT, 'Present'),
-        (ABSENT, 'Absent'),
-        (LATE, 'Late'),
-        (EXCUSED, 'Excused')
-    )
+    # PRESENT = 0
+    # ABSENT = 1
+    # LATE = 2
+    # EXCUSED = 3
+    #
+    # ATTENDANCE = (
+    #     (PRESENT, 'Present'),
+    #     (ABSENT, 'Absent'),
+    #     (LATE, 'Late'),
+    #     (EXCUSED, 'Excused')
+    # )
 
     event = models.ForeignKey(Event)
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     block = models.ForeignKey(Block, on_delete=models.CASCADE)
     updated_timestamp = models.DateTimeField(auto_now=True, auto_now_add=False)
     created_timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
-    attendance = models.IntegerField(default=PRESENT, choices=ATTENDANCE)
+    # attendance = models.IntegerField(default=PRESENT, choices=ATTENDANCE)
     absent = models.BooleanField(default=False)
     late = models.BooleanField(default=False)
     excused = models.BooleanField(default=False)

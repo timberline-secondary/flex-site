@@ -2,18 +2,84 @@
 {% load staticfiles %}
 {% load crispy_forms_tags %}
 
-{% block style %}{% endblock style %}
+{% block style %}
+  <link rel="stylesheet" href="{% static 'chosen_v1.6.2/chosen.css' %}">
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+{% endblock style %}
 
 {% block head_title %}Users | {{ block.super }}{% endblock %}
+
+
 
 {% block content %}
 
 
-  <h1>Homeroom Students for {{ homeroom_teacher }}</h1>
-  <ul>
-      {% for profile in object_list %}
-          <li>{{ profile.user }}, {{ profile.first_name }} {{ profile.last_name }} -- {{ profile.homeroom_teacher }}</li>
-      {% endfor %}
-  </ul>
+  <h1>Homeroom Students for {{ teacher }}</h1>
+
+  <form id="filter_form" method="GET" action="">
+    <p>Date: <input type="text"
+                    id="datepicker"
+                    name="date"
+                    placeholder="{{ date_filter }}"
+                    style="color:black">
+    </p>
+  </form>
+
+  <table data-toggle="table"
+         data-classes="table table-no-bordered"
+         data-search="true"
+         data-id-field="id"
+         data-sort-name="last"
+         data-sort-order="asc"
+         id="table">
+    <thead>
+    <tr>
+      <th data-field="id" data-sortable="true">Student Number</th>
+      <th data-field="first" data-sortable="true">First Name</th>
+      <th data-field="last" data-sortable="true">Last Name</th>
+      <th data-field="absent" data-sortable="true">Flex 1</th>
+      <th data-field="late" data-sortable="true">Flex 2</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for obj in object_list %}
+      <tr >
+        <td>{{ obj.user.get_username }}</td>
+        <td>{{ obj.user.first_name }}</td>
+        <td>{{ obj.user.last_name }}</td>
+        <td></td>
+        <td></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
 
 {% endblock content %}
+
+{% block js %}
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+  {#  Date Filter#}
+  <script>
+    function WednesdaysOnly(date) {
+      var day = date.getDay();
+      if (day == 3) //Wednesday = 3
+        return [true]
+      else
+        return [false]
+    }
+
+    $(document).ready(function () {
+      $('#datepicker').datepicker({
+        dateFormat: 'yy-mm-dd',
+        onSelect: function (dateText, inst) {
+          $('#filter_form').submit(); // <-- SUBMIT
+        },
+        beforeShowDay: WednesdaysOnly,
+      });
+    });
+
+  </script>
+  <!-- Bootstrap Tables:  http://bootstrap-table.wenzhixin.net.cn/ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
+{% endblock js %}

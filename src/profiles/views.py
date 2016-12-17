@@ -1,6 +1,11 @@
+from django.db import IntegrityError
+from django.http import Http404
+from random import randint
+
 from django.shortcuts import render
 import csv
-# Create your views here.
+
+from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.views.generic import ListView
 from django.shortcuts import render, get_object_or_404, redirect
 from registration.forms import User
@@ -8,25 +13,39 @@ from registration.forms import User
 from .models import Profile
 
 
-class PublisherList(ListView):
+class ProfileList(ListView):
     model = Profile
 
 
 def mass_user_import(request):
-    path = ""
+    # path = static("user_list.csv")
+    path = "/home/couture/Developer/flex-site/static_cdn/user_list.csv"
+    teachers = User.objects.all().filter(is_staff=True)
+
     with open(path) as f:
         reader = csv.reader(f)
         for row in reader:
 
-            homeroom_teacher = row[2]
+            try:
+                user = User.objects.create_user(
+                    username=row[0],
+                    password="123123",
+                    first_name=row[1],
+                    last_name=row[2],
+                )
+            except IntegrityError:  # user already exists
+                user = get_object_or_404(User, username=row[0])
 
-            _, created = Profile.objects.get_or_create(
-                first_name=row[0],
-                last_name=row[1],
-                homeroom_teacher=homeroom_teacher
-            )
-            # creates a tuple of the new object or
-            # current object and a boolean of if it was created
+            random_index = randint(0, len(teachers) - 1)
+
+            # even if new user NOT created, update profile data
+            profile = get_object_or_404(Profile, user=user)
+            profile.first_name = row[1]
+            profile.last_name = row[2]
+            profile.homeroom_teacher = teachers[random_index]
+            profile.save()
+
+        return redirect("profiles:list")
 
 
 def home_room(request, user_id=None):
@@ -34,8 +53,8 @@ def home_room(request, user_id=None):
         homeroom_teacher = get_object_or_404(User, id=user_id)
     else:
         homeroom_teacher = request.user
-    queryset = Profile.objects.filter(homeroom_teacher=homeroom_teacher)
-    print(queryset)
+    queryset = Profile.objects.select_related('user').filter(homeroom_teacher=homeroom_teacher)
+
     context = {
         "object_list": queryset,
         "teacher": homeroom_teacher,

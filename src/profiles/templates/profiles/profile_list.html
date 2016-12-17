@@ -10,9 +10,10 @@
 
 
     <h1>Student List</h1>
+  <a class="btn btn-warning" href="{% url 'profiles:import' %}">MASS IMPORT</a>
   <ul>
       {% for profile in object_list %}
-          <li>{{ profile}}</li>
+          <li>{{ profile}},{{ profile.user.username }}, {{ profile.user.date_joined }}, {{ profile.homeroom_teacher }}</li>
       {% endfor %}
   </ul>
 

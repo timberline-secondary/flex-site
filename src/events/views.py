@@ -1,14 +1,16 @@
 from datetime import date, datetime
 
 from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.serializers import json
 from django.forms import modelformset_factory
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 
 # Create your views here.
+from profiles.models import Profile
 from .models import Event, default_event_date, Registration, Block
-from .forms import EventForm, RegisterForm, AttendanceForm, AttendanceFormSetHelper
+from .forms import EventForm, AttendanceForm, AttendanceFormSetHelper, RegistrationForm
 
 
 def event_create(request):
@@ -60,25 +62,38 @@ def event_list(request):
     date_query = request.GET.get("date", str(default_event_date()))
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
 
-    form = RegisterForm(request.POST or None, event_date=d)
+    flex1 = Block.objects.get_flex_1()
+    flex2 = Block.objects.get_flex_2()
+
+    if request.user.is_authenticated():
+        # Find if the user already has an event for this day and block.
+        # If he does, the start with that instance, else start a new instance
+        try:
+            user_reg = Registration.objects.get(student=request.user, block=flex1, event__date=d)
+        except ObjectDoesNotExist:
+            user_reg = Registration(student=request.user, block=flex1)  # Event will be set by form
+        form_flex1 = RegistrationForm(request.POST or None,
+                                      date=d, block=flex1,
+                                      instance=user_reg,
+                                      prefix='flex1')
+
+        try:
+            user_reg = Registration.objects.get(student=request.user, block=flex2, event__date=d)
+        except ObjectDoesNotExist:
+            user_reg = Registration(student=request.user, block=flex2)  # Event will be set by form
+        form_flex2 = RegistrationForm(request.POST or None,
+                                       date=d, block=flex2,
+                                       instance=user_reg,
+                                       prefix='flex2')
+
+    else:
+        form_flex1 = None
+        form_flex2 = None
 
     if request.method == 'POST':
-        if form.is_valid():
-            event1 = form.cleaned_data['flex_1_event_choice']
-            event2 = form.cleaned_data['flex_2_event_choice']
-
-            if event1:
-                Registration.objects.create_registration(
-                    student=request.user,
-                    event=event1,
-                    block=Block.objects.get_flex_1(),
-                )
-            if event2:
-                Registration.objects.create_registration(
-                    student=request.user,
-                    event=event2,
-                    block=Block.objects.get_flex_2(),
-                )
+        if form_flex1.is_valid() and form_flex2.is_valid():
+            form_flex1.save()
+            form_flex2.save()
             return redirect("events:registrations_list")
 
     queryset = Event.objects.filter(date=d)
@@ -87,7 +102,9 @@ def event_list(request):
         "date_object": d,
         "title": "List",
         "object_list": queryset,
-        "register_form": form,
+        # "register_form": form,
+        "form_flex1": form_flex1,
+        "form_flex2": form_flex2,
     }
     return render(request, "events/event_list.html", context)
 
@@ -124,7 +141,7 @@ def event_delete(request, id=None):
 def register(request):
     data = json.loads(request.body)
     print(data)
-    return redirect("events/events:list")
+    return redirect("events:list")
 
 
 ###############################################
@@ -152,6 +169,19 @@ def registrations_manage(request):
     }
     return render(request, "events/registration_list.html", context)
 
+
+# def homeroom(request, id=None):
+#     students = Profile.objects.all().filter(homeroom_teacher=request.user)
+#     event = get_object_or_404(Event, id=id)
+#     queryset = Registration.objects.filter(event=event)
+#
+#     context = {
+#         "object_list": queryset,
+#         "event": event,
+#         "formset": formset,
+#         "helper": helper,
+#     }
+#     return render(request, "events/homeroom.html", context)
 
 def event_attendance(request, id=None):
     event = get_object_or_404(Event, id=id)

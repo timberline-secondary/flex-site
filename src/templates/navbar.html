@@ -9,10 +9,10 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">
+      <a class="navbar-brand" href="http://www.sd72.bc.ca/school/timberline/">
         <img alt="Brand" src="{%  static 'img/logo.png' %}">
       </a>
-      <div class="navbar-brand">Timberline Secondary</div>
+      <a href="http://www.sd72.bc.ca/school/timberline/"  class="navbar-brand">Timberline Secondary</a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
@@ -22,20 +22,27 @@
           <a href="{% url 'events:list' %}">Events <span class="sr-only">(current)</span></a>
         </li>
         <li>
-          <a href="#">Link</a>
+          <a href="{% url 'events:manage' %}">Manage Your Events <span class="sr-only"></span></a>
         </li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="#">Action</a></li>
-            <li><a href="#">Another action</a></li>
-            <li><a href="#">Something else here</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a href="#">Separated link</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a href="#">One more separated link</a></li>
-          </ul>
+        <li>
+          <a href="{% url 'profiles:homeroom' %}">Homeroom <span class="sr-only"></span></a>
         </li>
+        <li>
+          <a href="{% url 'profiles:list' %}">Profiles <span class="sr-only"></span></a>
+        </li>
+
+{#        <li class="dropdown">#}
+{#          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Your Events <span class="caret"></span></a>#}
+{#          <ul class="dropdown-menu">#}
+{#            <li><a href="#">Attendance</a></li>#}
+{#            <li><a href="#">Another action</a></li>#}
+{#            <li><a href="#">Something else here</a></li>#}
+{#            <li role="separator" class="divider"></li>#}
+{#            <li><a href="#">Separated link</a></li>#}
+{#            <li role="separator" class="divider"></li>#}
+{#            <li><a href="#">One more separated link</a></li>#}
+{#          </ul>#}
+{#        </li>#}
       </ul>
       {% if not request.user.is_authenticated and not "/accounts/login/" in request.get_full_path %}
 {#      <ul class="nav navbar-nav navbar-right">#}
@@ -53,6 +60,7 @@
       {% if request.user.is_authenticated %}
       <ul class="nav navbar-nav navbar-right">
         <li><a href="/admin">Admin</a></li>
+        <li><p class="navbar-text">{{ request.user.profile|upper }}</p></li>
 {#        <li><a href="{% url 'userena_profile_detail' request.user.username %}">{{ request.user.username }}</a></li>#}
         <li><a href="{% url 'auth_logout' %}">Logout</a></li>
       </ul>

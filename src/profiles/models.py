@@ -23,7 +23,7 @@ class Profile(models.Model):
                                  related_name='profiles', null=True)
 
     def __str__(self):
-        return self.first_name + " " + self.last_name
+        return str(self.first_name) + " " + str(self.last_name)
 
 
 def create_profile(sender, **kwargs):

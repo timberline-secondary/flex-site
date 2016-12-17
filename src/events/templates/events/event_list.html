@@ -34,9 +34,10 @@
     <div class="panel-body" id="register-prompt">
       <div class="row">
         <div class="col-sm-6">
-          <h3 id="register-heading">Your Events for {{ date_object|date:"j F Y" }}:</h3>
+          <h3 id="register-heading">Registration form for {{ date_object|date:"j M Y" }}:</h3>
           <form method="POST" action=""> {% csrf_token %}
-            {{ register_form|crispy }}
+            {{ form_flex1|crispy }}
+            {{ form_flex2|crispy }}
             <input class="btn btn-danger" type="submit" value="Save Selections"/>
             <a id="clear-selections" class="btn btn-default">Clear Selections</a>
           </form>
@@ -145,10 +146,13 @@
     $(document).ready(function () {
       $('#datepicker').datepicker({
         dateFormat: 'yy-mm-dd',
+        showOtherMonths: true,
+        selectOtherMonths: true,
         onSelect: function (dateText, inst) {
           $('#filter_form').submit(); // <-- SUBMIT
         },
         beforeShowDay: WednesdaysOnly,
+
       });
     });
 

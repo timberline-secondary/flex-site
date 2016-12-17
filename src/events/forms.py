@@ -31,7 +31,6 @@ class AttendanceForm(forms.ModelForm):
         }
 
 
-
 class AttendanceFormSetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super(AttendanceFormSetHelper, self).__init__(*args, **kwargs)
@@ -42,22 +41,54 @@ class AttendanceFormSetHelper(FormHelper):
         self.add_input(Submit('submit', 'Save'))
 
 
-class RegisterForm(forms.Form):
-    flex_1_event_choice = forms.ModelChoiceField(queryset=Event.objects.all(), required=False)
-    flex_2_event_choice = forms.ModelChoiceField(queryset=Event.objects.all(), required=False)
+# class RegisterForm(forms.Form):
+#     flex_1_event_choice = forms.ModelChoiceField(queryset=Event.objects.all(), required=False)
+#     flex_2_event_choice = forms.ModelChoiceField(queryset=Event.objects.all(), required=False)
+#
+#     def __init__(self, *args, **kwargs):
+#         event_date = kwargs.pop('event_date')
+#         super(RegisterForm, self).__init__(*args, **kwargs)
+#
+#         if event_date:
+#             flex1 = Block.objects.get_flex_1()
+#             flex1_qs = Event.objects.all_for_date(event_date=event_date, block=flex1)
+#             flex2 = Block.objects.get_flex_2()
+#             flex2_qs = Event.objects.all_for_date(event_date=event_date, block=flex2)
+#             self.fields['flex_1_event_choice'].queryset = flex1_qs
+#             self.fields['flex_2_event_choice'].queryset = flex2_qs
+
+
+class RegistrationForm(forms.ModelForm):
+    class Meta:
+        model = Registration
+        fields = ['event']
+
+        widgets = {
+            'student': PlainTextWidget,
+        }
 
     def __init__(self, *args, **kwargs):
-        event_date = kwargs.pop('event_date')
-        super(RegisterForm, self).__init__(*args, **kwargs)
+        date = kwargs.pop('date')
+        block = kwargs.pop('block')
+        super(RegistrationForm, self).__init__(*args, **kwargs)
 
-        if event_date:
-            flex1 = Block.objects.get_flex_1()
-            flex1_qs = Event.objects.all_for_date(event_date=event_date, block=flex1)
-            flex2 = Block.objects.get_flex_2()
-            flex2_qs = Event.objects.all_for_date(event_date=event_date, block=flex2)
-            self.fields['flex_1_event_choice'].queryset = flex1_qs
-            self.fields['flex_2_event_choice'].queryset = flex2_qs
+        if date and block:
+            flex_qs = Event.objects.all_for_date(event_date=date, block=block)
+            self.fields['event'].queryset = flex_qs
 
+            DOM_id = "event-" + str(block)
+            self.fields['event'].widget.attrs.update({'id': DOM_id, })
+            self.fields['event'].label = "Selection for " + str(block)
+
+
+class RegistrationFormSetHelper(FormHelper):
+    def __init__(self, *args, **kwargs):
+        super(RegistrationFormSetHelper, self).__init__(*args, **kwargs)
+        self.form_class = 'form-inline'
+        # self.field_template = 'bootstrap3/layout/inline_field.html'
+        # self.template = 'events/attendance_table_inline_formset.html'
+
+        self.add_input(Submit('submit', 'Save Selections'))
 
 class EventForm(forms.ModelForm):
     class Meta:
@@ -81,4 +112,4 @@ class EventForm(forms.ModelForm):
         super(EventForm, self).__init__(*args, **kwargs)
 
         self.fields["blocks"].widget = CheckboxSelectMultiple()
-        self.fields["facilitators"].widget.attrs.update({'class': 'chosen-select',})
+        self.fields["facilitators"].widget.attrs.update({'class': 'chosen-select', })

@@ -3,8 +3,8 @@
  */
 var $table = $('#table'),
 
-    $flex1_selection = $('#id_flex_1_event_choice'),
-    $flex2_selection = $('#id_flex_2_event_choice'),
+    $flex1_selection = $('#event-Flex-1'),
+    $flex2_selection = $('#event-Flex-2'),
 
     $blockConfirmModal = $('#block-confirmation-modal'),
     $blockConfirmModalTitle = $('#block-confirmation-modal').find('.modal-title'),
