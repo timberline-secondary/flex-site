@@ -1,6 +1,7 @@
 from datetime import date, datetime
 
 from django.contrib import messages
+from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.serializers import json
 from django.forms import modelformset_factory
@@ -131,6 +132,29 @@ def event_update(request, id=None):
     return render(request, "events/event_form.html", context)
 
 
+def event_copy(request, id=None):
+    new_event = get_object_or_404(Event, id=id)
+    new_event.pk = None  # autogen a new primary key (quest_id by default)
+    new_event.date = None
+
+    form = EventForm(request.POST or None, instance=new_event)
+
+    # not valid?
+    if form.is_valid():
+        event = form.save()
+
+        messages.success(request, "Successfully Updated")
+        return HttpResponseRedirect(event.get_absolute_url())
+
+    context = {
+        "title": new_event.title,
+        "event": new_event,
+        "form": form,
+        "btn_value": "Save"
+    }
+    return render(request, "events/event_form.html", context)
+
+
 def event_delete(request, id=None):
     event = get_object_or_404(Event, id=id)
     event.delete()
@@ -159,6 +183,14 @@ def registrations_list(request):
     }
     return render(request, "events/registration_list.html", context)
 
+def registrations_all(request):
+    #date_query = request.GET.get("date", str(default_event_date()))
+    #d = datetime.strptime(date_query, "%Y-%m-%d").date()
+    queryset = Registration.objects.all()
+    context = {
+        "object_list": queryset
+    }
+    return render(request, "events/registration_all.html", context)
 
 def registrations_manage(request):
     #date_query = request.GET.get("date", str(default_event_date()))
@@ -183,9 +215,13 @@ def registrations_manage(request):
 #     }
 #     return render(request, "events/homeroom.html", context)
 
-def event_attendance(request, id=None):
+def event_attendance(request, id=None, block_id=None):
+    if block_id:
+        block = get_object_or_404(Event, id=block_id)
+    else:
+        block = Block.objects.get_flex_2()
     event = get_object_or_404(Event, id=id)
-    queryset = Registration.objects.filter(event=event)
+    queryset = Registration.objects.filter(event=event, block=block)
 
     # https://docs.djangoproject.com/en/1.9/topics/forms/modelforms/#model-formsets
     AttendanceFormSet = modelformset_factory(Registration, form=AttendanceForm, extra=0)
@@ -208,3 +244,27 @@ def event_attendance(request, id=None):
         "helper": helper,
     }
     return render(request, "events/attendance.html", context)
+
+
+def registrations_homeroom(request, user_id=None):
+    date_query = request.GET.get("date", str(default_event_date()))
+    d = datetime.strptime(date_query, "%Y-%m-%d").date()
+    # d = datetime.strptime("2016-11-30", "%Y-%m-%d").date()
+
+    if user_id:
+        homeroom_teacher = get_object_or_404(User, id=user_id)
+    else:
+        homeroom_teacher = request.user
+    profile_queryset = Profile.objects.select_related('user').filter(homeroom_teacher=homeroom_teacher)
+    profile_queryset.annotate()
+
+    students = Registration.objects.homeroom_registration_check(d, homeroom_teacher)
+
+    context = {
+        "object_list": profile_queryset,
+        "students": students,
+        "teacher": homeroom_teacher,
+        "date_filter": date_query,
+        "date_object": d,
+    }
+    return render(request, "events/homeroom_list.html", context)

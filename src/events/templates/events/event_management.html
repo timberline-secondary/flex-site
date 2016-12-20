@@ -85,6 +85,9 @@
             <a class="btn btn-default" href="{% url 'events:update' obj.id %}">
               <i class="glyphicon glyphicon-edit"></i> Edit Event
             </a>
+            <a class="btn btn-default" href="{% url 'events:copy' obj.id %}">
+              <i class="glyphicon glyphicon-copy"></i> Copy Event
+            </a>
             <a class="btn btn-primary" href="{% url 'events:attendance' obj.id %}">
               <i class="glyphicon glyphicon-user"></i> Attendance
             </a>

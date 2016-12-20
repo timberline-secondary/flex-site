@@ -43,6 +43,17 @@
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
+
+<script>
+$(document).ready(function() {
+
+  // http://stackoverflow.com/questions/24514717/bootstrap-navbar-active-state-not-working
+  $('li.active').removeClass('active');
+  $('a[href="' + location.pathname + '"]').closest('li').addClass('active');
+
+});
+</script>
+
 {% block js %}{% endblock js %}
 
 </body>

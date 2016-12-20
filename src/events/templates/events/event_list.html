@@ -19,16 +19,22 @@
       </a>
     {% endif %}
   </h1>
-
-
-  <form id="filter_form" method="GET" action="">
-    <p>Date: <input type="text"
-                    id="datepicker"
-                    name="date"
-                    placeholder="{{ date_filter }}"
-                    style="color:black">
-    </p>
-  </form>
+  <div class="row">
+    <div class="col-md-3 col-sm-4 col-xs-6">
+      <form id="filter_form" class= method="GET" action="">
+        <div class="input-group">
+          <span class="input-group-addon" id="basic-addon1"><i class="glyphicon glyphicon-calendar"></i> Date</span>
+          <input type="text"
+                        id="datepicker"
+                        name="date"
+                        class="form-control"
+                        value="{{ date_filter }}"
+                        style="color:black">
+        </div>
+      </form>
+    </div>
+  </div>
+  <br>
 
   <div class="panel panel-default">
     <div class="panel-body" id="register-prompt">
@@ -63,12 +69,9 @@
          id="table">
     <thead>
     <tr>
-      {#      <th data-field="state" data-checkbox="true"></th>#}
-      <th data-field="id" data-visible="true">ID</th>
+      <th data-field="id" data-visible="false">ID</th>
       <th data-field="date" data-visible="false">Date</th>
       <th data-field="blocks">Blocks</th>
-{#      <th data-field="flex1" data-visible="false">Flex 1</th>#}
-{#      <th data-field="flex2" data-visible="false">Flex 1</th>#}
       <th data-field="blockselection" data-visible="false">Block Selection</th>
       <th data-field="title">Title</th>
       <th data-field="titletext" data-visible="false">Title Plain Text</th>
@@ -82,12 +85,9 @@
     <tbody>
     {% for obj in object_list %}
       <tr>
-        {#        <td></td>#}
         <td>{{ obj.id }}</td>
         <td>{{ obj.date }}</td>
         <td>{{ obj.blocks_str }}</td>
-{#        <td>{{ obj.flex1 }}</td>#}
-{#        <td>{{ obj.flex2 }}</td>#}
         <td>{{ obj.block_selection_guide }}</td>
         <td><b>
           {% if user.is_superuser or user in obj.get_editors %}

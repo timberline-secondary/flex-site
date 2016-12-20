@@ -1,5 +1,8 @@
+from datetime import datetime
+
 from django.db import IntegrityError
 from django.http import Http404
+from events.models import default_event_date, Registration
 from random import randint
 
 from django.shortcuts import render
@@ -49,14 +52,20 @@ def mass_user_import(request):
 
 
 def home_room(request, user_id=None):
+    date_query = request.GET.get("date", str(default_event_date()))
+    d = datetime.strptime(date_query, "%Y-%m-%d").date()
+
     if user_id:
         homeroom_teacher = get_object_or_404(User, id=user_id)
     else:
         homeroom_teacher = request.user
-    queryset = Profile.objects.select_related('user').filter(homeroom_teacher=homeroom_teacher)
+    profile_queryset = Profile.objects.select_related('user').filter(homeroom_teacher=homeroom_teacher)
+    profile_queryset.annotate()
 
     context = {
-        "object_list": queryset,
+        "object_list": profile_queryset,
         "teacher": homeroom_teacher,
+        "date_filter": date_query,
+        "date_object": d,
     }
     return render(request, "profiles/homeroom_list.html", context)

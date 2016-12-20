@@ -18,14 +18,14 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li class="active">
+        <li>
           <a href="{% url 'events:list' %}">Events <span class="sr-only">(current)</span></a>
         </li>
         <li>
           <a href="{% url 'events:manage' %}">Manage Your Events <span class="sr-only"></span></a>
         </li>
         <li>
-          <a href="{% url 'profiles:homeroom' %}">Homeroom <span class="sr-only"></span></a>
+          <a href="{% url 'events:registrations_homeroom' %}">Homeroom <span class="sr-only"></span></a>
         </li>
         <li>
           <a href="{% url 'profiles:list' %}">Profiles <span class="sr-only"></span></a>

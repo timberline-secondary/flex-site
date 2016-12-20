@@ -1,7 +1,8 @@
 from datetime import date, datetime, timedelta
 
 from django.conf import settings
-# from django.contrib.auth.models import User
+from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.core.urlresolvers import reverse
 
@@ -90,8 +91,8 @@ class Event(models.Model):
     F1_OR_F2 = 1
     F1_AND_F2 = 2
     MULTI_BLOCK_CHOICES = (
-        (F1_XOR_F2, 'Must choose one block only.'),
-        (F1_OR_F2, 'Can Choose one block or both blocks.'),
+        (F1_XOR_F2, 'Can choose one or the other, but not both.'),
+        (F1_OR_F2, 'Can choose one block or both blocks.'),
         (F1_AND_F2, 'Both blocks are required.'),
     )
 
@@ -105,7 +106,7 @@ class Event(models.Model):
     # flex2 = models.BooleanField(default=False)
     multi_block_event = models.IntegerField(default=F1_OR_F2, choices=MULTI_BLOCK_CHOICES,
                                             help_text="If the event is running in more than one block, what restrictions"
-                                                   " are there for students registering for it?"
+                                                   " are there for students?"
                                             )
     facilitators = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='events',
                                           limit_choices_to={'is_staff': True})
@@ -127,30 +128,19 @@ class Event(models.Model):
         return reverse("events:detail", kwargs={"id": self.id})
 
     def blocks_str(self):
-        # string = ""
-        # if self.flex1:
-        #     string += "Flex-1"
-        #     if self.flex2:
-        #         if self.multi_block_event == Event.AND:
-        #             string += " and "
-        #         else:
-        #             string += " or "
-        #         string += "Flex-2"
-        # elif self.flex2:
-        #     string += "Flex-2"
-        # else:
-        #     string += "None"
-        # return string
-
         blocks = self.blocks.all()
         bl_str = ""
         count = 1
         for block in blocks:
             if count > 1:
                 if self.multi_block_event == Event.F1_AND_F2:
-                    bl_str += " and "
-                else:
-                    bl_str += " or "
+                    bl_str += " AND "
+                elif self.multi_block_event == Event.F1_OR_F2:
+                    bl_str += " OR "
+                elif self.multi_block_event == Event.F1_XOR_F2:
+                    bl_str += " XOR "
+                else:  # shouldn't get here
+                    bl_str += " ERROR "
             bl_str += str(block)
             count += 1
         return bl_str
@@ -206,6 +196,26 @@ class RegistrationManager(models.Manager):
     def get_for_user_block_date(self, student, block, event_date):
         qs = self.get_queryset()
         return qs.filter(student=student).filter(event__date=event_date).filter(block=block)
+
+    def homeroom_registration_check(self, event_date, homeroom_teacher):
+        students = User.objects.all().filter(is_staff=False, profile__homeroom_teacher=homeroom_teacher)
+        students = students.values('id', 'username', 'first_name', 'last_name')
+        students = list(students)
+
+        # get queryset with events? optimization for less hits on db
+        qs = self.get_queryset().filter(event__date=event_date, student__profile__homeroom_teacher=homeroom_teacher)
+        print(qs)
+        for student in students:
+            user_regs_qs = qs.filter(student_id=student['id'])
+
+            for block in Block.objects.all():
+                try:
+                    reg = user_regs_qs.get(block=block)
+                    student[block.constant_string()] = str(reg.event)
+                except ObjectDoesNotExist:
+                    student[block.constant_string()] = None
+
+        return students
 
 
 class Registration(models.Model):

@@ -23,12 +23,18 @@ class AttendanceForm(forms.ModelForm):
             "absent",
             "late",
             "excused",
-            "student",
+            # "student",
         )
 
-        widgets = {
-            'student': PlainTextWidget,
-        }
+        # widgets = {
+        #     'student': PlainTextWidget,
+        # }
+
+    def __init__(self, *args, **kwargs):
+        super(AttendanceForm, self).__init__(*args, **kwargs)  # call base class
+        self.first_name = self.instance.student.profile.first_name
+        self.last_name = self.instance.student.profile.last_name
+        self.student_number = self.instance.student.username
 
 
 class AttendanceFormSetHelper(FormHelper):
