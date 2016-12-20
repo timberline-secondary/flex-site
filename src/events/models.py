@@ -198,13 +198,18 @@ class RegistrationManager(models.Manager):
         return qs.filter(student=student).filter(event__date=event_date).filter(block=block)
 
     def homeroom_registration_check(self, event_date, homeroom_teacher):
-        students = User.objects.all().filter(is_staff=False, profile__homeroom_teacher=homeroom_teacher)
+        students = User.objects.all().filter(
+            is_staff=False,
+            profile__homeroom_teacher=homeroom_teacher
+        )
         students = students.values('id', 'username', 'first_name', 'last_name')
         students = list(students)
 
         # get queryset with events? optimization for less hits on db
-        qs = self.get_queryset().filter(event__date=event_date, student__profile__homeroom_teacher=homeroom_teacher)
-        print(qs)
+        qs = self.get_queryset().filter(
+            event__date=event_date,
+            student__profile__homeroom_teacher=homeroom_teacher
+        )
         for student in students:
             user_regs_qs = qs.filter(student_id=student['id'])
 

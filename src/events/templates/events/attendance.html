@@ -10,23 +10,56 @@
 
 {% block content %}
 
-  <h1>Attendance - {{ event.title }} <br/>
+  <h1>Attendance - {{ event.title }}
     <small>{{ event.date }}</small>
   </h1>
 
-  <p>Block: {{ event.blocks_str }}</p>
-  <p>Location: {{ event.location }}</p>
-  <p>Facilitators: {{ event.facilitators.all }}</p>
+{#  <div class="row">#}
+{#    <div class="col-sm-12">#}
+{#      <div class="btn-group" role="group">#}
+{#          <a href="" class="btn btn-default active">Flex 1</a>#}
+{#          <a href="" class="btn btn-default">Flex 2</a>#}
+{#      </div>#}
+{#    </div>#}
+{#  </div>#}
 
-  {% crispy formset helper %}
+{#  <div>#}
+{#    <p>Block: {{ event.blocks_str }}</p>#}
+{#    <p>Location: {{ event.location }}</p>#}
+{#  </div>#}
+{#  <p>Facilitators:</p> <ul>{{ event.facilitators.all|unordered_list }}</ul>#}
 
-  <p></p>
-  <p></p>
+
+  <div class="row">
+    <div class="col-sm-12">
+      <ul class="nav nav-tabs">
+        {% for block in event.blocks.all %}
+        <li role="presentation" {% if block == active_block %}class="active"{% endif %}>
+          <a href="{% url 'events:attendance_by_block' event.id block.id %}"
+             aria-controls="flex1"
+             role="tab"
+          >
+            {{ block }}
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+
+          {% crispy formset1 helper %}
+
+    </div>
+  </div>
+
+{##}
+{#  {% crispy formset2 helper %}#}
+{##}
+{#  <p></p>#}
+{#  <p></p>#}
 
 
 {% endblock content %}
 
 {% block js %}
   <!-- Bootstrap Tables:  http://bootstrap-table.wenzhixin.net.cn/ -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
+{#  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>#}
 {% endblock js %}

@@ -43,10 +43,9 @@ def event_detail(request, id=None):
 
 
 def event_manage(request):
-
     # date_query = request.GET.get("date", str(default_event_date()))
     # d = datetime.strptime(date_query, "%Y-%m-%d").date()
-    # queryset = request.user.event_set.all()
+
     queryset = Event.objects.filter(facilitators=request.user)
     # Event.objects.all_for_facilitator(request.user)
     context = {
@@ -54,6 +53,7 @@ def event_manage(request):
         # "date_object": d,
         "title": "Your Events",
         "object_list": queryset,
+        # "date_filter": d,
     }
     return render(request, "events/event_management.html", context)
 
@@ -175,26 +175,22 @@ def register(request):
 ################################################
 
 def registrations_list(request):
-    #date_query = request.GET.get("date", str(default_event_date()))
-    #d = datetime.strptime(date_query, "%Y-%m-%d").date()
     queryset = Registration.objects.filter(student=request.user)
     context = {
         "object_list": queryset
     }
     return render(request, "events/registration_list.html", context)
 
+
 def registrations_all(request):
-    #date_query = request.GET.get("date", str(default_event_date()))
-    #d = datetime.strptime(date_query, "%Y-%m-%d").date()
     queryset = Registration.objects.all()
     context = {
         "object_list": queryset
     }
     return render(request, "events/registration_all.html", context)
 
+
 def registrations_manage(request):
-    #date_query = request.GET.get("date", str(default_event_date()))
-    #d = datetime.strptime(date_query, "%Y-%m-%d").date()
     queryset = Registration.objects.filter(student=request.user)
     context = {
         "object_list": queryset
@@ -202,46 +198,38 @@ def registrations_manage(request):
     return render(request, "events/registration_list.html", context)
 
 
-# def homeroom(request, id=None):
-#     students = Profile.objects.all().filter(homeroom_teacher=request.user)
-#     event = get_object_or_404(Event, id=id)
-#     queryset = Registration.objects.filter(event=event)
-#
-#     context = {
-#         "object_list": queryset,
-#         "event": event,
-#         "formset": formset,
-#         "helper": helper,
-#     }
-#     return render(request, "events/homeroom.html", context)
-
 def event_attendance(request, id=None, block_id=None):
-    if block_id:
-        block = get_object_or_404(Event, id=block_id)
-    else:
-        block = Block.objects.get_flex_2()
     event = get_object_or_404(Event, id=id)
-    queryset = Registration.objects.filter(event=event, block=block)
+    if block_id:
+        active_block = get_object_or_404(Block, id=block_id)
+    else:
+        active_block = event.blocks.all()[0]
+
+    queryset1 = Registration.objects.filter(event=event, block=active_block)
 
     # https://docs.djangoproject.com/en/1.9/topics/forms/modelforms/#model-formsets
-    AttendanceFormSet = modelformset_factory(Registration, form=AttendanceForm, extra=0)
+    AttendanceFormSet1 = modelformset_factory(Registration, form=AttendanceForm, extra=0)
     helper = AttendanceFormSetHelper()
 
     if request.method =="POST":
-        formset = AttendanceFormSet(
+        formset1 = AttendanceFormSet1(
             request.POST, request.FILES,
-            queryset=queryset,
+            queryset=queryset1,
+            prefix='flex1'
         )
-        if formset.is_valid():
-            formset.save()
+        if formset1.is_valid():
+            formset1.save()
+
     else:
-        formset = AttendanceFormSet(queryset=queryset)
+        formset1 = AttendanceFormSet1(queryset=queryset1, prefix='flex1')
+
 
     context = {
-        "object_list": queryset,
+        "object_list_1": queryset1,
         "event": event,
-        "formset": formset,
+        "formset1": formset1,
         "helper": helper,
+        "active_block": active_block,
     }
     return render(request, "events/attendance.html", context)
 
@@ -249,7 +237,6 @@ def event_attendance(request, id=None, block_id=None):
 def registrations_homeroom(request, user_id=None):
     date_query = request.GET.get("date", str(default_event_date()))
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
-    # d = datetime.strptime("2016-11-30", "%Y-%m-%d").date()
 
     if user_id:
         homeroom_teacher = get_object_or_404(User, id=user_id)

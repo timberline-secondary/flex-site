@@ -21,6 +21,7 @@
         <li>
           <a href="{% url 'events:list' %}">Events <span class="sr-only">(current)</span></a>
         </li>
+        {% if user.is_authenticated %}
         <li>
           <a href="{% url 'events:manage' %}">Manage Your Events <span class="sr-only"></span></a>
         </li>
@@ -30,6 +31,7 @@
         <li>
           <a href="{% url 'profiles:list' %}">Profiles <span class="sr-only"></span></a>
         </li>
+        {% endif %}
 
 {#        <li class="dropdown">#}
 {#          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Your Events <span class="caret"></span></a>#}

@@ -12,6 +12,8 @@ urlpatterns = [
     url(r'^(?P<id>\d+)/copy/$', views.event_copy, name='copy'),
     url(r'^(?P<id>\d+)/delete/$', views.event_delete, name='delete'),
     url(r'^(?P<id>\d+)/attendance/$', views.event_attendance, name='attendance'),
+    url(r'^(?P<id>\d+)/attendance/(?P<block_id>\d+)$', views.event_attendance, name='attendance_by_block'),
+
     # Registrations
     url(r'^register/$', views.register, name='register'),
     url(r'^registrations/$', views.registrations_list, name='registrations_list'),

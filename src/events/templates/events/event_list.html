@@ -17,6 +17,7 @@
 
   {%  include 'events/date_filter.html' %}
 
+  {% if user.is_authenticated %}
   <div class="panel panel-default">
     <div class="panel-body" id="register-prompt">
       <div class="row">
@@ -38,6 +39,7 @@
       </div>
     </div>
   </div>
+  {% endif %}
 
 
 
@@ -89,6 +91,7 @@
     </tbody>
   </table>
 
+  {% if user.is_authenticated %}
   <div id="block-confirmation-modal" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -108,6 +111,7 @@
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal -->
+  {% endif %}
 
 {% endblock content %}
 
@@ -116,29 +120,6 @@
 
   {#  Date Filter#}
   <script src="{% static 'js/events-datepicker.js' %}"></script>
-{#  <script>#}
-{#    function WednesdaysOnly(date) {#}
-{#      var day = date.getDay();#}
-{#      if (day == 3) //Wednesday = 3#}
-{#        return [true]#}
-{#      else#}
-{#        return [false]#}
-{#    }#}
-{##}
-{#    $(document).ready(function () {#}
-{#      $('#datepicker').datepicker({#}
-{#        dateFormat: 'yy-mm-dd',#}
-{#        showOtherMonths: true,#}
-{#        selectOtherMonths: true,#}
-{#        onSelect: function (dateText, inst) {#}
-{#          $('#filter_form').submit(); // <-- SUBMIT#}
-{#        },#}
-{#        beforeShowDay: WednesdaysOnly,#}
-{##}
-{#      });#}
-{#    });#}
-{##}
-{#  </script>#}
 
   {#  "Chosen" select widget #}
   {#  <script src="{% static 'chosen_v1.6.2/chosen.jquery.min.js' %}"></script>#}

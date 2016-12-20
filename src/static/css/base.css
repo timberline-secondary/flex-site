@@ -5,7 +5,7 @@
     background: #1a88b0 none;
 }
 
-.navbar-default .navbar-nav > li > a {
+.navbar-default .navbar-nav > li > a, .navbar-default .navbar-text {
     color: #fff;
 }
 
