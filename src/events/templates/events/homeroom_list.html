@@ -4,6 +4,7 @@
 
 {% block style %}
   <link rel="stylesheet" href="{% static 'chosen_v1.6.2/chosen.css' %}">
+  <link rel="stylesheet" href="{% static 'css/events.css' %}">
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 {% endblock style %}
 
@@ -16,14 +17,7 @@
 
   <h1>Homeroom Students for {{ teacher }}</h1>
 
-  <form id="filter_form" method="GET" action="">
-    <p>Date: <input type="text"
-                    id="datepicker"
-                    name="date"
-                    placeholder="{{ date_filter }}"
-                    style="color:black">
-    </p>
-  </form>
+  {%  include 'events/date_filter.html' %}
 
   <table data-toggle="table"
          data-classes="table table-no-bordered"
@@ -60,28 +54,8 @@
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
   {#  Date Filter#}
-  <script>
-    function WednesdaysOnly(date) {
-      var day = date.getDay();
-      if (day == 3) //Wednesday = 3
-        return [true]
-      else
-        return [false]
-    }
+  <script src="{% static 'js/events-datepicker.js' %}"></script>
 
-    $(document).ready(function () {
-      $('#datepicker').datepicker({
-        dateFormat: 'yy-mm-dd',
-        showOtherMonths: true,
-        selectOtherMonths: true,
-        onSelect: function (dateText, inst) {
-          $('#filter_form').submit(); // <-- SUBMIT
-        },
-        beforeShowDay: WednesdaysOnly,
-      });
-    });
-
-  </script>
   <!-- Bootstrap Tables:  http://bootstrap-table.wenzhixin.net.cn/ -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
 {% endblock js %}

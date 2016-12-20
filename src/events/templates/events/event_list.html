@@ -4,6 +4,7 @@
 
 {% block style %}
   <link rel="stylesheet" href="{% static 'chosen_v1.6.2/chosen.css' %}">
+  <link rel="stylesheet" href="{% static 'css/events.css' %}">
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 {% endblock style %}
 
@@ -12,29 +13,9 @@
 
 {% block content %}
 
-  <h1>Flex Events
-    {% if user.is_staff %}
-      <a class="btn btn-primary pull-right" href="{% url 'events:manage' %}">
-        <i class="glyphicon glyphicon-tasks"></i> Manage Your Events
-      </a>
-    {% endif %}
-  </h1>
-  <div class="row">
-    <div class="col-md-3 col-sm-4 col-xs-6">
-      <form id="filter_form" class= method="GET" action="">
-        <div class="input-group">
-          <span class="input-group-addon" id="basic-addon1"><i class="glyphicon glyphicon-calendar"></i> Date</span>
-          <input type="text"
-                        id="datepicker"
-                        name="date"
-                        class="form-control"
-                        value="{{ date_filter }}"
-                        style="color:black">
-        </div>
-      </form>
-    </div>
-  </div>
-  <br>
+  <h1>Flex Events</h1>
+
+  {%  include 'events/date_filter.html' %}
 
   <div class="panel panel-default">
     <div class="panel-body" id="register-prompt">
@@ -134,29 +115,30 @@
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
   {#  Date Filter#}
-  <script>
-    function WednesdaysOnly(date) {
-      var day = date.getDay();
-      if (day == 3) //Wednesday = 3
-        return [true]
-      else
-        return [false]
-    }
-
-    $(document).ready(function () {
-      $('#datepicker').datepicker({
-        dateFormat: 'yy-mm-dd',
-        showOtherMonths: true,
-        selectOtherMonths: true,
-        onSelect: function (dateText, inst) {
-          $('#filter_form').submit(); // <-- SUBMIT
-        },
-        beforeShowDay: WednesdaysOnly,
-
-      });
-    });
-
-  </script>
+  <script src="{% static 'js/events-datepicker.js' %}"></script>
+{#  <script>#}
+{#    function WednesdaysOnly(date) {#}
+{#      var day = date.getDay();#}
+{#      if (day == 3) //Wednesday = 3#}
+{#        return [true]#}
+{#      else#}
+{#        return [false]#}
+{#    }#}
+{##}
+{#    $(document).ready(function () {#}
+{#      $('#datepicker').datepicker({#}
+{#        dateFormat: 'yy-mm-dd',#}
+{#        showOtherMonths: true,#}
+{#        selectOtherMonths: true,#}
+{#        onSelect: function (dateText, inst) {#}
+{#          $('#filter_form').submit(); // <-- SUBMIT#}
+{#        },#}
+{#        beforeShowDay: WednesdaysOnly,#}
+{##}
+{#      });#}
+{#    });#}
+{##}
+{#  </script>#}
 
   {#  "Chosen" select widget #}
   {#  <script src="{% static 'chosen_v1.6.2/chosen.jquery.min.js' %}"></script>#}
