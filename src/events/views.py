@@ -9,6 +9,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 
 # Create your views here.
+from django.urls import reverse_lazy
+from django.views.generic import DeleteView
 from profiles.models import Profile
 from .models import Event, default_event_date, Registration, Block
 from .forms import EventForm, AttendanceForm, AttendanceFormSetHelper, RegistrationForm
@@ -162,6 +164,11 @@ def event_delete(request, id=None):
     return redirect("events/events:list")
 
 
+class EventDelete(DeleteView):
+    model = Event
+    success_url = reverse_lazy('events:manage')
+
+
 def register(request):
     data = json.loads(request.body)
     print(data)
@@ -188,6 +195,13 @@ def registrations_all(request):
         "object_list": queryset
     }
     return render(request, "events/registration_all.html", context)
+
+
+def registrations_delete(request, id=None):
+    reg = get_object_or_404(Registration, id=id)
+    reg.delete()
+    messages.success(request, "Successfully Deleted")
+    return redirect("events:registrations_manage")
 
 
 def registrations_manage(request):

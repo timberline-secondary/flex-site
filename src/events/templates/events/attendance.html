@@ -14,20 +14,7 @@
     <small>{{ event.date }}</small>
   </h1>
 
-{#  <div class="row">#}
-{#    <div class="col-sm-12">#}
-{#      <div class="btn-group" role="group">#}
-{#          <a href="" class="btn btn-default active">Flex 1</a>#}
-{#          <a href="" class="btn btn-default">Flex 2</a>#}
-{#      </div>#}
-{#    </div>#}
-{#  </div>#}
-
-{#  <div>#}
-{#    <p>Block: {{ event.blocks_str }}</p>#}
-{#    <p>Location: {{ event.location }}</p>#}
-{#  </div>#}
-{#  <p>Facilitators:</p> <ul>{{ event.facilitators.all|unordered_list }}</ul>#}
+  {% include 'events/event_single.html' %}
 
 
   <div class="row">

@@ -85,6 +85,7 @@ class RegistrationForm(forms.ModelForm):
             DOM_id = "event-" + str(block)
             self.fields['event'].widget.attrs.update({'id': DOM_id, })
             self.fields['event'].label = "Selection for " + str(block)
+            # self.fields['event'].widget.attrs.update({'readonly': 'readonly', })
 
 
 class RegistrationFormSetHelper(FormHelper):

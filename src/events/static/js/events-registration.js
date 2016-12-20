@@ -146,6 +146,8 @@ function hideRows() {
         return;
     }
 
+    // $flex1_selection.trigger("chosen:updated");
+
     // scroll back to the registrations form
     // $('html, body').animate({
     //     scrollTop: $("#register-prompt").offset().top
@@ -157,7 +159,8 @@ function hideRows() {
 var $buttons = $('#block-confirmation-modal .modal-footer button');
 
 
-$(function () {
+$( document ).ready(function() {
+
     $buttons.click(function (e) {
         var $target = $(e.target); // Clicked button element
 
@@ -210,6 +213,8 @@ $('#clear-selections').on('click', function (e) {
 
     // show all events
     $table.bootstrapTable('getRowsHidden', true);
+
+    // $flex1_selection.trigger("chosen:updated");
 
 });
 
