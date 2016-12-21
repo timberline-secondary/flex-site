@@ -104,7 +104,7 @@ def event_list(request):
             form_flex2.save()
             return redirect("events:registrations_list")
 
-    queryset = Event.objects.filter(date=d)
+    queryset = Event.objects.filter(date=d, category__visible_in_event_list=True)
     context = {
         "date_filter": date_query,
         "date_object": d,

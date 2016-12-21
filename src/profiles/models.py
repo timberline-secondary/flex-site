@@ -23,8 +23,8 @@ class Profile(models.Model):
                                          limit_choices_to={'is_staff': True},
                                          related_name='profiles',
                                          null=True, blank=True)
-    grade = models.IntegerField(null=True)
-    phone = models.CharField(max_length=13, null=True, blank=True)
+    grade = models.IntegerField(null=True, blank=True)
+    phone = models.CharField(max_length=13, null=True, blank=True, help_text="Format: (000)000-0000")
     email = models.EmailField(null=True, blank=True)
 
     def __str__(self):

@@ -11,6 +11,8 @@ from django.core.urlresolvers import reverse
 
 class Category(models.Model):
     name = models.CharField(max_length=120)
+    visible_in_event_list = models.BooleanField(default=False)
+    description = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         verbose_name_plural = "categories"
