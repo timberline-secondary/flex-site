@@ -2,11 +2,14 @@ import re
 import codecs
 import csv
 
+from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
+from django.http import Http404
 
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 
 from .models import Profile
 from .forms import UserImportForm
@@ -14,6 +17,20 @@ from .forms import UserImportForm
 
 # class ProfileList(ListView):
 #     model = Profile
+
+@staff_member_required()
+def reset_password_to_default(request, id):
+    student = get_object_or_404(User, id=id)
+    this_user = request.user
+
+    if student.profile.homeroom_teacher is this_user or this_user.is_superuser:
+        student.password = make_password("wolf")
+        student.save()
+        messages.success(request, 'Password reset to "wolf".')
+        return redirect('events:registrations_homeroom')
+    else:
+        raise Http404("You are not this student's homeroom teacher.")
+
 
 @user_passes_test(lambda u: u.is_superuser)
 def mass_update(request):

@@ -30,6 +30,12 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
+
+    # http://django-registration-redux.readthedocs.io/en/latest/quickstart.html#quickstart
+    # django-registration-redux
+    'registration',
+    # Why up here? #http://stackoverflow.com/questions/34577607/django-registration-redux-change-password-link
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,9 +49,7 @@ INSTALLED_APPS = (
     # 'guardian',
     # 'easy_thumbnails',
 
-    # http://django-registration-redux.readthedocs.io/en/latest/quickstart.html#quickstart
-    # django-registration-redux
-    'registration',
+
 
     'crispy_forms',
 
