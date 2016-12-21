@@ -27,7 +27,6 @@ class Profile(models.Model):
     phone = models.CharField(max_length=13, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
 
-
     def __str__(self):
         return str(self.user.username) + " (" + str(self.user.first_name) + " " + str(self.user.last_name) + ")"
 

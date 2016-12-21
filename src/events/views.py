@@ -1,6 +1,8 @@
 from datetime import date, datetime
 
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.serializers import json
@@ -10,12 +12,14 @@ from django.shortcuts import render, get_object_or_404, redirect
 
 # Create your views here.
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
 from django.views.generic import DeleteView
 from profiles.models import Profile
 from .models import Event, default_event_date, Registration, Block
 from .forms import EventForm, AttendanceForm, AttendanceFormSetHelper, RegistrationForm
 
 
+@staff_member_required
 def event_create(request):
     form = EventForm(request.POST or None)
 
@@ -44,6 +48,7 @@ def event_detail(request, id=None):
     return render(request, "events/event_detail.html", context)
 
 
+@staff_member_required
 def event_manage(request):
     # date_query = request.GET.get("date", str(default_event_date()))
     # d = datetime.strptime(date_query, "%Y-%m-%d").date()
@@ -112,6 +117,7 @@ def event_list(request):
     return render(request, "events/event_list.html", context)
 
 
+@staff_member_required
 def event_update(request, id=None):
     event = get_object_or_404(Event, id=id)
 
@@ -134,6 +140,7 @@ def event_update(request, id=None):
     return render(request, "events/event_form.html", context)
 
 
+@staff_member_required
 def event_copy(request, id=None):
     new_event = get_object_or_404(Event, id=id)
     new_event.pk = None  # autogen a new primary key (quest_id by default)
@@ -157,6 +164,7 @@ def event_copy(request, id=None):
     return render(request, "events/event_form.html", context)
 
 
+@staff_member_required
 def event_delete(request, id=None):
     event = get_object_or_404(Event, id=id)
     event.delete()
@@ -164,11 +172,13 @@ def event_delete(request, id=None):
     return redirect("events/events:list")
 
 
+@method_decorator(staff_member_required, name='dispatch')
 class EventDelete(DeleteView):
     model = Event
     success_url = reverse_lazy('events:manage')
 
 
+@login_required
 def register(request):
     data = json.loads(request.body)
     print(data)
@@ -180,7 +190,7 @@ def register(request):
 #       REGISTRATION VIEWS
 #
 ################################################
-
+@login_required
 def registrations_list(request):
     queryset = Registration.objects.filter(student=request.user)
     context = {
@@ -189,6 +199,7 @@ def registrations_list(request):
     return render(request, "events/registration_list.html", context)
 
 
+@staff_member_required
 def registrations_all(request):
     queryset = Registration.objects.all()
     context = {
@@ -197,6 +208,7 @@ def registrations_all(request):
     return render(request, "events/registration_all.html", context)
 
 
+@login_required
 def registrations_delete(request, id=None):
     reg = get_object_or_404(Registration, id=id)
     reg.delete()
@@ -204,6 +216,7 @@ def registrations_delete(request, id=None):
     return redirect("events:registrations_manage")
 
 
+@login_required
 def registrations_manage(request):
     queryset = Registration.objects.filter(student=request.user)
     context = {
@@ -212,6 +225,7 @@ def registrations_manage(request):
     return render(request, "events/registration_list.html", context)
 
 
+@staff_member_required
 def event_attendance(request, id=None, block_id=None):
     event = get_object_or_404(Event, id=id)
     if block_id:
@@ -248,6 +262,7 @@ def event_attendance(request, id=None, block_id=None):
     return render(request, "events/attendance.html", context)
 
 
+@staff_member_required
 def registrations_homeroom(request, user_id=None):
     date_query = request.GET.get("date", str(default_event_date()))
     d = datetime.strptime(date_query, "%Y-%m-%d").date()

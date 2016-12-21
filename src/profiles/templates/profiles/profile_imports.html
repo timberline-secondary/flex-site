@@ -11,7 +11,7 @@
 
   <h1>Mass User Import/Update</h1>
 
-  <div class="panel panel-default">
+  <div class="panel panel-primary">
     <div class="panel-heading">Bulk Import Form</div>
     <div class="panel-body">
       <form  enctype="multipart/form-data" method="post" action="">{% csrf_token %}
@@ -52,7 +52,7 @@
   {% if student_import %}
     <h3>Student Import Results</h3>
     <h4>Import Errors and Warnings</h4>
-    <p>Num errors/warnings: {{ student_errors|length }}</p>
+    <p>Total errors/warnings: {{ student_errors|length }}</p>
     <p>Errors will appear in red and prevent students from being imported.  Warnings appear in yellow and do not
     prevent import, but you might need to manually fix something.</p>
       <table class="table table-no-bordered">
