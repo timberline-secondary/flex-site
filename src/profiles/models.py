@@ -17,13 +17,19 @@ from django.utils.translation import ugettext as _
 
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, unique=True)
-    first_name = models.CharField(max_length=50, null=True)
-    last_name = models.CharField(max_length=50, null=True)
-    homeroom_teacher = models.ForeignKey(settings.AUTH_USER_MODEL, limit_choices_to={'is_staff': True},
-                                 related_name='profiles', null=True)
+    # first_name = models.CharField(max_length=50, null=True)  // use user.first_name
+    # last_name = models.CharField(max_length=50, null=True)
+    homeroom_teacher = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                         limit_choices_to={'is_staff': True},
+                                         related_name='profiles',
+                                         null=True, blank=True)
+    grade = models.IntegerField(null=True)
+    phone = models.CharField(max_length=13, null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)
+
 
     def __str__(self):
-        return str(self.first_name) + " " + str(self.last_name)
+        return str(self.user.username) + " (" + str(self.user.first_name) + " " + str(self.user.last_name) + ")"
 
 
 def create_profile(sender, **kwargs):

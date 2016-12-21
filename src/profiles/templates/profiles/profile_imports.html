@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block style %}{% endblock style %}
+
+{% block head_title %}User Import | {{ block.super }}{% endblock %}
+
+{% block content %}
+
+
+  <h1>Mass User Import/Update</h1>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">Bulk Import Form</div>
+    <div class="panel-body">
+      <form  enctype="multipart/form-data" method="post" action="">{% csrf_token %}
+        {{ form.as_p }}
+        <input class="btn btn-primary" type="submit" value="Import" />
+      </form>
+    </div>
+  </div>
+
+
+
+  {% if staff_import %}
+    <h3>Staff Import Results</h3>
+    <p>New staff imported: {{ new_staff_list|length }}</p>
+    <p>The following new users were imported.  Their default password has been set to "wolf".</p>
+
+    <table class="table table-no-bordered">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for obj in new_staff_list %}
+        <tr>
+          <td>{{ obj.username }}</td>
+          <td>{{ obj.first_name }}</td>
+          <td>{{ obj.last_name }}</td>
+        </tr>
+      {% endfor %}
+
+      </tbody>
+    </table>
+  {% endif %}
+
+  {% if student_import %}
+    <h3>Student Import Results</h3>
+    <p>New students imported: {{ new_student_list|length }}</p>
+    <p>The following new users were imported.  Their default password has been set to "wolf".</p>
+
+    <table class="table table-no-bordered">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Homeroom Teacher</th>
+        <th>Grade</th>
+        <th>Phone</th>
+        <th>Email</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for obj in new_student_list %}
+        <tr>
+          <td>{{ obj.username }}</td>
+          <td>{{ obj.first_name }}</td>
+          <td>{{ obj.last_name }}</td>
+          <td>{{ obj.profile.homeroom_teacher.profile}}</td>
+          <td>{{ obj.profile.grade }}</td>
+          <td>{{ obj.profile.phone }}</td>
+          <td>{{ obj.profile.email }}</td>
+        </tr>
+      {% endfor %}
+
+      </tbody>
+    </table>
+  {% endif %}
+
+{% endblock content %}

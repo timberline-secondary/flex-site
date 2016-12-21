@@ -32,8 +32,8 @@ class AttendanceForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(AttendanceForm, self).__init__(*args, **kwargs)  # call base class
-        self.first_name = self.instance.student.profile.first_name
-        self.last_name = self.instance.student.profile.last_name
+        self.first_name = self.instance.student.first_name
+        self.last_name = self.instance.student.last_name
         self.student_number = self.instance.student.username
 
 
