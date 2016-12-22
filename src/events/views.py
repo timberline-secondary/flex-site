@@ -1,3 +1,4 @@
+import csv
 from datetime import date, datetime
 
 from django.contrib import messages
@@ -212,6 +213,49 @@ def staff_locations(request):
         "users": users,
     }
     return render(request, "events/staff.html", context)
+
+
+@staff_member_required
+def generate_synervoice_csv(request, d):
+    def blocks_absent(s):
+        str = ""
+        if 'FLEX1' in s:
+            str += s['FLEX1']
+        if 'FLEX2' in s:
+            str += s['FLEX2']
+        return str
+
+    d_str = d.strftime("%y%m%d")
+
+    attendance_data = Registration.objects.all_attendance(d)
+
+    absent_data = [s for s in attendance_data if len(s) > 7]
+
+    # https://docs.djangoproject.com/en/1.10/howto/outputting-csv/
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="synervoice.csv"'
+
+    writer = csv.writer(response)
+    for s in absent_data:
+        writer.writerow([s['last_name'] + ", " + s['first_name'],
+                         s['username'],
+                         s['profile__grade'],
+                         s['profile__email'],
+                         d_str,
+                         blocks_absent(s),
+                       ])
+
+    return response
+
+
+@staff_member_required
+def synervoice(request):
+    if request.method == "POST":
+        event_date = request.POST.get("date")
+        d = datetime.strptime(event_date, "%Y-%m-%d").date()
+        return generate_synervoice_csv(request, d)
+
+    return render(request, "events/synervoice.html")
 
 
 ###############################################

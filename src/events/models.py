@@ -110,11 +110,11 @@ class Event(models.Model):
                                             help_text="If the event is running in more than one block, what restrictions"
                                                    " are there for students?"
                                             )
-    facilitators = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='events',
+    facilitators = models.ManyToManyField(User, related_name='events',
                                           limit_choices_to={'is_staff': True})
     allow_facilitators_to_modify = models.BooleanField(default=True,
                                                        help_text="If false, only the creator of the event can edit.")
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL)
+    creator = models.ForeignKey(User)
     updated_timestamp = models.DateTimeField(auto_now=True, auto_now_add=False)
     created_timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
 
@@ -224,6 +224,46 @@ class RegistrationManager(models.Manager):
 
         return students
 
+    def all_attendance(self, event_date):
+        students = User.objects.all().filter(
+            is_active=True,
+            is_staff=False,
+        )
+
+        students = students.values('id',
+                                   'username',
+                                   'first_name',
+                                   'last_name',
+                                   'profile__grade',
+                                   'profile__phone',
+                                   'profile__email')
+        students = list(students)
+
+        # get queryset with events? optimization for less hits on db
+        qs = self.get_queryset().filter(
+            event__date=event_date,
+        )
+        for student in students:
+            user_regs_qs = qs.filter(student_id=student['id'])
+
+            for block in Block.objects.all():
+                try:
+                    reg = user_regs_qs.get(block=block)
+                    if reg.absent and not reg.excused:
+                        student[block.constant_string()] = block.constant_string()
+                except ObjectDoesNotExist:
+                    student[block.constant_string()] = block.constant_string() + "-NOREG"
+
+        return students
+
+    def attendance(self, flex_date):
+        return self.get_queryset().filter(event__date=flex_date,
+                                          student__is_active=True,
+                                          student__is_staff=False,
+                                          absent=True,
+                                          excused=False,
+                                          )
+
 
 class Registration(models.Model):
 
@@ -240,7 +280,7 @@ class Registration(models.Model):
     # )
 
     event = models.ForeignKey(Event)
-    student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    student = models.ForeignKey(User, on_delete=models.CASCADE)
     block = models.ForeignKey(Block, on_delete=models.CASCADE)
     updated_timestamp = models.DateTimeField(auto_now=True, auto_now_add=False)
     created_timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
