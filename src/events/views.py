@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.serializers import json
 from django.forms import modelformset_factory
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 
 # Create your views here.
@@ -145,6 +145,7 @@ def event_copy(request, id=None):
     new_event = get_object_or_404(Event, id=id)
     new_event.pk = None  # autogen a new primary key (quest_id by default)
     new_event.date = None
+    new_event.blocks = new_event
 
     form = EventForm(request.POST or None, instance=new_event)
 
@@ -152,7 +153,7 @@ def event_copy(request, id=None):
     if form.is_valid():
         event = form.save()
 
-        messages.success(request, "Successfully Updated")
+        messages.success(request, "New event created")
         return HttpResponseRedirect(event.get_absolute_url())
 
     context = {
@@ -168,7 +169,7 @@ def event_copy(request, id=None):
 def event_delete(request, id=None):
     event = get_object_or_404(Event, id=id)
     event.delete()
-    messages.success(request, "Successfully Deleted")
+    messages.success(request, "Successfully deleted")
     return redirect("events/events:list")
 
 
@@ -183,6 +184,34 @@ def register(request):
     data = json.loads(request.body)
     print(data)
     return redirect("events:list")
+
+
+@login_required
+def staff_locations(request):
+    date_query = request.GET.get("date", str(default_event_date()))
+    d = datetime.strptime(date_query, "%Y-%m-%d").date()
+
+    users = User.objects.all().filter(is_staff=True).values('id', 'first_name', 'last_name')
+    users = list(users)
+
+    events = Event.objects.all().filter(date=d)
+
+    for user in users:
+        user_events = events.filter(facilitators__id=user['id'])
+
+        for block in Block.objects.all():
+            try:
+                block_events = user_events.filter(blocks=block)
+                user[block.constant_string()] = block_events
+            except ObjectDoesNotExist:
+                user[block.constant_string()] = None
+
+    context = {
+        "date_filter": date_query,
+        "date_object": d,
+        "users": users,
+    }
+    return render(request, "events/staff.html", context)
 
 
 ###############################################

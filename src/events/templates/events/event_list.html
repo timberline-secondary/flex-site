@@ -18,11 +18,11 @@
   {%  include 'events/date_filter.html' %}
 
   {% if user.is_authenticated %}
-  <div class="panel panel-default">
+  <div class="panel panel-primary">
+    <div class="panel-heading " id="register-heading">Registration form for {{ date_object|date:"j M Y" }}</div>
     <div class="panel-body" id="register-prompt">
       <div class="row">
         <div class="col-sm-6">
-          <h3 id="register-heading">Registration form for {{ date_object|date:"j M Y" }}:</h3>
           <form method="POST" action=""> {% csrf_token %}
             {{ form_flex1|crispy }}
             {{ form_flex2|crispy }}
@@ -30,12 +30,12 @@
             <a id="clear-selections" class="btn btn-default">Clear Selections</a>
           </form>
         </div>
-        <div class="col-sm-6">
-
-          <a class="btn btn-info pull-right" href="{% url 'events:registrations_list' %}">View All Your Events</a>
-          <p>Registration status:</p>
-          <p id="registration-status">You have not registered for any events.</p>
-        </div>
+{#        <div class="col-sm-6">#}
+{##}
+{#          <a class="btn btn-info pull-right" href="{% url 'events:registrations_list' %}">View All Your Events</a>#}
+{#          <p>Registration status:</p>#}
+{#          <p id="registration-status">You have not registered for any events.</p>#}
+{#        </div>#}
       </div>
     </div>
   </div>

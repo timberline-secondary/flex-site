@@ -14,6 +14,7 @@ urlpatterns = [
     url(r'^(?P<pk>\d+)/delete/$', views.EventDelete.as_view(), name='delete'),
     url(r'^(?P<id>\d+)/attendance/$', views.event_attendance, name='attendance'),
     url(r'^(?P<id>\d+)/attendance/(?P<block_id>\d+)$', views.event_attendance, name='attendance_by_block'),
+    url(r'^staff/$', views.staff_locations, name='staff_locations'),
 
     # Registrations
     url(r'^register/$', views.register, name='register'),
