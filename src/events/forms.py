@@ -41,10 +41,11 @@ class AttendanceFormSetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super(AttendanceFormSetHelper, self).__init__(*args, **kwargs)
         self.form_class = 'form-inline'
+        self.form_id = 'attendance-form'
         # self.field_template = 'bootstrap3/layout/inline_field.html'
         self.template = 'events/attendance_table_inline_formset.html'
 
-        self.add_input(Submit('submit', 'Save'))
+        self.add_input(Submit('submit', 'Save Attendance'))
 
 
 # class RegisterForm(forms.Form):

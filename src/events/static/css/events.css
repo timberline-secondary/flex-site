@@ -6,3 +6,8 @@
     color:black;
     background: white;
 }
+
+#studentNumberField {
+    height: 100%;
+    font-size: 215px;
+}

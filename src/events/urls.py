@@ -13,7 +13,12 @@ urlpatterns = [
     # url(r'^(?P<id>\d+)/delete/$', views.event_delete, name='delete'),
     url(r'^(?P<pk>\d+)/delete/$', views.EventDelete.as_view(), name='delete'),
     url(r'^(?P<id>\d+)/attendance/$', views.event_attendance, name='attendance'),
+    url(r'^(?P<id>\d+)/attendance/keypad/$', views.event_attendance_keypad, name='attendance_keypad'),
     url(r'^(?P<id>\d+)/attendance/(?P<block_id>\d+)$', views.event_attendance, name='attendance_by_block'),
+    url(r'^(?P<id>\d+)/attendance/keypad/(?P<block_id>\d+)$', views.event_attendance_keypad,
+        name='attendance_keypad_by_block'),
+    url(r'^(?P<id>\d+)/attendance/keypad/initialize/$', views.event_attendance_keypad_init,
+        name='attendance_keypad_init'),
     url(r'^staff/$', views.staff_locations, name='staff_locations'),
     url(r'^synervoice/$', views.synervoice, name='synervoice'),
 

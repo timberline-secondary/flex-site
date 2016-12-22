@@ -117,7 +117,7 @@ class Event(models.Model):
     creator = models.ForeignKey(User)
     updated_timestamp = models.DateTimeField(auto_now=True, auto_now_add=False)
     created_timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
-
+    is_keypad_initialized = models.BooleanField(default=False)
     objects = EventManager()
 
     class Meta:

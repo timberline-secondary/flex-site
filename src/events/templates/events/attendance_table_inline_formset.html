@@ -59,9 +59,9 @@
                     {% for field in form %}
                         {% include 'bootstrap/field.html' with tag="td" form_show_labels=False %}
                     {% endfor %}
-                    <td>{{ form.first_name }}</td>
-                    <td>{{ form.last_name }}</td>
-                    <td>{{ form.student_number }}</td>
+                    <td class="attendance-first-name">{{ form.first_name }}</td>
+                    <td class="attendance-last-name">{{ form.last_name }}</td>
+                    <td class="attendance-student-number">{{ form.student_number }}</td>
                 </tr>
             {% endfor %}
         </tbody>
