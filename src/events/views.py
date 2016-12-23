@@ -259,22 +259,20 @@ def synervoice(request):
 
 
 @staff_member_required
-def event_attendance_keypad_init(request, id):
-    event = get_object_or_404(Event, id=id)
-    registrations = event.registration_set.all()
-    registrations.update(absent=True)
-    event.is_keypad_initialized = True
-    event.save()
-    return event_attendance_keypad(request, id=id)
-
-
-@staff_member_required
 def event_attendance_keypad(request, id=None, block_id=None):
-    return event_attendance(request, id, block_id, keypad=True)
+    event = get_object_or_404(Event, id=id)
+    # The first time this view is called, initialize the event for keypad entry
+    # and set all the attendance to False
+    if not event.is_keypad_initialized:
+        registrations = event.registration_set.all()
+        registrations.update(absent=True)
+        event.is_keypad_initialized = True
+        event.save()
+    return event_attendance(request, id, block_id)
 
 
 @staff_member_required
-def event_attendance(request, id=None, block_id=None, keypad=False):
+def event_attendance(request, id=None, block_id=None):
     event = get_object_or_404(Event, id=id)
     if block_id:
         active_block = get_object_or_404(Block, id=block_id)
@@ -299,14 +297,12 @@ def event_attendance(request, id=None, block_id=None, keypad=False):
     else:
         formset1 = AttendanceFormSet1(queryset=queryset1, prefix='flex1')
 
-
     context = {
         "object_list_1": queryset1,
         "event": event,
         "formset1": formset1,
         "helper": helper,
         "active_block": active_block,
-        "keypad": keypad,
     }
     return render(request, "events/attendance.html", context)
 

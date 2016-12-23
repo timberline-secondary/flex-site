@@ -15,39 +15,28 @@
   <h1>Attendance - {{ event.title }}
     <small>
       {{ event.date }}
-      <div role="navigation" aria-label="attendance_type" class="pull-right">
-        <ul class="nav nav-pills">
-          <li role="presentation" {% if not keypad %}class="active"{% endif %}>
-            <a href="{% url 'events:attendance' event.id %}">Manual</a>
-          </li>
-          <li role="presentation" {% if keypad %}class="active"{% endif %}>
-            <a id="keypad_link"
-               {% if not event.is_keypad_initialized %}
-                href="{% url 'events:attendance_keypad_init' event.id %}"
-               {% else %}
-                href="{% url 'events:attendance_keypad' event.id %}"
-               {% endif %}
-            >Keypad</a>
-          </li>
-        </ul>
-      </div>
+      {% if not event.is_keypad_initialized %}<a class="btn btn-default pull-right" id="keypad_init"
+         href="{% url 'events:attendance_keypad_init' event.id %}">Initialize Keypad Entry</a>
+      {% endif %}
     </small>
   </h1>
 
   {% include 'events/event_single.html' %}
 
   <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary " data-toggle="modal" data-target="#keypadEntryModal">
-  Launch demo modal
-</button>
+  {% if event.is_keypad_initialized %}
+  <p><a type="button" class="btn btn-default" data-toggle="modal" data-target="#keypadEntryModal">
+    <i class="fa fa-keyboard-o"></i> Launch Keypad Entry
+  </a></p>
+  {% endif %}
+
 
   <div class="row">
     <div class="col-sm-12" role="navigation">
       <ul class="nav nav-tabs">
         {% for block in event.blocks.all %}
         <li role="presentation" {% if block == active_block %}class="active"{% endif %}>
-          <a href="{% if keypad %}{% url 'events:attendance_keypad_by_block' event.id block.id %}
-                   {% else %}{% url 'events:attendance_by_block' event.id block.id %}{% endif %}"
+          <a href="{% url 'events:attendance_by_block' event.id block.id %}"
              aria-controls="flex1"
              role="tab"
           >
@@ -74,7 +63,7 @@
       </div>
       <div class="modal-body">
         <h1>Student Number</h1>
-        <input id="studentNumberField" type="text" name="studentNumber" class="form-control">
+        <input id="studentNumberField" type="text" name="studentNumber" class="form-control" value="99">
         <h1 id="keypadResult"></h1>
       </div>
       <div class="modal-footer">
@@ -95,10 +84,10 @@
   <script>
     var confirmMessage = "<p>Keypad entry has not been initialized for this event yet.  This requires marking " +
         "all students as absent for all blocks, which will overwrite any attendance already completed.</p>" +
-        "<p>You are still be able to manually edit the attendance when in keypad entry mode.</p>" +
+        "<p>You are still be able to manually edit the attendance.</p>" +
         "<p>Are you sure you want to initialize keypad entry mode?</p>";
 
-    $('#keypad_link').confirmModal({
+    $('#keypad_init').confirmModal({
       confirmTitle     : 'Initialize keypad entry mode',
       confirmMessage   : confirmMessage,
       confirmOk        : 'Yes',
@@ -108,54 +97,7 @@
       confirmAutoOpen  : false
     });
   </script>
-  {% endif %}
-
-
-  {% if keypad %}
-  <script>
-    var $modal = $('#keypadEntryModal');
-    var $numberField = $("#studentNumberField");
-    var $confirmBtn = $("#keypadEnter");
-    var $results = $("#keypadResult");
-
-    $modal.on('shown.bs.modal', function () {
-      $numberField.focus()
-    })
-
-    // Bind "Enter" key to the submit button:
-    $numberField.keyup(function(event){
-      if(event.keyCode == 13){
-          $confirmBtn.click();
-      }
-    });
-
-    // When the enter button is click (via enter key also) set absent to false on form for that student
-    $confirmBtn.click(function(event){
-      var studentNumber = $numberField.val();
-      $numberField.val(""); //reset
-
-      // find the row that contains the student number
-      var $row = $("#attendance-form tr:contains("+studentNumber+")");
-
-      if ($row.length > 0) { //found the row
-        // untick the absent checkbox
-        var $absentBox = $row.find("td:first-child input");
-        $absentBox.prop('checked', false);
-
-        var first = $row.find("td.attendance-first-name").html();
-        var last = $row.find("td.attendance-last-name").html();
-        var icon = "<i class='fa fa-2x fa-check text-success'></i>";
-        var results = icon + " " + first + " " + last + " " + icon;
-
-      }
-      else {
-        var icon = "<i class='fa fa-2x fa-close text-danger'></i>"
-        var results = icon + " " + studentNumber + " not found " + icon;
-      }
-      $results.html(results);
-
-    });
-  </script>
+  {% else %}<script src="{% static 'js/events-attendance-keypad.js' %}"> </script>
   {% endif %}
 
 
