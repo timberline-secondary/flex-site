@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.serializers import json
-from django.forms import modelformset_factory
+from django.forms import modelformset_factory, model_to_dict
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 
@@ -144,11 +144,19 @@ def event_update(request, id=None):
 @staff_member_required
 def event_copy(request, id=None):
     new_event = get_object_or_404(Event, id=id)
+
+    blocks = new_event.blocks.all()
+    facilitators = new_event.facilitators.all()
+
     new_event.pk = None  # autogen a new primary key (quest_id by default)
     new_event.date = None
-    new_event.blocks = new_event
 
-    form = EventForm(request.POST or None, instance=new_event)
+    d = {'blocks': blocks,
+         'facilitators': facilitators,
+         }
+
+    print(d)
+    form = EventForm(request.POST or None, instance=new_event, initial=d)
 
     # not valid?
     if form.is_valid():

@@ -50,22 +50,6 @@
     });
   </script>
 
-  <script>
-    function WednesdaysOnly(date) {
-      var day = date.getDay();
-      if (day == 3) //Wednesday = 3
-          return [true]
-      else
-          return [false]
-    }
+  <script id="event-datepicker" data-date-input-id="id_date" src="{% static 'js/events-datepicker.js' %}" ></script>
 
-    $(document).ready(function() {
-      $('#id_date').datepicker({
-        dateFormat: 'yy-mm-dd',
-        showOtherMonths: true,
-        selectOtherMonths: true,
-        beforeShowDay: WednesdaysOnly,
-      });
-    });
-  </script>
 {% endblock js %}

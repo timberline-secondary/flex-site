@@ -34,15 +34,6 @@ class EventAdmin(admin.ModelAdmin):
 
     search_fields = ["title", "description"]
 
-    # Blocks
-    # Date
-    # Teacher
-    # Category
-    # Location
-    # Max Participants
-    # Registration cut_off (default will be 10 minutes prior to the event's start time.  If you need
-    # Allow students to leave event after registration until date
-
     class Meta:
         model = Event
 

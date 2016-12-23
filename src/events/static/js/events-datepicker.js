@@ -7,7 +7,15 @@ function WednesdaysOnly(date) {
 }
 
 $(document).ready(function () {
-  $('#datepicker').datepicker({
+  var dateInputId = $('#event-datepicker').data("date-input-id");
+  var $dateInput = $("#"+dateInputId);
+
+  if ($dateInput.length == 0 )
+      $dateInput = $('#datepicker');
+
+  console.log($dateInput)
+
+  $dateInput.datepicker({
     dateFormat: 'yy-mm-dd',
     showOtherMonths: true,
     selectOtherMonths: true,
