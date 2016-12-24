@@ -1,14 +1,15 @@
-from crispy_forms.bootstrap import StrictButton
 from django import forms
-from django.forms import modelformset_factory, ModelChoiceField, TextInput
+from django.contrib.auth.models import User
 from django.forms.widgets import CheckboxSelectMultiple
+from django.utils.encoding import force_text
+from django_select2.forms import Select2Widget, Select2MultipleWidget, ModelSelect2MultipleWidget
 from django_summernote.widgets import SummernoteWidget, SummernoteInplaceWidget
 from django.utils.safestring import mark_safe
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, HTML, MultiField, Div
+from crispy_forms.layout import Submit
 
-from .models import Event, Block, Registration
+from .models import Event, Registration
 
 
 class PlainTextWidget(forms.Widget):
@@ -26,10 +27,6 @@ class AttendanceForm(forms.ModelForm):
             # "student",
         )
 
-        # widgets = {
-        #     'student': PlainTextWidget,
-        # }
-
     def __init__(self, *args, **kwargs):
         super(AttendanceForm, self).__init__(*args, **kwargs)  # call base class
         self.first_name = self.instance.student.first_name
@@ -46,23 +43,6 @@ class AttendanceFormSetHelper(FormHelper):
         self.template = 'events/attendance_table_inline_formset.html'
 
         self.add_input(Submit('submit', 'Save Attendance'))
-
-
-# class RegisterForm(forms.Form):
-#     flex_1_event_choice = forms.ModelChoiceField(queryset=Event.objects.all(), required=False)
-#     flex_2_event_choice = forms.ModelChoiceField(queryset=Event.objects.all(), required=False)
-#
-#     def __init__(self, *args, **kwargs):
-#         event_date = kwargs.pop('event_date')
-#         super(RegisterForm, self).__init__(*args, **kwargs)
-#
-#         if event_date:
-#             flex1 = Block.objects.get_flex_1()
-#             flex1_qs = Event.objects.all_for_date(event_date=event_date, block=flex1)
-#             flex2 = Block.objects.get_flex_2()
-#             flex2_qs = Event.objects.all_for_date(event_date=event_date, block=flex2)
-#             self.fields['flex_1_event_choice'].queryset = flex1_qs
-#             self.fields['flex_2_event_choice'].queryset = flex2_qs
 
 
 class RegistrationForm(forms.ModelForm):
@@ -98,26 +78,41 @@ class RegistrationFormSetHelper(FormHelper):
 
         self.add_input(Submit('submit', 'Save Selections'))
 
+
+class UserCustomTitleWidget(ModelSelect2MultipleWidget):
+    model = User
+
+    search_fields = [
+        'first_name__istartswith',
+        'last_name__istartswith',
+        'username__istartswith',
+    ]
+
+    def label_from_instance(self, obj):
+        return obj.get_full_name().upper()
+
+
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
         fields = [
             "date",
+            "title",
             "blocks",
             "multi_block_event",
-            "title",
-            "description",
+            "facilitators",
             "category",
             "location",
-            "facilitators",
+            "description",
             "allow_facilitators_to_modify",
         ]
         widgets = {
             'description': SummernoteWidget,
+            'facilitators': UserCustomTitleWidget,
         }
 
     def __init__(self, *args, **kwargs):
         super(EventForm, self).__init__(*args, **kwargs)
 
         self.fields["blocks"].widget = CheckboxSelectMultiple()
-        self.fields["facilitators"].widget.attrs.update({'class': 'chosen-select', })
+        # self.fields["facilitators"].widget.attrs.update({'class': 'chosen-select', })

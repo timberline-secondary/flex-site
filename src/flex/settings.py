@@ -48,9 +48,8 @@ INSTALLED_APPS = (
     # 'guardian',
     # 'easy_thumbnails',
 
-
-
     'crispy_forms',
+    'django_select2',  # http://django-select2.readthedocs.io/en/latest/get_started.html
 
     'django_summernote',
 
@@ -158,6 +157,13 @@ LOGIN_REDIRECT_URL = "/"
 SITE_ID = 1
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'cache_table',
+    }
+}
 
 from django_summernote.settings import static_url
 SUMMERNOTE_CONFIG = {

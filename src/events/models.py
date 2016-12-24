@@ -82,13 +82,6 @@ class EventManager(models.Manager):
 
 class Event(models.Model):
 
-    # FLEX_BLOCK_1 = 1
-    # FLEX_BLOCK_2 = 2
-    # FLEX_BLOCK_CHOICES = (
-    #     (FLEX_BLOCK_1, 'Flex-1'),
-    #     (FLEX_BLOCK_2, 'Flex-2'),
-    # )
-
     F1_XOR_F2 = 0
     F1_OR_F2 = 1
     F1_AND_F2 = 2
@@ -100,6 +93,12 @@ class Event(models.Model):
 
     title = models.CharField(max_length=120)
     description = models.TextField()
+    # description_link = models.URLField(null=True, blank=True,
+    #                                    help_text="An optional link to provide with the text description.  Video links"
+    #                                              "may be embedded with the description depending on screen space.")
+    # description_image = models.ImageField(null=True, blank=True,
+    #                                       help_text="An optional image to upload.  This will be displayed with the "
+    #                                                 "description depending on screen space.")
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     date = models.DateField(default=default_event_date)
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
@@ -107,8 +106,8 @@ class Event(models.Model):
     # flex1 = models.BooleanField(default=True)
     # flex2 = models.BooleanField(default=False)
     multi_block_event = models.IntegerField(default=F1_OR_F2, choices=MULTI_BLOCK_CHOICES,
-                                            help_text="If the event is running in more than one block, what restrictions"
-                                                   " are there for students?"
+                                            help_text="If the event is running in more than one block, "
+                                                      "what restrictions are there for students?"
                                             )
     facilitators = models.ManyToManyField(User, related_name='events',
                                           limit_choices_to={'is_staff': True})
