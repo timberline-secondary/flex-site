@@ -1,13 +1,12 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.forms.widgets import CheckboxSelectMultiple
-from django.utils.encoding import force_text
 from django_select2.forms import Select2Widget, Select2MultipleWidget, ModelSelect2MultipleWidget
-from django_summernote.widgets import SummernoteWidget, SummernoteInplaceWidget
 from django.utils.safestring import mark_safe
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
+from tinymce.widgets import TinyMCE
 
 from .models import Event, Registration
 
@@ -104,15 +103,18 @@ class EventForm(forms.ModelForm):
             "category",
             "location",
             "description",
+            "description_link",
             "allow_facilitators_to_modify",
         ]
         widgets = {
-            'description': SummernoteWidget,
+            'description': TinyMCE(mce_attrs={'theme': 'simple',
+                                              }),
             'facilitators': UserCustomTitleWidget,
+            'blocks': CheckboxSelectMultiple,
         }
 
-    def __init__(self, *args, **kwargs):
-        super(EventForm, self).__init__(*args, **kwargs)
-
-        self.fields["blocks"].widget = CheckboxSelectMultiple()
-        # self.fields["facilitators"].widget.attrs.update({'class': 'chosen-select', })
+    # def __init__(self, *args, **kwargs):
+    #     super(EventForm, self).__init__(*args, **kwargs)
+    #
+    #     self.fields["description"].widget = TinyMCE(attrs={'theme': 'advanced', })
+    #     # self.fields["facilitators"].widget.attrs.update({'class': 'chosen-select', })

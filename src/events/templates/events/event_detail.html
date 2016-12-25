@@ -6,12 +6,7 @@
 <h1>{{ event.title }}</h1>
   <a class="btn btn-default" href="{% url 'events:update' event.id %}">Edit</a>
   <a class="btn btn-danger" href="{% url 'events:delete' event.id %}">Delete</a>
-  <ul>
-  <li>{{ event.date }}</li>
-  <li>{{ event.description|safe }}</li>
-  <li>{{ event.location }}</li>
-  <li>{{ event.creator }}</li>
-  <li>{{ event.facilitators.all }}</li>
-  <li>{{ event.blocks.all }}</li>
-</ul>
+
+{% include 'events/event_single.html' %}
+
 {% endblock content %}

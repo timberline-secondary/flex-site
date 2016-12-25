@@ -1,3 +1,5 @@
+{% load embed_video_tags %}
+
 <table
          class="table table-no-bordered"
          id="table-event-{{ event.id }}">
@@ -28,7 +30,28 @@
       <td>{{ event.location }}</td>
       <td>{{ event.facilitator_string|safe }} </td>
       <td>{{ event.category }}</td>
-      <td>{{ event.description|safe }}</td>
+      <td>
+{#        {% if event.image %}#}
+{#          <a href="{{ event.description_link }}">#}
+{#            <img src="{{ event.description_link }}" class="img-rounded pull-right" style="width:25%;">#}
+{#          </a>#}
+{#          {% endif %}#}
+        {{ event.description|safe }}
+        <div>
+            {% if event.video %}
+              <!-- 16:9 aspect ratio -->
+              <div class="embed-responsive embed-responsive-16by9 img-rounded">
+                <iframe class="embed-responsive-item" src="{{ event.video }}" allowfullscreen></iframe>
+              </div>
+            {% elif event.image %}
+              <a href="{{ event.description_link }}">
+                <img src="{{ event.description_link }}" class="img-rounded img-responsive" style="max-height: 200px;">
+              </a>
+            {% else %}
+              <p><a href="{{ event.description_link }}">Link</a></p>
+            {% endif %}
+        </div>
+      </td>
 
     </tr>
   </tbody>

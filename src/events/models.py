@@ -1,10 +1,16 @@
+import mimetypes
 from datetime import date, datetime, timedelta
 
+import embed_video
+from PIL import Image
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.core.urlresolvers import reverse
+from embed_video.backends import detect_backend, UnknownBackendException
+
+from tinymce.models import HTMLField
 
 # Create your models here.
 
@@ -92,10 +98,11 @@ class Event(models.Model):
     )
 
     title = models.CharField(max_length=120)
-    description = models.TextField()
-    # description_link = models.URLField(null=True, blank=True,
-    #                                    help_text="An optional link to provide with the text description.  Video links"
-    #                                              "may be embedded with the description depending on screen space.")
+    description = models.TextField(null=True, blank=True)  # MCE widget validation fails if required
+    description_link = models.URLField(null=True, blank=True,
+                                       help_text="An optional link to provide with the text description.  "
+                                                 "If the link is to a video or an image it will be embedded "
+                                                 "with the description if there is enough screen space.")
     # description_image = models.ImageField(null=True, blank=True,
     #                                       help_text="An optional image to upload.  This will be displayed with the "
     #                                                 "description depending on screen space.")
@@ -130,6 +137,29 @@ class Event(models.Model):
 
     def get_absolute_url(self):
         return reverse("events:detail", kwargs={"id": self.id})
+
+    def get_video_embed_link(self, backend):
+        if type(backend) is embed_video.backends.YoutubeBackend:
+            return "https://www.youtube.com/embed/" + backend.get_code() + "?rel=0"
+        elif type(backend) is embed_video.backends.VimeoBackend:
+            return "https://player.vimeo.com/video/" + backend.get_code()
+        else:
+            return None
+
+    def video(self):
+        try:
+            backend = detect_backend(self.description_link)
+            return self.get_video_embed_link(backend)
+        except UnknownBackendException:
+            return None
+
+    def image(self):
+        # http://stackoverflow.com/questions/10543940/check-if-a-url-to-an-image-is-up-and-exists-in-python
+        mimetype, encoding = mimetypes.guess_type(self.description_link)
+        if mimetype and mimetype.startswith('image'):
+            return self.description_link
+        else:
+            return None
 
     def blocks_str(self):
         blocks = self.blocks.all()
