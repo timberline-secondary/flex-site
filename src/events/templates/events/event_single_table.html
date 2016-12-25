@@ -1,0 +1,22 @@
+
+  <table data-toggle="table"
+         data-classes="table table-no-bordered"
+         id="table">
+  <thead>
+  <tr>
+    <th data-field="id" data-visible="false">ID</th>
+    <th data-field="date" data-visible="false">Date</th>
+    <th data-field="blocks">Blocks</th>
+    <th data-field="blockselection" data-visible="false">Block Selection</th>
+    <th data-field="title">Title</th>
+    <th data-field="titletext" data-visible="false">Title Plain Text</th>
+    <th data-field="location">Location</th>
+    <th data-field="teachers">Teachers</th>
+    <th data-field="category">Category</th>
+    <th data-field="description">Description</th>
+  </tr>
+  </thead>
+  <tbody>
+    {% include 'events/event_row.html' %}
+  </tbody>
+</table>

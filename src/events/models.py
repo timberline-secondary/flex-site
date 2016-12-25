@@ -120,6 +120,17 @@ class Event(models.Model):
                                           limit_choices_to={'is_staff': True})
     allow_facilitators_to_modify = models.BooleanField(default=True,
                                                        help_text="If false, only the creator of the event can edit.")
+    registration_cut_off = models.IntegerField(default=30,
+                                               help_text="How many minutes before the start of the flex block does "
+                                                         "registration close?  After this time, students will no"
+                                                         "longer be able to register for the event.")
+    max_capacity = models.PositiveIntegerField(default=30,
+                                               help_text="The maximum number of students that can register for this "
+                                                         "event.  Once the maximum is reached, students will no longer"
+                                                         "be able to register for this event.")
+
+
+    # generally non-editable fields
     creator = models.ForeignKey(User)
     updated_timestamp = models.DateTimeField(auto_now=True, auto_now_add=False)
     created_timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)

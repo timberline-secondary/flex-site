@@ -1,12 +1,23 @@
 {% extends "base.html" %}
 
+{% block style %}
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+{% endblock style %}
+
+
 {% block head_title %}{{ event.title }} | {{ block.super }}{% endblock %}
+
 
 {% block content %}
 <h1>{{ event.title }}</h1>
-  <a class="btn btn-default" href="{% url 'events:update' event.id %}">Edit</a>
-  <a class="btn btn-danger" href="{% url 'events:delete' event.id %}">Delete</a>
 
-{% include 'events/event_single.html' %}
+{% include 'events/event_single_table.html' %}
 
 {% endblock content %}
+
+{% block js %}
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <!-- Bootstrap Tables:  http://bootstrap-table.wenzhixin.net.cn/ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
+
+{% endblock js %}

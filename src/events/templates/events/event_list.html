@@ -3,7 +3,6 @@
 {% load crispy_forms_tags %}
 
 {% block style %}
-  <link rel="stylesheet" href="{% static 'chosen_v1.6.2/chosen.css' %}">
   <link rel="stylesheet" href="{% static 'css/events.css' %}">
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 {% endblock style %}
@@ -66,27 +65,8 @@
     </tr>
     </thead>
     <tbody>
-    {% for obj in object_list %}
-      <tr>
-        <td>{{ obj.id }}</td>
-        <td>{{ obj.date }}</td>
-        <td>{{ obj.blocks_str }}</td>
-        <td>{{ obj.block_selection_guide }}</td>
-        <td><b>
-          {% if user.is_superuser or user in obj.get_editors %}
-            <a title="Click to Edit" href='{% url 'events:update' obj.id %}'>{{ obj.title }}</a>
-          {% else %}
-            {{ obj.title }}
-          {% endif %}
-
-        </b></td>
-        <td>{{ obj.title }}</td>
-        <td>{{ obj.location }}</td>
-        <td>{{ obj.facilitator_string|safe }} </td>
-        <td>{{ obj.category }}</td>
-        <td>{{ obj.description|safe }}</td>
-
-      </tr>
+    {% for event in object_list %}
+      {% include 'events/event_row.html' %}
     {% endfor %}
     </tbody>
   </table>
@@ -120,15 +100,6 @@
 
   {#  Date Filter#}
   <script src="{% static 'js/events-datepicker.js' %}"></script>
-
-  {#    "Chosen" select widget#}
-{#    <script src="{% static 'chosen_v1.6.2/chosen.jquery.min.js' %}"></script>#}
-{#      <script>#}
-{#      $(document).ready(function() {#}
-{#        $("#event-Flex-1").chosen();#}
-{#      });#}
-{#    </script>#}
-
 
   <!-- Bootstrap Tables:  http://bootstrap-table.wenzhixin.net.cn/ -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>

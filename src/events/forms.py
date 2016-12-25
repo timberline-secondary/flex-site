@@ -102,6 +102,8 @@ class EventForm(forms.ModelForm):
             "facilitators",
             "category",
             "location",
+            "max_capacity",
+            "registration_cut_off",
             "description",
             "description_link",
             "allow_facilitators_to_modify",
