@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.core.urlresolvers import reverse
+from django.db.models.signals import post_save, pre_save
 from embed_video.backends import detect_backend, UnknownBackendException
 
 from tinymce.models import HTMLField
@@ -342,4 +343,3 @@ class Registration(models.Model):
 
     def __str__(self):
         return str(self.student) + ": " + str(self.event)
-

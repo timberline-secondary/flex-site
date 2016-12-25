@@ -37,4 +37,4 @@ def create_profile(sender, **kwargs):
     if kwargs["created"]:
         Profile.objects.create(user=user)
 
-post_save.connect(create_profile, sender=settings.AUTH_USER_MODEL)
+post_save.connect(create_profile, sender=User)

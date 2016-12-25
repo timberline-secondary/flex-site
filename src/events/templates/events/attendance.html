@@ -23,13 +23,13 @@
 
   {% include 'events/event_single_table.html' %}
 
+  <br>
   <!-- Button trigger modal -->
   {% if event.is_keypad_initialized %}
   <p><a type="button" class="btn btn-default" data-toggle="modal" data-target="#keypadEntryModal">
     <i class="fa fa-keyboard-o"></i> Launch Keypad Entry
   </a></p>
   {% endif %}
-
 
   <div class="row">
     <div class="col-sm-12" role="navigation">
@@ -102,5 +102,5 @@
 
 
   <!-- Bootstrap Tables:  http://bootstrap-table.wenzhixin.net.cn/ -->
-{#  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>#}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
 {% endblock js %}

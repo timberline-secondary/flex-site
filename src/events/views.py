@@ -82,7 +82,8 @@ def event_list(request):
         except ObjectDoesNotExist:
             user_reg = Registration(student=request.user, block=flex1)  # Event will be set by form
         form_flex1 = RegistrationForm(request.POST or None,
-                                      date=d, block=flex1,
+                                      date=d,
+                                      block=flex1,
                                       instance=user_reg,
                                       prefix='flex1')
 
@@ -91,9 +92,10 @@ def event_list(request):
         except ObjectDoesNotExist:
             user_reg = Registration(student=request.user, block=flex2)  # Event will be set by form
         form_flex2 = RegistrationForm(request.POST or None,
-                                       date=d, block=flex2,
-                                       instance=user_reg,
-                                       prefix='flex2')
+                                      date=d,
+                                      block=flex2,
+                                      instance=user_reg,
+                                      prefix='flex2')
 
     else:
         form_flex1 = None
@@ -101,8 +103,16 @@ def event_list(request):
 
     if request.method == 'POST':
         if form_flex1.is_valid() and form_flex2.is_valid():
-            form_flex1.save()
-            form_flex2.save()
+            reg = form_flex1.save(commit=False)
+            if reg.event.is_keypad_initialized:
+                reg.absent = True
+            reg.save()
+
+            reg = form_flex2.save(commit=False)
+            if reg.event.is_keypad_initialized:
+                reg.absent = True
+            reg.save()
+
             return redirect("events:registrations_list")
 
     queryset = Event.objects.filter(date=d, category__visible_in_event_list=True)

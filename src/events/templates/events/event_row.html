@@ -37,16 +37,16 @@
       <br>
       <div class="btn-group pull-right" role="group">
         <a class="btn btn-danger" href="{% url 'events:delete' event.id %}">
-          <i class="glyphicon glyphicon-trash"></i> Delete
+          <i class="fa fa-trash"></i> Delete
         </a>
         <a class="btn btn-default" href="{% url 'events:update' event.id %}">
-          <i class="glyphicon glyphicon-edit"></i> Edit
+          <i class="fa fa-edit"></i> Edit
         </a>
         <a class="btn btn-default" href="{% url 'events:copy' event.id %}">
-          <i class="glyphicon glyphicon-copy"></i> Copy
+          <i class="fa fa-copy"></i> Copy
         </a>
         <a class="btn btn-primary" href="{% url 'events:attendance' event.id %}">
-          <i class="glyphicon glyphicon-user"></i> Attendance
+          <i class="fa fa-users"></i> Attendance
         </a>
       </div>
     {% endif %}
