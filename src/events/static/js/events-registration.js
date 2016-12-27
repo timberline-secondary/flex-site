@@ -102,14 +102,5 @@ $table.bootstrapTable({
     }
 });
 
-// $(document).ready(function() {
-//     $(".wait-on-click").click(function() {
-//         $("*").css("cursor", "wait");
-//     });
-// });
-
-// $(".wait-on-click").click(function(){
-//    $("body").toggleClass("wait");
-// });
 
 
