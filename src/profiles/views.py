@@ -141,34 +141,3 @@ def mass_update(request):
     }
     return render(request, "profiles/profile_imports.html", context)
 
-#
-# def mass_user_import(request):
-#     # path = static("user_list.csv")
-#     path = "/home/couture/Developer/flex-site/static_cdn/user_list.csv"
-#     teachers = User.objects.all().filter(is_staff=True)
-#
-#     with open(path) as f:
-#         reader = csv.reader(f)
-#         for row in reader:
-#
-#             try:
-#                 user = User.objects.create_user(
-#                     username=row[0],
-#                     password="123123",
-#                     first_name=row[1],
-#                     last_name=row[2],
-#                 )
-#             except IntegrityError:  # user already exists
-#                 user = get_object_or_404(User, username=row[0])
-#
-#             random_index = randint(0, len(teachers) - 1)
-#
-#             # even if new user NOT created, update profile data
-#             profile = get_object_or_404(Profile, user=user)
-#             profile.first_name = row[1]
-#             profile.last_name = row[2]
-#             profile.homeroom_teacher = teachers[random_index]
-#             profile.save()
-#
-#         return redirect("profiles:list")
-

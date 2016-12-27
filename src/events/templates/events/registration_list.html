@@ -9,7 +9,6 @@
 {% block head_title %}Registered Events | {{ block.super }}{% endblock %}
 
 {% block content %}
-
   <h1>Your Registered Events</h1>
 
   <table data-toggle="table"
@@ -37,7 +36,7 @@
                class="btn btn-danger btn-xs"
                title="Unregister for this event"
         >
-          <i class="glyphicon glyphicon-trash"></i></a></td>
+          <i class="fa fa-trash"></i></a></td>
         <td>{{ obj.id }}</td>
         <td>{{ obj.event.date }}</td>
         <td>{{ obj.block }}</td>

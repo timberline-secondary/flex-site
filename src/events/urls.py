@@ -14,14 +14,14 @@ urlpatterns = [
     url(r'^(?P<pk>\d+)/delete/$', views.EventDelete.as_view(), name='delete'),
     url(r'^(?P<id>\d+)/attendance/$', views.event_attendance, name='attendance'),
     url(r'^(?P<id>\d+)/attendance/keypad/$', views.event_attendance_keypad, name='attendance_keypad_init'),
-    url(r'^(?P<id>\d+)/attendance/(?P<block_id>\d+)$', views.event_attendance, name='attendance_by_block'),
+    url(r'^(?P<id>\d+)/attendance/(?P<block_id>\d+)/$', views.event_attendance, name='attendance_by_block'),
     url(r'^staff/$', views.staff_locations, name='staff_locations'),
     url(r'^synervoice/$', views.synervoice, name='synervoice'),
 
     # Registrations
-    url(r'^register/$', views.register, name='register'),
+    url(r'^register/(?P<id>\d+)/block/(?P<block_id>\d+)/$', views.register, name='register'),
     url(r'^registrations/$', views.registrations_list, name='registrations_list'),
-    url(r'^registrations/(?P<id>\d+)/$', views.registrations_delete, name='registrations_delete'),
+    url(r'^registrations/(?P<id>\d+)/delete$', views.registrations_delete, name='registrations_delete'),
     url(r'^registrations/all/$', views.registrations_all, name='registrations_all'),
     url(r'^registrations/homeroom/$', views.registrations_homeroom, name='registrations_homeroom'),
     url(r'^registrations/manage/$', views.registrations_manage, name='registrations_manage'),

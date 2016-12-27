@@ -173,6 +173,13 @@ class Event(models.Model):
         else:
             return None
 
+    def both_required(self):
+        blocks = self.blocks.all()
+        if blocks.count() > 1 and multi_block_event == F1_AND_F2:
+            return True
+        else:
+            return False
+
     def blocks_str(self):
         blocks = self.blocks.all()
         bl_str = ""
@@ -236,7 +243,6 @@ class RegistrationManager(models.Manager):
         reg = self.create(event=event,
                           student=student,
                           block=block)
-        # do something with the book
         return reg
 
     def get_for_user_block_date(self, student, block, event_date):
@@ -250,6 +256,8 @@ class RegistrationManager(models.Manager):
         )
         students = students.values('id', 'username', 'first_name', 'last_name')
         students = list(students)
+
+        block_ids = Block.objects.values('id')
 
         # get queryset with events? optimization for less hits on db
         qs = self.get_queryset().filter(
@@ -311,24 +319,11 @@ class RegistrationManager(models.Manager):
 
 class Registration(models.Model):
 
-    # PRESENT = 0
-    # ABSENT = 1
-    # LATE = 2
-    # EXCUSED = 3
-    #
-    # ATTENDANCE = (
-    #     (PRESENT, 'Present'),
-    #     (ABSENT, 'Absent'),
-    #     (LATE, 'Late'),
-    #     (EXCUSED, 'Excused')
-    # )
-
     event = models.ForeignKey(Event)
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     block = models.ForeignKey(Block, on_delete=models.CASCADE)
     updated_timestamp = models.DateTimeField(auto_now=True, auto_now_add=False)
     created_timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
-    # attendance = models.IntegerField(default=PRESENT, choices=ATTENDANCE)
     absent = models.BooleanField(default=False)
     late = models.BooleanField(default=False)
     excused = models.BooleanField(default=False)
@@ -336,9 +331,7 @@ class Registration(models.Model):
     objects = RegistrationManager()
 
     class Meta:
-        order_with_respect_to = 'event'
-
-    class Meta:
+        # order_with_respect_to = 'event'
         unique_together = ("event", "student", "block")
 
     def __str__(self):

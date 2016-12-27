@@ -15,3 +15,7 @@
 #keypadResult {
     font-size: 72px;
 }
+
+body.wait, body.wait *{
+ cursor: wait !important;
+}

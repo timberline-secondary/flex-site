@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.serializers import json
 from django.forms import modelformset_factory, model_to_dict
@@ -12,7 +13,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 
 # Create your views here.
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import DeleteView
 from profiles.models import Profile
@@ -67,53 +68,22 @@ def event_manage(request):
 
 
 def event_list(request):
-
     date_query = request.GET.get("date", str(default_event_date()))
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
 
-    flex1 = Block.objects.get_flex_1()
-    flex2 = Block.objects.get_flex_2()
+    blocks = Block.objects.all()
+    blocks_json = serializers.serialize('json', blocks, fields=('id', 'name', ))
 
     if request.user.is_authenticated():
-        # Find if the user already has an event for this day and block.
-        # If he does, the start with that instance, else start a new instance
-        try:
-            user_reg = Registration.objects.get(student=request.user, block=flex1, event__date=d)
-        except ObjectDoesNotExist:
-            user_reg = Registration(student=request.user, block=flex1)  # Event will be set by form
-        form_flex1 = RegistrationForm(request.POST or None,
-                                      date=d,
-                                      block=flex1,
-                                      instance=user_reg,
-                                      prefix='flex1')
-
-        try:
-            user_reg = Registration.objects.get(student=request.user, block=flex2, event__date=d)
-        except ObjectDoesNotExist:
-            user_reg = Registration(student=request.user, block=flex2)  # Event will be set by form
-        form_flex2 = RegistrationForm(request.POST or None,
-                                      date=d,
-                                      block=flex2,
-                                      instance=user_reg,
-                                      prefix='flex2')
-
-    else:
-        form_flex1 = None
-        form_flex2 = None
-
-    if request.method == 'POST':
-        if form_flex1.is_valid() and form_flex2.is_valid():
-            reg = form_flex1.save(commit=False)
-            if reg.event.is_keypad_initialized:
-                reg.absent = True
-            reg.save()
-
-            reg = form_flex2.save(commit=False)
-            if reg.event.is_keypad_initialized:
-                reg.absent = True
-            reg.save()
-
-            return redirect("events:registrations_list")
+        # Build a dictionary of user's registrations for this day:
+        # {block_name: event,}
+        registrations = {}
+        for block in blocks:
+            try:
+                reg = Registration.objects.get(student=request.user, block=block, event__date=d)
+            except Registration.DoesNotExist:
+                reg = None
+            registrations[block] = reg
 
     queryset = Event.objects.filter(date=d, category__visible_in_event_list=True)
     context = {
@@ -121,9 +91,8 @@ def event_list(request):
         "date_object": d,
         "title": "List",
         "object_list": queryset,
-        # "register_form": form,
-        "form_flex1": form_flex1,
-        "form_flex2": form_flex2,
+        "registrations": registrations,
+        "blocks_json": blocks_json,
     }
     return render(request, "events/event_list.html", context)
 
@@ -196,13 +165,6 @@ def event_delete(request, id=None):
 class EventDelete(DeleteView):
     model = Event
     success_url = reverse_lazy('events:manage')
-
-
-@login_required
-def register(request):
-    data = json.loads(request.body)
-    print(data)
-    return redirect("events:list")
 
 
 @login_required
@@ -339,6 +301,20 @@ def registrations_list(request):
     return render(request, "events/registration_list.html", context)
 
 
+@login_required
+def register(request, id, block_id):
+    date_query = request.GET.get("date", str(default_event_date()))
+    event = get_object_or_404(Event, id=id)
+    block = get_object_or_404(Block, id=block_id)
+
+    if event.both_required:
+        for block in event.blocks.all():
+            Registration.objects.create_registration(event=event, student=request.user, block=block)
+    else:
+        Registration.objects.create_registration(event=event, student=request.user, block=block)
+    return redirect("%s?date=%s" % (reverse('events:list'), date_query))
+
+
 @staff_member_required
 def registrations_all(request):
     queryset = Registration.objects.all()
@@ -353,7 +329,14 @@ def registrations_delete(request, id=None):
     reg = get_object_or_404(Registration, id=id)
     reg.delete()
     messages.success(request, "Successfully Deleted")
-    return redirect("events:registrations_manage")
+
+    # Return to page that got us here.
+    # http://stackoverflow.com/questions/12758786/redirect-return-to-same-previous-page-in-django
+    # Don't do this with forms/POST
+    if request.META:  # this can be turned off, so need to check
+        return redirect(request.META.get('HTTP_REFERER'))
+    else:
+        return redirect('events:registrations_list')
 
 
 @login_required

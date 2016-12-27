@@ -1,4 +1,6 @@
-<tr>
+<tr data-flex1-register-url="{% url 'events:register' event.id 1 %}?date={{ date_filter }}"
+    data-flex2-register-url="{% url 'events:register' event.id 2 %}?date={{ date_filter }}"
+>
   <td>{{ event.id }}</td>
   <td>{{ event.date }}</td>
   <td>{{ event.blocks_str }}</td>
@@ -36,16 +38,16 @@
     {% if request.user.is_superuser or request.user in event.get_editors %}
       <br>
       <div class="btn-group pull-right" role="group">
-        <a class="btn btn-danger" href="{% url 'events:delete' event.id %}">
+        <a class="btn btn-danger wait" href="{% url 'events:delete' event.id %}">
           <i class="fa fa-trash"></i> Delete
         </a>
-        <a class="btn btn-default" href="{% url 'events:update' event.id %}">
+        <a class="btn btn-default wait" href="{% url 'events:update' event.id %}">
           <i class="fa fa-edit"></i> Edit
         </a>
-        <a class="btn btn-default" href="{% url 'events:copy' event.id %}">
+        <a class="btn btn-default wait" href="{% url 'events:copy' event.id %}">
           <i class="fa fa-copy"></i> Copy
         </a>
-        <a class="btn btn-primary" href="{% url 'events:attendance' event.id %}">
+        <a class="btn btn-primary wait" href="{% url 'events:attendance' event.id %}">
           <i class="fa fa-users"></i> Attendance
         </a>
       </div>
