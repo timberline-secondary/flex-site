@@ -10,7 +10,7 @@ var $table = $('#table'),
     $blockConfirmModalTitle = $('#block-confirmation-modal').find('.modal-title'),
     $blockConfirmModalBody = $('#block-confirmation-modal').find('.modal-body'),
     $btnConfirmFlex1 = $('#btn-confirm-flex-1'),
-    $btnConfirmFlex2 = $('#btn-confirm-flex-2'),
+    $btnConfirmFlex2 = $('#btn-confirm-flex-2');
     // $btnCancel = $('#btn-confirm-cancel');
 
 // function getIdSelections() {

@@ -16,6 +16,6 @@
     font-size: 72px;
 }
 
-body.wait, body.wait *{
- cursor: wait !important;
-}
+/*body.wait, body.wait *{*/
+ /*cursor: wait !important;*/
+/*}*/

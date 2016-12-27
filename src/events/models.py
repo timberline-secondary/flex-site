@@ -175,7 +175,7 @@ class Event(models.Model):
 
     def both_required(self):
         blocks = self.blocks.all()
-        if blocks.count() > 1 and multi_block_event == F1_AND_F2:
+        if blocks.count() > 1 and self.multi_block_event == self.F1_AND_F2:
             return True
         else:
             return False
@@ -235,6 +235,21 @@ class Event(models.Model):
                 if fac not in editors:
                     editors += [fac]
         return editors
+
+    def is_available(self, user, block):
+        """
+        Check if this event is available based on user's current registrations.
+        :param user:
+        :param block:
+        :return:
+        """
+        # is this event open to the user?
+        regs = user.registration_set.filter(event__date=self.date)
+        for reg in regs:
+            print(reg)
+            if reg.is_conflict(self, block):
+                return False
+        return True
 
 
 class RegistrationManager(models.Manager):
@@ -336,3 +351,29 @@ class Registration(models.Model):
 
     def __str__(self):
         return str(self.student) + ": " + str(self.event)
+
+    def is_conflict(self, event, block, user=None, event_date=None):
+        """
+
+        :param event:
+        :param block:
+        :param user: if None assume the same user
+        :param event_date: if None assume the same date
+        :return: True if the event conflicts with this registration
+        """
+
+        print(self.event.multi_block_event)
+        print(Event.F1_XOR_F2)
+
+        if (user and self.student is not user) or (event_date and event_date != self.event.date):
+            return False  # not same student or not same date
+        else:
+            if self.block is block or self.event.multi_block_event == Event.F1_AND_F2:
+                return True  # this event occurs in the same block (or multi block AND)
+            # Same event and XOR = conflict
+            elif self.event is event and self.event.multi_block_event == Event.F1_XOR_F2:
+                return True  # XOR event and already registered for one block = conflict
+
+        # did I miss anything?
+        return False
+

@@ -172,10 +172,10 @@ def staff_locations(request):
     date_query = request.GET.get("date", str(default_event_date()))
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
 
-    users = User.objects.all().filter(is_staff=True).values('id', 'first_name', 'last_name')
+    users = User.objects.filter(is_staff=True).values('id', 'first_name', 'last_name')
     users = list(users)
 
-    events = Event.objects.all().filter(date=d)
+    events = Event.objects.filter(date=d)
 
     for user in users:
         user_events = events.filter(facilitators__id=user['id'])
@@ -307,11 +307,15 @@ def register(request, id, block_id):
     event = get_object_or_404(Event, id=id)
     block = get_object_or_404(Block, id=block_id)
 
-    if event.both_required:
-        for block in event.blocks.all():
+    available = event.is_available(request.user, block)
+    print(available)
+
+    if available:
+        if event.both_required():
+            for block in event.blocks.all():
+                Registration.objects.create_registration(event=event, student=request.user, block=block)
+        else:
             Registration.objects.create_registration(event=event, student=request.user, block=block)
-    else:
-        Registration.objects.create_registration(event=event, student=request.user, block=block)
     return redirect("%s?date=%s" % (reverse('events:list'), date_query))
 
 
@@ -327,7 +331,13 @@ def registrations_all(request):
 @login_required
 def registrations_delete(request, id=None):
     reg = get_object_or_404(Registration, id=id)
-    reg.delete()
+    if reg.event.both_required():
+        # maybe try/except instead?
+        # Delete all records of this event (i.e. for all blocks)
+        regs = Registration.objects.filter(event=reg.event, student=reg.student)
+        regs.delete()
+    else:
+        reg.delete()
     messages.success(request, "Successfully Deleted")
 
     # Return to page that got us here.
