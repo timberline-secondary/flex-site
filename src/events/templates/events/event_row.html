@@ -1,5 +1,15 @@
 <tr data-flex1-register-url="{% url 'events:register' event.id 1 %}?date={{ date_filter }}"
     data-flex2-register-url="{% url 'events:register' event.id 2 %}?date={{ date_filter }}"
+    {% if not event.available %}
+{#    class="text-muted-more"#}
+    data-event-available="false"
+    data-tooltip="tooltip"
+    data-title="This event conflicts with another event you are already registered for.
+                You will need to remove the conflicting event before you can register for this one."
+    data-placement="bottom"
+    {% else %}
+    data-event-available="true"
+    {% endif %}
 >
   <td>{{ event.id }}</td>
   <td>{{ event.date }}</td>

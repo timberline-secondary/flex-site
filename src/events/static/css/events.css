@@ -19,3 +19,21 @@
 /*body.wait, body.wait *{*/
  /*cursor: wait !important;*/
 /*}*/
+
+/*.table>tbody>tr.unavailable >td, .table>tbody>tr.unavailable >th, .table>tbody>tr>td.unavailable, .table>tbody>tr>th.unavailable, .table>tfoot>tr.unavailable >td, .table>tfoot>tr.unavailable >th, .table>tfoot>tr>td.unavailable, .table>tfoot>tr>th.unavailable, .table>thead>tr.unavailable >td, .table>thead>tr.unavailable >th, .table>thead>tr>td.unavailable, .table>thead>tr>th.unavailable {*/
+    /*background-color: #f3f3f3;*/
+/*}*/
+
+.text-muted-more, tr[data-event-available="false"] {
+    color: darkgray;
+}
+
+.text-muted-more img, tr[data-event-available="false"] img {
+    opacity: 0.5;
+    -webkit-filter: grayscale(100%); /* needed for older Android browsers mostly... */
+    filter: grayscale(100%);
+}
+
+tr[data-event-available="true"]:hover {
+    cursor: pointer;
+}

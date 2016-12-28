@@ -66,10 +66,63 @@ def event_manage(request):
     }
     return render(request, "events/event_management.html", context)
 
+@staff_member_required
+def event_attendance_keypad(request, id=None, block_id=None):
+    event = get_object_or_404(Event, id=id)
+    # The first time this view is called, initialize the event for keypad entry
+    # and set all the attendance to False
+    if not event.is_keypad_initialized:
+        registrations = event.registration_set.all()
+        registrations.update(absent=True)
+        event.is_keypad_initialized = True
+        event.save()
+    return event_attendance(request, id, block_id)
 
-def event_list(request):
+
+@staff_member_required
+def event_attendance(request, id=None, block_id=None):
+    event = get_object_or_404(Event, id=id)
+    if block_id:
+        active_block = get_object_or_404(Block, id=block_id)
+    else:
+        active_block = event.blocks.all()[0]
+
+    queryset1 = Registration.objects.filter(event=event, block=active_block)
+
+    # https://docs.djangoproject.com/en/1.9/topics/forms/modelforms/#model-formsets
+    AttendanceFormSet1 = modelformset_factory(Registration, form=AttendanceForm, extra=0)
+    helper = AttendanceFormSetHelper()
+
+    if request.method =="POST":
+        formset1 = AttendanceFormSet1(
+            request.POST, request.FILES,
+            queryset=queryset1,
+            prefix='flex1'
+        )
+        if formset1.is_valid():
+            formset1.save()
+
+    else:
+        formset1 = AttendanceFormSet1(queryset=queryset1, prefix='flex1')
+
+    context = {
+        "object_list_1": queryset1,
+        "event": event,
+        "formset1": formset1,
+        "helper": helper,
+        "active_block": active_block,
+    }
+    return render(request, "events/attendance.html", context)
+
+
+def event_list(request, block_id=None):
     date_query = request.GET.get("date", str(default_event_date()))
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
+
+    if block_id:
+        active_block = get_object_or_404(Block, id=block_id)
+    else:
+        active_block = Block.objects.all()[0]
 
     blocks = Block.objects.all()
     blocks_json = serializers.serialize('json', blocks, fields=('id', 'name', ))
@@ -85,7 +138,13 @@ def event_list(request):
                 reg = None
             registrations[block] = reg
 
-    queryset = Event.objects.filter(date=d, category__visible_in_event_list=True)
+    queryset = active_block.event_set.filter(date=d, category__visible_in_event_list=True)
+
+    for event in queryset:
+        event.available = event.is_available(request.user, active_block)
+
+    # queryset.annotate(is_available(request.user, blocks[0]))
+
     context = {
         "date_filter": date_query,
         "date_object": d,
@@ -93,6 +152,8 @@ def event_list(request):
         "object_list": queryset,
         "registrations": registrations,
         "blocks_json": blocks_json,
+        "blocks": blocks,
+        "active_block": active_block,
     }
     return render(request, "events/event_list.html", context)
 
@@ -238,55 +299,6 @@ def synervoice(request):
     return render(request, "events/synervoice.html")
 
 
-@staff_member_required
-def event_attendance_keypad(request, id=None, block_id=None):
-    event = get_object_or_404(Event, id=id)
-    # The first time this view is called, initialize the event for keypad entry
-    # and set all the attendance to False
-    if not event.is_keypad_initialized:
-        registrations = event.registration_set.all()
-        registrations.update(absent=True)
-        event.is_keypad_initialized = True
-        event.save()
-    return event_attendance(request, id, block_id)
-
-
-@staff_member_required
-def event_attendance(request, id=None, block_id=None):
-    event = get_object_or_404(Event, id=id)
-    if block_id:
-        active_block = get_object_or_404(Block, id=block_id)
-    else:
-        active_block = event.blocks.all()[0]
-
-    queryset1 = Registration.objects.filter(event=event, block=active_block)
-
-    # https://docs.djangoproject.com/en/1.9/topics/forms/modelforms/#model-formsets
-    AttendanceFormSet1 = modelformset_factory(Registration, form=AttendanceForm, extra=0)
-    helper = AttendanceFormSetHelper()
-
-    if request.method =="POST":
-        formset1 = AttendanceFormSet1(
-            request.POST, request.FILES,
-            queryset=queryset1,
-            prefix='flex1'
-        )
-        if formset1.is_valid():
-            formset1.save()
-
-    else:
-        formset1 = AttendanceFormSet1(queryset=queryset1, prefix='flex1')
-
-    context = {
-        "object_list_1": queryset1,
-        "event": event,
-        "formset1": formset1,
-        "helper": helper,
-        "active_block": active_block,
-    }
-    return render(request, "events/attendance.html", context)
-
-
 ###############################################
 #
 #       REGISTRATION VIEWS
@@ -316,6 +328,8 @@ def register(request, id, block_id):
                 Registration.objects.create_registration(event=event, student=request.user, block=block)
         else:
             Registration.objects.create_registration(event=event, student=request.user, block=block)
+    else:
+        messages.success(request, "Event conflicts with another event you are already registered for.")
     return redirect("%s?date=%s" % (reverse('events:list'), date_query))
 
 

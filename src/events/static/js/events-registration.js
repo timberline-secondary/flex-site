@@ -98,9 +98,17 @@ function whichFlexModal(row, $tr) {
  */
 $table.bootstrapTable({
     onClickRow: function (row, $element, field) {
-        whichFlexModal(row, $element);
+        if($element.data("available")!=false) {
+            whichFlexModal(row, $element);
+        }
     }
 });
 
+$( document ).ready(function() {
+    $tooltip = $('[data-tooltip="tooltip"]')
+    $tooltip.attr('title',$tooltip.data("title")); //can't use title cus bootstrap table messes with it
+    $tooltip.tooltip();
+
+});
 
 

@@ -5,6 +5,7 @@ from . import views
 urlpatterns = [
     url(r'^$', views.event_list, name='home'),
     url(r'^$', views.event_list, name='list'),
+    url(r'^block/(?P<block_id>\d+)/$', views.event_list, name='list_by_block'),
     url(r'^manage/$', views.event_manage, name='manage'),
     url(r'^create/$', views.event_create, name='create'),
     url(r'^(?P<id>\d+)/$', views.event_detail, name='detail'),
@@ -14,7 +15,7 @@ urlpatterns = [
     url(r'^(?P<pk>\d+)/delete/$', views.EventDelete.as_view(), name='delete'),
     url(r'^(?P<id>\d+)/attendance/$', views.event_attendance, name='attendance'),
     url(r'^(?P<id>\d+)/attendance/keypad/$', views.event_attendance_keypad, name='attendance_keypad_init'),
-    url(r'^(?P<id>\d+)/attendance/(?P<block_id>\d+)/$', views.event_attendance, name='attendance_by_block'),
+    url(r'^(?P<id>\d+)/attendance/block/(?P<block_id>\d+)/$', views.event_attendance, name='attendance_by_block'),
     url(r'^staff/$', views.staff_locations, name='staff_locations'),
     url(r'^synervoice/$', views.synervoice, name='synervoice'),
 

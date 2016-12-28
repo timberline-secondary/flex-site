@@ -246,7 +246,6 @@ class Event(models.Model):
         # is this event open to the user?
         regs = user.registration_set.filter(event__date=self.date)
         for reg in regs:
-            print(reg)
             if reg.is_conflict(self, block):
                 return False
         return True
@@ -354,24 +353,19 @@ class Registration(models.Model):
 
     def is_conflict(self, event, block, user=None, event_date=None):
         """
-
         :param event:
         :param block:
         :param user: if None assume the same user
         :param event_date: if None assume the same date
         :return: True if the event conflicts with this registration
         """
-
-        print(self.event.multi_block_event)
-        print(Event.F1_XOR_F2)
-
         if (user and self.student is not user) or (event_date and event_date != self.event.date):
             return False  # not same student or not same date
         else:
-            if self.block is block or self.event.multi_block_event == Event.F1_AND_F2:
+            if self.block == block or self.event.both_required() or event.both_required():
                 return True  # this event occurs in the same block (or multi block AND)
             # Same event and XOR = conflict
-            elif self.event is event and self.event.multi_block_event == Event.F1_XOR_F2:
+            elif self.event == event and self.event.multi_block_event == Event.F1_XOR_F2:
                 return True  # XOR event and already registered for one block = conflict
 
         # did I miss anything?

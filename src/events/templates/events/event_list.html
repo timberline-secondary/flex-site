@@ -15,7 +15,6 @@
   <div class="row">
     <div class="col-sm-5">
       <h1>Flex Events <small>{{ date_object|date:"j M Y" }}</small></h1>
-
       {%  include 'events/date_filter.html' %}
     </div>
     <div class="col-sm-7">
@@ -43,35 +42,59 @@
     </div>
   </div>
 
-  <table data-toggle="table"
-         data-classes="table table-no-bordered"
-         data-search="true"
-      {#         data-click-to-select="true"#}
-         data-id-field="id"
-         data-unique-id="id"
-         data-blocks="{{ blocks_json }}"
-         id="table">
-    <thead>
-    <tr>
-      <th data-field="id" data-visible="false">ID</th>
-      <th data-field="date" data-visible="false">Date</th>
-      <th data-field="blocks">Blocks</th>
-      <th data-field="blockselection" data-visible="false">Block Selection</th>
-      <th data-field="title">Title</th>
-      <th data-field="titletext" data-visible="false">Title Plain Text</th>
-      <th data-field="location">Location</th>
-      <th data-field="teachers">Teachers</th>
-      <th data-field="category">Category</th>
-      <th data-field="description">Description</th>
 
-    </tr>
-    </thead>
-    <tbody>
-    {% for event in object_list %}
-      {% include 'events/event_row.html' %}
-    {% endfor %}
-    </tbody>
-  </table>
+  <!-- Event lists -->
+  <div class="row">
+    <div class="col-sm-12" role="navigation">
+      <ul class="nav nav-tabs">
+        {% for block in blocks %}
+        <li role="presentation" {% if block == active_block %}class="active"{% endif %}>
+          <a href="{% url 'events:list_by_block' block.id %}?date={{ date_filter }}"
+             aria-controls="{{ block }}"
+             role="tab"
+          >
+            {{ block }}
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+
+      <table data-toggle="table"
+             data-classes="table table-no-bordered table-hover"
+             data-search="true"
+             data-sortable="true"
+
+             data-id-field="id"
+             data-unique-id="id"
+             data-blocks="{{ blocks_json }}"
+
+             id="table">
+          <thead>
+          <tr>
+            <th data-field="id" data-visible="false">ID</th>
+            <th data-field="date" data-visible="false">Date</th>
+            <th data-field="blocks">Blocks</th>
+            <th data-field="blockselection" data-visible="false">Block Selection</th>
+            <th data-field="title">Title</th>
+            <th data-field="titletext" data-visible="false">Title Plain Text</th>
+            <th data-field="location">Location</th>
+            <th data-field="teachers">Teachers</th>
+            <th data-field="category">Category</th>
+            <th data-field="description">Description</th>
+
+          </tr>
+          </thead>
+          <tbody>
+          {% for event in object_list %}
+            {% include 'events/event_row.html' %}
+          {% endfor %}
+          </tbody>
+      </table>
+
+    </div>  <!-- col -->
+  </div>  <!-- row -->
+
+
 
   {% if user.is_authenticated %}
   <div id="block-confirmation-modal" class="modal fade" tabindex="-1" role="dialog">
