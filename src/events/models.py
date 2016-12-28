@@ -121,7 +121,8 @@ class Event(models.Model):
         "registration cut off [minutes]",
         default=5,
         help_text="How many minutes before the start of the flex block does registration close?  After this time, "
-                  "students will no longer be able to register for the event.")
+                  "students will no longer be able to register for the event, not will they be able to delete it"
+                  "if they've already registered.")
     max_capacity = models.PositiveIntegerField(
         default=30,
         help_text="The maximum number of students that can register for this event.  Once the maximum is reached, "
@@ -253,9 +254,13 @@ class Event(models.Model):
         return result
 
     def is_registration_closed(self, block):
-        time_now = timezone.localtime(timezone.now())
-        cut_off = (time_now + timedelta(minutes=self.registration_cut_off)).time()
-        return block.start_time < cut_off
+        if self.date < timezone.now().date():
+            result = True
+        else:
+            time_now = timezone.localtime(timezone.now())
+            cut_off = (time_now + timedelta(minutes=self.registration_cut_off)).time()
+            result = block.start_time < cut_off
+        return result
 
     def is_full(self, block=None):
         """
@@ -387,7 +392,7 @@ class Registration(models.Model):
         :param block:
         :param user: if None assume the same user
         :param event_date: if None assume the same date
-        :return: True if the event conflicts with this registration
+        :return: True if the event & block conflicts with this registration
         """
         if (user and self.student is not user) or (event_date and event_date != self.event.date):
             return False  # not same student or not same date
@@ -401,3 +406,5 @@ class Registration(models.Model):
         # did I miss anything?
         return False
 
+    def past_cut_off(self):
+        return self.event.is_registration_closed(self.block)

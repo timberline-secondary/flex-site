@@ -32,11 +32,17 @@
     <tbody>
     {% for obj in object_list %}
       <tr >
-        <td><a href="{% url 'events:registrations_delete' obj.id %}"
-               class="btn btn-danger btn-xs"
-               title="Unregister for this event"
-        >
-          <i class="fa fa-trash"></i></a></td>
+        <td>
+          {% if obj.past_cut_off %}
+            -
+          {% else %}
+            <a href="{% url 'events:registrations_delete' obj.id %}"
+                 class="btn btn-danger btn-xs"
+                 title="Unregister for this event"
+            >
+            <i class="fa fa-trash"></i></a>
+          {% endif %}
+        </td>
         <td>{{ obj.id }}</td>
         <td>{{ obj.event.date }}</td>
         <td>{{ obj.block }}</td>

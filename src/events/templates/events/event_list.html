@@ -26,9 +26,11 @@
             {% for key,value in registrations.items %}
             <li><h4>{{ key }}:
               {% if value %}{{ value.event }} ({{ value.event.location }})&nbsp;&nbsp;
-                <a class="text-danger wait-on-click" href="{% url 'events:registrations_delete' value.id %}">
-                  <i class="fa fa-trash"></i>
-                </a>
+                {% if not value.past_cut_off %}
+                  <a class="text-danger wait-on-click" href="{% url 'events:registrations_delete' value.id %}">
+                    <i class="fa fa-trash"></i>
+                  </a>
+                {% endif %}
               {% else %}
                 None
               {% endif %}
