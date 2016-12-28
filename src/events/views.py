@@ -186,9 +186,7 @@ def event_list(request, block_id=None):
 
     for event in queryset:
         event.attendance = event.registration_set.filter(block=active_block).count()
-        event.available = event.is_available(request.user, active_block)
-
-    # queryset.annotate(is_available(request.user, blocks[0]))
+        event.available, event.explanation = event.is_available(request.user, active_block)
 
     context = {
         "date_filter": date_query,
@@ -324,7 +322,7 @@ def register(request, id, block_id):
     event = get_object_or_404(Event, id=id)
     block = get_object_or_404(Block, id=block_id)
 
-    available = event.is_available(request.user, block)
+    available, reason = event.is_available(request.user, block)
 
     if available:
         if event.both_required():
@@ -333,7 +331,7 @@ def register(request, id, block_id):
         else:
             Registration.objects.create_registration(event=event, student=request.user, block=block)
     else:
-        messages.success(request, "Event conflicts with another event you are already registered for.")
+        messages.error(request, reason)
     return redirect("%s?date=%s" % (reverse('events:list_by_block', args=(block_id,)), date_query))
 
 

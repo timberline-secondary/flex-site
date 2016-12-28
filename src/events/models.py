@@ -1,17 +1,15 @@
 import mimetypes
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 
 import embed_video
-from PIL import Image
-from django.conf import settings
+
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.core.urlresolvers import reverse
-from django.db.models.signals import post_save, pre_save
-from embed_video.backends import detect_backend, UnknownBackendException
+from django.utils import timezone
 
-from tinymce.models import HTMLField
+from embed_video.backends import detect_backend, UnknownBackendException
 
 # Create your models here.
 
@@ -236,20 +234,28 @@ class Event(models.Model):
 
     def is_available(self, user, block):
         """
-        Check if this event is available based on user's current registrations
+        Check if this event is available based on user's current registrations, attendance, and cutoff times
         :param user:
         :param block:
-        :return: None if event is full, otherwise True or False to indicate conflicts
+        :return: A tuple (boolean, string) where string is a reason for False
         """
-        result = True
+        result = True, None
         if self.is_full(block):
-            result = None
+            result = False, "This event is full."
+        elif self.is_registration_closed(block):
+            result = False, "The deadline to register for this event has passed."
         else:
             regs = user.registration_set.filter(event__date=self.date)
             for reg in regs:
                 if reg.is_conflict(self, block):
-                    result = False
+                    result = False, "This event conflicts with another event you are already registered for." \
+                             "You will need to remove the conflicting event before you can register for this one."
         return result
+
+    def is_registration_closed(self, block):
+        time_now = timezone.localtime(timezone.now())
+        cut_off = (time_now + timedelta(minutes=self.registration_cut_off)).time()
+        return block.start_time < cut_off
 
     def is_full(self, block=None):
         """

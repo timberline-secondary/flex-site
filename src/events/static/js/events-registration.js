@@ -98,7 +98,7 @@ function whichFlexModal(row, $tr) {
  */
 $table.bootstrapTable({
     onClickRow: function (row, $element, field) {
-        if($element.data("available")!=false) {
+        if($element.data("event-available")!=false) {
             whichFlexModal(row, $element);
         }
     }

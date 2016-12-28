@@ -2,11 +2,7 @@
     data-flex2-register-url="{% url 'events:register' event.id 2 %}?date={{ date_filter }}"
     {% if not event.available and not user.is_staff %}
       data-event-available="false"
-      data-tooltip-title="
-        {% if event.available == None %} This event is full.
-        {% else %}This event conflicts with another event you are already registered for.
-                  You will need to remove the conflicting event before you can register for this one.
-        {% endif %}"
+      data-tooltip-title="{{ event.explanation }}"
       data-placement="bottom"
     {% elif not user.is_staff %}
       data-event-available="true"
@@ -20,7 +16,7 @@
     {% if user.is_superuser or user in event.get_editors %}
       <a title="Click to Edit" href='{% url 'events:update' event.id %}'>{{ event.title }}</a>
     {% else %}
-      {{ event.title }} *{{ event.available }}*
+      {{ event.title }}
     {% endif %}
 
   </b></td>
