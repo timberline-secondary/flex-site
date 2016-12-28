@@ -18,7 +18,7 @@
       {%  include 'events/date_filter.html' %}
     </div>
     <div class="col-sm-7">
-      {% if user.is_authenticated %}
+      {% if user.is_authenticated and not user.is_staff %}
       <div class="panel panel-danger">
         <div class="panel-heading " id="register-heading">You are registered for these events:</div>
         <div class="panel-body" id="register-prompt">
@@ -128,5 +128,9 @@
 
   <!-- Bootstrap Tables:  http://bootstrap-table.wenzhixin.net.cn/ -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
-  <script src="{% static 'js/events-registration.js' %}"></script>
+
+  {% if not user.is_staff %}
+    <script src="{% static 'js/events-registration.js' %}"></script>
+  {% endif %}
+
 {% endblock js %}

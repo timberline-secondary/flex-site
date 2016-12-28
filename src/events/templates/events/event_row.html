@@ -48,9 +48,6 @@
     {% if request.user.is_superuser or request.user in event.get_editors %}
       <br>
       <div class="btn-group pull-right" role="group">
-        <a class="btn btn-danger wait" href="{% url 'events:delete' event.id %}">
-          <i class="fa fa-trash"></i> Delete
-        </a>
         <a class="btn btn-default wait" href="{% url 'events:update' event.id %}">
           <i class="fa fa-edit"></i> Edit
         </a>
@@ -59,6 +56,9 @@
         </a>
         <a class="btn btn-primary wait" href="{% url 'events:attendance' event.id %}">
           <i class="fa fa-users"></i> Attendance
+          {% for num in event.get_attendances %}
+            <span class="badge">{{ num }}</span>
+          {% endfor %}
         </a>
       </div>
     {% endif %}

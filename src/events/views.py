@@ -41,6 +41,30 @@ def event_create(request):
     return render(request, "events/event_form.html", context)
 
 
+@staff_member_required
+def event_update(request, id=None):
+    event = get_object_or_404(Event, id=id)
+
+    form = EventForm(request.POST or None, instance=event)
+
+    # not valid?
+    if form.is_valid():
+        event = form.save(commit=False)
+        event.save()
+        form.save_m2m()
+        messages.success(request, "Successfully Updated")
+        return HttpResponseRedirect(event.get_absolute_url())
+
+    context = {
+        "title": event.title,
+        "delete_btn": True,
+        "event": event,
+        "form": form,
+        "btn_value": "Save"
+    }
+    return render(request, "events/event_form.html", context)
+
+
 def event_detail(request, id=None):
     instance = get_object_or_404(Event, id=id)
     context = {
@@ -51,12 +75,31 @@ def event_detail(request, id=None):
 
 
 @staff_member_required
+def event_delete(request, id=None):
+    event = get_object_or_404(Event, id=id)
+    event.delete()
+    messages.success(request, "Successfully deleted")
+    return redirect("events/events:list")
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class EventDelete(DeleteView):
+    model = Event
+    success_url = reverse_lazy('events:manage')
+
+
+@staff_member_required
 def event_manage(request):
     # date_query = request.GET.get("date", str(default_event_date()))
     # d = datetime.strptime(date_query, "%Y-%m-%d").date()
 
     queryset = Event.objects.filter(facilitators=request.user)
-    # Event.objects.all_for_facilitator(request.user)
+
+    # for event in queryset:
+    #     for block in event.blocks.all():
+    #         event.attendance = {}
+    #         event.attendance = event.registration_set.filter().count()
+
     context = {
         # "date_filter": date_query,
         # "date_object": d,
@@ -65,6 +108,7 @@ def event_manage(request):
         # "date_filter": d,
     }
     return render(request, "events/event_management.html", context)
+
 
 @staff_member_required
 def event_attendance_keypad(request, id=None, block_id=None):
@@ -141,6 +185,7 @@ def event_list(request, block_id=None):
     queryset = active_block.event_set.filter(date=d, category__visible_in_event_list=True)
 
     for event in queryset:
+        event.attendance = event.registration_set.filter(block=active_block).count()
         event.available = event.is_available(request.user, active_block)
 
     # queryset.annotate(is_available(request.user, blocks[0]))
@@ -156,29 +201,6 @@ def event_list(request, block_id=None):
         "active_block": active_block,
     }
     return render(request, "events/event_list.html", context)
-
-
-@staff_member_required
-def event_update(request, id=None):
-    event = get_object_or_404(Event, id=id)
-
-    form = EventForm(request.POST or None, instance=event)
-
-    # not valid?
-    if form.is_valid():
-        event = form.save(commit=False)
-        event.save()
-        form.save_m2m()
-        messages.success(request, "Successfully Updated")
-        return HttpResponseRedirect(event.get_absolute_url())
-
-    context = {
-        "title": event.title,
-        "event": event,
-        "form": form,
-        "btn_value": "Save"
-    }
-    return render(request, "events/event_form.html", context)
 
 
 @staff_member_required
@@ -212,20 +234,6 @@ def event_copy(request, id=None):
         "btn_value": "Save"
     }
     return render(request, "events/event_form.html", context)
-
-
-@staff_member_required
-def event_delete(request, id=None):
-    event = get_object_or_404(Event, id=id)
-    event.delete()
-    messages.success(request, "Successfully deleted")
-    return redirect("events/events:list")
-
-
-@method_decorator(staff_member_required, name='dispatch')
-class EventDelete(DeleteView):
-    model = Event
-    success_url = reverse_lazy('events:manage')
 
 
 @login_required

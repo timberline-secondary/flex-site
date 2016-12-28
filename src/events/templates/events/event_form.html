@@ -21,16 +21,21 @@
 
       <form method="POST" action=""> {% csrf_token %}
         <h1>{{ title }}
-          <div class="pull-right">
+          <div class="btn-group pull-right" role="group">
+
             <a class="btn btn-default" href="{% url 'events:list' %}">Cancel</a>
             <input class="btn btn-primary" type="submit" value="{{ btn_value }}" />
+            {% if delete_btn %}<a class="btn btn-danger" href="{% url 'events:delete' event.id %}">Delete</a>{% endif %}
 
           </div>
         </h1>
         {{ form|crispy}}
-          <div class="pull-right">
+          <div class="btn-group pull-right" role="group">
+
             <a class="btn btn-default" href="{% url 'events:list' %}">Cancel</a>
             <input class="btn btn-primary" type="submit" value="{{ btn_value }}" />
+            {% if delete_btn %}<a class="btn btn-danger" href="{% url 'events:delete' event.id %}">Delete</a>{% endif %}
+
           </div>
       </form>
 

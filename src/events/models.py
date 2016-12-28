@@ -250,6 +250,12 @@ class Event(models.Model):
                 return False
         return True
 
+    def get_attendances(self):
+        att = []
+        for block in self.blocks.all():
+            att.append(self.registration_set.filter(block=block).count())
+        return att
+
 
 class RegistrationManager(models.Manager):
     def create_registration(self, event, student, block):
