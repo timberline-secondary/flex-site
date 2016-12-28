@@ -13,7 +13,7 @@ $(document).ready(function () {
   if ($dateInput.length == 0 )
       $dateInput = $('#datepicker');
 
-  console.log($dateInput)
+  // console.log($dateInput)
 
   $dateInput.datepicker({
     dateFormat: 'yy-mm-dd',

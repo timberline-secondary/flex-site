@@ -105,10 +105,14 @@ $table.bootstrapTable({
 });
 
 $( document ).ready(function() {
-    $tooltip = $('[data-tooltip="tooltip"]')
-    $tooltip.attr('title',$tooltip.data("title")); //can't use title cus bootstrap table messes with it
-    $tooltip.tooltip();
-
+    $( document ).tooltip({
+        items: '[data-event-available="false"]',
+        content: function() {
+            var $row = $(this);
+            return $row.data("tooltip-title");
+        },
+        hide: false,
+    });
 });
 
 

@@ -217,7 +217,6 @@ def event_copy(request, id=None):
          'facilitators': facilitators,
          }
 
-    print(d)
     form = EventForm(request.POST or None, instance=new_event, initial=d)
 
     # not valid?
@@ -275,9 +274,7 @@ def generate_synervoice_csv(request, d):
         return str
 
     d_str = d.strftime("%y%m%d")
-
     attendance_data = Registration.objects.all_attendance(d)
-
     absent_data = [s for s in attendance_data if len(s) > 7]
 
     # https://docs.djangoproject.com/en/1.10/howto/outputting-csv/
@@ -328,7 +325,6 @@ def register(request, id, block_id):
     block = get_object_or_404(Block, id=block_id)
 
     available = event.is_available(request.user, block)
-    print(available)
 
     if available:
         if event.both_required():
@@ -338,7 +334,7 @@ def register(request, id, block_id):
             Registration.objects.create_registration(event=event, student=request.user, block=block)
     else:
         messages.success(request, "Event conflicts with another event you are already registered for.")
-    return redirect("%s?date=%s" % (reverse('events:list'), date_query))
+    return redirect("%s?date=%s" % (reverse('events:list_by_block', args=(block_id,)), date_query))
 
 
 @staff_member_required

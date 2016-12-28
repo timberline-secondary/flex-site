@@ -100,45 +100,43 @@ class Event(models.Model):
 
     title = models.CharField(max_length=120)
     description = models.TextField(null=True, blank=True)  # MCE widget validation fails if required
-    description_link = models.URLField(null=True, blank=True,
-                                       help_text="An optional link to provide with the text description.  "
-                                                 "If the link is to a video or an image it will be embedded "
-                                                 "with the description if there is enough screen space.")
-    # description_image = models.ImageField(null=True, blank=True,
-    #                                       help_text="An optional image to upload.  This will be displayed with the "
-    #                                                 "description depending on screen space.")
+    description_link = models.URLField(
+        null=True, blank=True,
+        help_text="An optional link to provide with the text description. If the link is to a video (YouTube or Vimeo) "
+                  "or an image (png, jpg, etc.) it will be embedded with the description if there is enough "
+                  "screen space.")
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     date = models.DateField(default=default_event_date)
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
     blocks = models.ManyToManyField(Block)
-    # flex1 = models.BooleanField(default=True)
-    # flex2 = models.BooleanField(default=False)
-    multi_block_event = models.IntegerField(default=F1_OR_F2, choices=MULTI_BLOCK_CHOICES,
-                                            help_text="If the event is running in more than one block, "
-                                                      "what restrictions are there for students?"
-                                            )
+    multi_block_event = models.IntegerField(
+        default=F1_OR_F2,
+        choices=MULTI_BLOCK_CHOICES,
+        help_text="If the event is running in more than one block, what restrictions are there for students?  "
+                  "This field is ignored if the event only occurs during one block.")
     facilitators = models.ManyToManyField(User, related_name='events',
                                           limit_choices_to={'is_staff': True})
-    allow_facilitators_to_modify = models.BooleanField(default=True,
-                                                       help_text="If false, only the creator of the event can edit.")
-    registration_cut_off = models.IntegerField(default=30,
-                                               help_text="How many minutes before the start of the flex block does "
-                                                         "registration close?  After this time, students will no"
-                                                         "longer be able to register for the event.")
-    max_capacity = models.PositiveIntegerField(default=30,
-                                               help_text="The maximum number of students that can register for this "
-                                                         "event.  Once the maximum is reached, students will no longer"
-                                                         "be able to register for this event.")
-
+    allow_facilitators_to_modify = models.BooleanField(
+        default=True,
+        help_text="If false, only the creator of the event can edit.")
+    registration_cut_off = models.IntegerField(
+        "registration cut off [minutes]",
+        default=5,
+        help_text="How many minutes before the start of the flex block does registration close?  After this time, "
+                  "students will no longer be able to register for the event.")
+    max_capacity = models.PositiveIntegerField(
+        default=30,
+        help_text="The maximum number of students that can register for this event.  Once the maximum is reached, "
+                  "students will no longer be able to register for this event.")
 
     # generally non-editable fields
     creator = models.ForeignKey(User)
     updated_timestamp = models.DateTimeField(auto_now=True, auto_now_add=False)
     created_timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
-    is_keypad_initialized = models.BooleanField(default=False,
-                                                help_text="If keypad entry is required, leave this field false and "
-                                                          "turn it on through the event's attendance page so that the"
-                                                          "proper scripts will run.")
+    is_keypad_initialized = models.BooleanField(
+        default=False,
+        help_text="If keypad entry is required, leave this field false and turn it on through the event's attendance "
+                  "page so that the proper scripts will run.")
     objects = EventManager()
 
     class Meta:
@@ -238,23 +236,43 @@ class Event(models.Model):
 
     def is_available(self, user, block):
         """
-        Check if this event is available based on user's current registrations.
+        Check if this event is available based on user's current registrations
         :param user:
         :param block:
-        :return:
+        :return: None if event is full, otherwise True or False to indicate conflicts
         """
-        # is this event open to the user?
-        regs = user.registration_set.filter(event__date=self.date)
-        for reg in regs:
-            if reg.is_conflict(self, block):
-                return False
-        return True
+        result = True
+        if self.is_full(block):
+            result = None
+        else:
+            regs = user.registration_set.filter(event__date=self.date)
+            for reg in regs:
+                if reg.is_conflict(self, block):
+                    result = False
+        return result
 
-    def get_attendances(self):
-        att = []
-        for block in self.blocks.all():
-            att.append(self.registration_set.filter(block=block).count())
-        return att
+    def is_full(self, block=None):
+        """
+        :param block:
+        :return: If block=None return a boolean array with an element for each block this event occurs in.
+        Otherwise, return only for the specified block
+        """
+        if block:
+            is_full = self.get_attendances(block) >= self.max_capacity
+        else:
+            is_full = []
+            for att in self.get_attendances(block):
+                is_full.append(att >= self.max_capacity)
+        return is_full
+
+    def get_attendances(self, block=None):
+        if block:
+            result = self.registration_set.filter(block=block).count()
+        else:
+            result = []
+            for block in self.blocks.all():
+                result.append(self.registration_set.filter(block=block).count())
+        return result
 
 
 class RegistrationManager(models.Manager):
