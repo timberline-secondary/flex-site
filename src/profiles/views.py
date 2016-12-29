@@ -50,10 +50,11 @@ def mass_update(request):
             staff_import = True
             for row in reader:
                 if row:  # check for blank rows
-                    username = row[0]
                     qs = User.objects.all()
+
+                    username = row[0]
                     # check if user exists, else create new user
-                    if not qs.filter(username=username).exists():
+                    if username and not qs.filter(username=username).exists():
                         user = User.objects.create_user(
                             username=username,
                             password="wolf",
@@ -62,6 +63,8 @@ def mass_update(request):
                             is_staff=True,
                         )
                         new_staff_list.append(user)
+                    else:
+                        print("user: " + str(username))
 
         if 'student_csv_file' in request.FILES:
             file = request.FILES['student_csv_file']
@@ -81,7 +84,7 @@ def mass_update(request):
                         student_errors.append({'error': "Student number doesn't match pattern", 'row': row})
                     else:
                         # students should have one entry for each semester, only use semester indicated in form
-                        if row[5] == semester:
+                        if row[5] == semester or row[5] == "LINEAR":
                             username = row[0]
                             first_name = row[1]
                             last_name = row[2]
