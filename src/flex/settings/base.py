@@ -13,18 +13,13 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = open(os.path.expanduser('~/.flex-secret')).read().strip()
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -100,17 +95,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'flex.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
-
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
@@ -125,34 +109,8 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.8/howto/static-files/
-
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-    #'/var/www/static/',
-]
-STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static_cdn")
-
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "media_cdn")
-
-
 ADMIN_SITE_HEADER = 'Timberline Flex Site - Administration'
 
-# django-guardian
-# ANONYMOUS_USER_ID = -1
-# AUTH_PROFILE_MODULE = 'accounts.UserProfile'
-
-# userena
-# USERENA_ACTIVATION_REQUIRED = False
-# #USERENA_USE_HTTPS = True
-# USERENA_DEFAULT_PRIVACY = 'closed'
-# USERENA_HIDE_EMAIL = True
-# LOGIN_REDIRECT_URL = '/accounts/%(username)s/'
-# #LOGIN_URL = '/accounts/signin/'
-# #LOGOUT_URL = '/accounts/signout/'
 
 # django-registration-redux
 ACCOUNT_ACTIVATION_DAYS = 7
