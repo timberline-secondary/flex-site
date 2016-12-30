@@ -171,6 +171,7 @@ def event_list(request, block_id=None):
     blocks = Block.objects.all()
     blocks_json = serializers.serialize('json', blocks, fields=('id', 'name', ))
 
+    registrations = {}
     if request.user.is_authenticated():
         # Build a dictionary of user's registrations for this day:
         # {block_name: event,}
