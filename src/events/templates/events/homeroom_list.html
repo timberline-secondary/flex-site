@@ -8,14 +8,14 @@
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 {% endblock style %}
 
-{% block head_title %}Users | {{ block.super }}{% endblock %}
+{% block head_title %}Homeroom | {{ block.super }}{% endblock %}
 
 
 
 {% block content %}
 
 
-  <h1>Homeroom Students for {{ teacher }}</h1>
+  <h1>Homeroom Students for {{ teacher.get_full_name }}</h1>
 
   {%  include 'events/date_filter.html' %}
 
