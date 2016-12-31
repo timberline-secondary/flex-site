@@ -5,9 +5,8 @@
 2. (perl locales error? https://www.thomas-krenn.com/en/wiki/Perl_warning_Setting_locale_failed_in_Debian)
 3. `adduser username --force-badname --ingroup sudo`
 4. add [public key authentication](https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-16-04)
-5. disable password auth
 6. set up basic firewall (ufw) and allow OpenSSH, turn on rate limiting `ufw limit ssh/tcp`, install fail2ban
-7. disable root login `/etc/ssh/sshd_config`
+7. disable password authentication and root login `/etc/ssh/sshd_config`
 8. time: set timezone `sudo dpkg-reconfigure tzdata` and install ntp.
 
 ## Nginx Postrgres uWSGI Python/Django stack
