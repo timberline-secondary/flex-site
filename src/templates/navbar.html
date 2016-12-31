@@ -12,34 +12,37 @@
       <a class="navbar-brand" href="http://www.sd72.bc.ca/school/timberline/">
         <img alt="Brand" src="{%  static 'img/logo.png' %}">
       </a>
-      <a href="http://www.sd72.bc.ca/school/timberline/"  class="navbar-brand">Timberline Secondary</a>
+      <a href="http://www.sd72.bc.ca/school/timberline/"  class="navbar-brand hidden-sm">Timberline Secondary</a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    {% if user.is_authenticated %}
       <ul class="nav navbar-nav">
         <li>
           <a href="{% url 'events:list' %}">All Events<span class="sr-only">(current)</span></a>
         </li>
-        {% if user.is_authenticated %}
+
           {% if request.user.is_staff %}
             <li>
-              <a href="{% url 'events:manage' %}">Manage Your Events<span class="sr-only"></span></a>
+              <a href="{% url 'events:manage' %}">Your Events<span class="sr-only"></span></a>
             </li>
             <li>
               <a href="{% url 'events:registrations_homeroom' %}">Homeroom<span class="sr-only"></span></a>
             </li>
           {% else %}
             <li>
-              <a href="{% url 'events:registrations_manage' %}">View Your Events<span class="sr-only"></span></a>
+              <a href="{% url 'events:registrations_manage' %}">Your Events<span class="sr-only"></span></a>
             </li>
           {% endif %}
           <li>
             <a href="{% url 'events:staff_locations' %}">Teachers<span class="sr-only"></span></a>
           </li>
-        {% endif %}
+
 
       </ul>
+      {% endif %}
+
       {% if not request.user.is_authenticated and not "/accounts/login/" in request.get_full_path %}
 {#      <ul class="nav navbar-nav navbar-right">#}
 {#        <li><a href="{% url 'userena_signup' %}">Signup</a></li>#}
