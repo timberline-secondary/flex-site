@@ -195,6 +195,12 @@ class Event(models.Model):
             count += 1
         return bl_str
 
+    def blocks_str_explanation(self):
+        if self.blocks.all().count() > 1:
+            return dict(Event.MULTI_BLOCK_CHOICES).get(self.multi_block_event)
+        else:
+            return None
+
     def block_selection_guide(self):
         blocks = self.blocks.all()
         if len(blocks) > 1:

@@ -123,8 +123,6 @@
 {% endblock content %}
 
 {% block js %}
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
   {#  Date Filter#}
   <script src="{% static 'js/events-datepicker.js' %}"></script>
 
@@ -134,5 +132,11 @@
   {% if not user.is_staff %}
     <script src="{% static 'js/events-registration.js' %}"></script>
   {% endif %}
+
+  <script>
+    $( document ).ready(function() {
+      $('[data-toggle="tooltip"]').tooltip();
+    });
+  </script>
 
 {% endblock js %}

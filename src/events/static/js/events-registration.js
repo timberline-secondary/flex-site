@@ -105,7 +105,12 @@ $table.bootstrapTable({
 });
 
 $( document ).ready(function() {
-    $( document ).tooltip({
+    // resolve conflict between jquery UI and Bootstrap stuff
+    // http://stackoverflow.com/questions/13731400/jqueryui-tooltips-are-competing-with-twitter-bootstrap
+    $.widget.bridge('uibutton', $.ui.button);
+    $.widget.bridge('uitooltip', $.ui.tooltip);
+
+    $( document ).uitooltip({
         items: '[data-event-available="false"]',
         content: function() {
             var $row = $(this);

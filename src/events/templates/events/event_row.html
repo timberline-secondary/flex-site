@@ -10,7 +10,7 @@
 >
   <td>{{ event.id }}</td>
   <td>{{ event.date }}</td>
-  <td>{{ event.blocks_str }}</td>
+  <td title="{{ event.blocks_str_explanation|default_if_none:'' }}" data-toggle="tooltip" data-placement="top" data-container="body" >{{ event.blocks_str }}</td>
   <td>{{ event.block_selection_guide }}</td>
   <td><b>
     {% if user.is_superuser or user in event.get_editors %}
@@ -21,7 +21,9 @@
 
   </b></td>
   <td>{{ event.title }}</td>
-  <td>{{ event.location }}</td>
+  <td title="{{ event.location.name }}" data-toggle="tooltip" data-placement="top" data-container="body" >
+    {{ event.location }}
+  </td>
   <td>{{ event.facilitator_string|safe }} </td>
   <td>{{ event.category }}</td>
   <td>
