@@ -19,6 +19,9 @@ urlpatterns = [
     url(r'^staff/$', views.staff_locations, name='staff_locations'),
     url(r'^synervoice/$', views.synervoice, name='synervoice'),
 
+    # Locations
+    url(r'^locations/create/$', views.location_create, name='location_create'),
+
     # Registrations
     url(r'^register/(?P<id>\d+)/block/(?P<block_id>\d+)/$', views.register, name='register'),
     url(r'^registrations/$', views.registrations_list, name='registrations_list'),

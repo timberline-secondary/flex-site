@@ -27,8 +27,8 @@ class Category(models.Model):
 
 
 class Location(models.Model):
-    room_number = models.CharField(max_length=10, unique=True)
-    name = models.CharField(max_length=120, null=True, blank=True)
+    room_number = models.CharField(max_length=20, unique=True, help_text="e.g. B201")
+    name = models.CharField(max_length=120, null=True, blank=True, help_text="e.g. Hackerspace (or) Couture's Room")
 
     def __str__(self):
         return self.room_number

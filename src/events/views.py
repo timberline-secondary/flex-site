@@ -18,7 +18,25 @@ from django.utils.decorators import method_decorator
 from django.views.generic import DeleteView
 from profiles.models import Profile
 from .models import Event, default_event_date, Registration, Block
-from .forms import EventForm, AttendanceForm, AttendanceFormSetHelper, RegistrationForm
+from .forms import EventForm, AttendanceForm, AttendanceFormSetHelper, RegistrationForm, LocationForm
+
+
+@staff_member_required
+def location_create(request):
+    form = LocationForm(request.POST or None)
+
+    if form.is_valid():
+        loc = form.save()
+        messages.success(request,
+                         "Location added.  Refresh your event creation form to get the new location to appear.")
+        return redirect('events:create')
+
+    context = {
+        "title": "Add new location",
+        "form": form,
+        "btn_value": "Save"
+    }
+    return render(request, "events/location_form.html", context)
 
 
 @staff_member_required

@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.forms import widgets
 from django.forms.widgets import CheckboxSelectMultiple
+from django.urls import reverse, reverse_lazy
 from django_select2.forms import Select2Widget, Select2MultipleWidget, ModelSelect2MultipleWidget
 from django.utils.safestring import mark_safe
 
@@ -8,7 +10,16 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from tinymce.widgets import TinyMCE
 
-from .models import Event, Registration
+from .models import Event, Registration, Location
+
+
+class LocationForm(forms.ModelForm):
+    class Meta:
+        model = Location
+        fields = (
+            "room_number",
+            "name",
+        )
 
 
 class PlainTextWidget(forms.Widget):
@@ -91,7 +102,40 @@ class UserCustomTitleWidget(ModelSelect2MultipleWidget):
         return obj.get_full_name().upper()
 
 
+# http://stackoverflow.com/questions/28068168/django-adding-an-add-new-button-for-a-foreignkey-in-a-modelform
+class RelatedFieldWidgetCanAdd(widgets.Select):
+
+    def __init__(self, related_model, related_url=None, *args, **kw):
+
+        super(RelatedFieldWidgetCanAdd, self).__init__(*args, **kw)
+
+        if not related_url:
+            rel_to = related_model
+            info = (rel_to._meta.app_label, rel_to._meta.object_name.lower())
+            related_url = 'admin:%s_%s_add' % info
+
+        # Be careful that here "reverse" is not allowed
+        self.related_url = related_url
+
+    def render(self, name, value, *args, **kwargs):
+        self.related_url = reverse(self.related_url)
+        output = [super(RelatedFieldWidgetCanAdd, self).render(name, value, *args, **kwargs)]
+        output.append('<a href="%s" class="add-another" id="add_id_%s"> ' % (self.related_url, name))
+        output.append('<i class="fa fa-plus"></i> Add new</a> (this will reset your form)')
+        return mark_safe(''.join(output))
+
+
+class LocationModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return "%s (%s)" % (obj.room_number, obj.name)
+
+
 class EventForm(forms.ModelForm):
+    location = LocationModelChoiceField(
+        queryset=Location.objects.all(),
+        widget=RelatedFieldWidgetCanAdd(Location, 'events:location_create'),
+    )
+
     class Meta:
         model = Event
         fields = [
@@ -113,6 +157,8 @@ class EventForm(forms.ModelForm):
                                               }),
             'facilitators': UserCustomTitleWidget,
             'blocks': CheckboxSelectMultiple,
+            # 'location': RelatedFieldWidgetCanAdd(Location, reverse_lazy('events:location_create')),
+            # 'location': RelatedFieldWidgetCanAdd(Location, 'events:location_create'),
         }
 
     # def __init__(self, *args, **kwargs):

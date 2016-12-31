@@ -7,6 +7,7 @@
   {{ form.media.css }}
 
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
 {% endblock style %}
 
 {% block content %}
@@ -17,19 +18,15 @@
         <h1>{{ title }}
           <div class="btn-group pull-right" role="group">
 
-            <a class="btn btn-default" href="{% url 'events:list' %}">Cancel</a>
+            <a class="btn btn-default" href="{% url 'events:create' %}">Cancel</a>
             <input class="btn btn-primary" type="submit" value="{{ btn_value }}" />
-            {% if delete_btn %}<a class="btn btn-danger" href="{% url 'events:delete' event.id %}">Delete</a>{% endif %}
-
           </div>
         </h1>
         {{ form|crispy}}
           <div class="btn-group pull-right" role="group">
 
-            <a class="btn btn-default" href="{% url 'events:list' %}">Cancel</a>
+            <a class="btn btn-default" href="{% url 'events:create' %}">Cancel</a>
             <input class="btn btn-primary" type="submit" value="{{ btn_value }}" />
-            {% if delete_btn %}<a class="btn btn-danger" href="{% url 'events:delete' event.id %}">Delete</a>{% endif %}
-
           </div>
       </form>
 
