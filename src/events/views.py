@@ -28,7 +28,7 @@ def location_create(request):
     if form.is_valid():
         loc = form.save()
         messages.success(request,
-                         "Location added.  Refresh your event creation form to get the new location to appear.")
+                         "New location added.")
         return redirect('events:create')
 
     context = {
