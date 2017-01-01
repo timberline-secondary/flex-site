@@ -266,7 +266,9 @@ class Event(models.Model):
     def is_registration_closed(self, block):
         if self.date < timezone.now().date():
             result = True
-        else:
+        elif self.date > timezone.now().date():
+            result = False
+        else: # same day
             time_now = timezone.localtime(timezone.now())
             cut_off = (time_now + timedelta(minutes=self.registration_cut_off)).time()
             result = block.start_time < cut_off
