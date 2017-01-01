@@ -121,7 +121,7 @@ class Event(models.Model):
         "registration cut off [minutes]",
         default=5,
         help_text="How many minutes before the start of the flex block does registration close?  After this time, "
-                  "students will no longer be able to register for the event, not will they be able to delete it"
+                  "students will no longer be able to register for the event, nor will they be able to delete it"
                   "if they've already registered.")
     max_capacity = models.PositiveIntegerField(
         default=30,
