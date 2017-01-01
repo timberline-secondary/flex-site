@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth import user_logged_in
 from django.contrib.auth.models import User
 from django.db import models
@@ -8,23 +9,25 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse
 
-
 class PasswordResetRequiredMiddleware(object):
 
     def process_request(self, request):
         result = None
-        if not request.user.is_authenticated:
-            result = None
-        elif request.path == reverse('auth_password_change_done'):
-            request.user.profile.password_change_required = False
-            request.user.profile.save()
-            result = None
-        elif request.user.profile.password_change_required:
-            if request.path != reverse('auth_password_change') and \
-               request.path != reverse('auth_logout'):
-                result = HttpResponseRedirect(reverse('auth_password_change'))
-        else:
-            result = None
+        try:
+            if not request.user.is_authenticated:
+                result = None
+            elif request.path == reverse('auth_password_change_done'):
+                request.user.profile.password_change_required = False
+                request.user.profile.save()
+                result = None
+            elif request.user.profile.password_change_required:
+                if request.path != reverse('auth_password_change') and \
+                   request.path != reverse('auth_logout'):
+                    result = HttpResponseRedirect(reverse('auth_password_change'))
+            else:
+                result = None
+        except Profile.DoesNotExist:
+            messages.error(request, "You don't seem to have a profile?")
 
         return result
 
@@ -46,15 +49,8 @@ class Profile(models.Model):
 
 def create_profile(sender, **kwargs):
     user = kwargs["instance"]
-    print(kwargs)
     if kwargs["created"]:
         Profile.objects.create(user=user)
 
 
-
-# def password_reset_check(sender, **kwargs):
-#     print(kwargs)
-
-
 post_save.connect(create_profile, sender=User)
-# user_logged_in.connect(password_reset_check, sender=User)
