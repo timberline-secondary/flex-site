@@ -156,6 +156,8 @@ class Event(models.Model):
             return None
 
     def video(self):
+        if not self.description_link:
+            return None
         try:
             backend = detect_backend(self.description_link)
             return self.get_video_embed_link(backend)
@@ -163,6 +165,8 @@ class Event(models.Model):
             return None
 
     def image(self):
+        if not self.description_link:
+            return None
         # http://stackoverflow.com/questions/10543940/check-if-a-url-to-an-image-is-up-and-exists-in-python
         mimetype, encoding = mimetypes.guess_type(self.description_link)
         if mimetype and mimetype.startswith('image'):
