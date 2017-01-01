@@ -31,10 +31,11 @@
 </head>
 <body>
 
-{% include "messages_display.html" %}
+
 {% include "navbar.html" %}
 
 <div class="container">
+  {% include "messages_display.html" %}
   {% block content %}
   {% endblock content %}
 </div>
@@ -58,6 +59,10 @@ $(document).ready(function() {
 
   $(window).on('beforeunload', function(){
    $('*').css("cursor", "wait");
+  });
+
+  $("div.alert.slide").on("click", "button.close", function() {
+    $(this).parent().slideUp();
   });
 
 });
