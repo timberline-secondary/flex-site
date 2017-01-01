@@ -19,7 +19,8 @@ class PasswordResetRequiredMiddleware(object):
             elif request.path == reverse('auth_password_change_done'):
                 request.user.profile.password_change_required = False
                 request.user.profile.save()
-                result = None
+                messages.success(request, "Password successfully changed.")
+                result = redirect('home')
             elif request.user.profile.password_change_required:
                 if request.path != reverse('auth_password_change') and \
                    request.path != reverse('auth_logout'):
