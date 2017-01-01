@@ -70,6 +70,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'profiles.models.PasswordResetRequiredMiddleware',
 )
 
 ROOT_URLCONF = 'flex.urls'

@@ -1,25 +1,36 @@
+from django.contrib.auth import user_logged_in
 from django.contrib.auth.models import User
 from django.db import models
 from django.conf import settings
-# from django.contrib.auth.models import User
+
 from django.db.models.signals import post_save
-from django.utils.translation import ugettext as _
-# from userena.models import UserenaBaseProfile
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
+from django.urls import reverse
 
 
-# class UserProfile(UserenaBaseProfile):
-#     user = models.OneToOneField(settings.AUTH_USER_MODEL,
-#                                 unique=True,
-#                                 verbose_name=_('user'),
-#                                 related_name='my_profile')
-#     favourite_snack = models.CharField(_('favourite snack'),
-#                                        max_length=5)
+class PasswordResetRequiredMiddleware(object):
+
+    def process_request(self, request):
+        result = None
+        if not request.user.is_authenticated:
+            result = None
+        elif request.path == reverse('auth_password_change_done'):
+            request.user.profile.password_change_required = False
+            request.user.profile.save()
+            result = None
+        elif request.user.profile.password_change_required:
+            if request.path != reverse('auth_password_change') and \
+               request.path != reverse('auth_logout'):
+                result = HttpResponseRedirect(reverse('auth_password_change'))
+        else:
+            result = None
+
+        return result
 
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
-    # first_name = models.CharField(max_length=50, null=True)  // use user.first_name
-    # last_name = models.CharField(max_length=50, null=True)
     homeroom_teacher = models.ForeignKey(settings.AUTH_USER_MODEL,
                                          limit_choices_to={'is_staff': True},
                                          related_name='profiles',
@@ -27,6 +38,7 @@ class Profile(models.Model):
     grade = models.IntegerField(null=True, blank=True)
     phone = models.CharField(max_length=13, null=True, blank=True, help_text="Format: (000)000-0000")
     email = models.EmailField(null=True, blank=True)
+    password_change_required = models.BooleanField(default=True)
 
     def __str__(self):
         return str(self.user.username) + " (" + str(self.user.first_name) + " " + str(self.user.last_name) + ")"
@@ -34,7 +46,15 @@ class Profile(models.Model):
 
 def create_profile(sender, **kwargs):
     user = kwargs["instance"]
+    print(kwargs)
     if kwargs["created"]:
         Profile.objects.create(user=user)
 
+
+
+# def password_reset_check(sender, **kwargs):
+#     print(kwargs)
+
+
 post_save.connect(create_profile, sender=User)
+# user_logged_in.connect(password_reset_check, sender=User)
