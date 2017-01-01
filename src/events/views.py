@@ -189,6 +189,8 @@ def event_list(request, block_id=None):
     blocks = Block.objects.all()
     blocks_json = serializers.serialize('json', blocks, fields=('id', 'name', ))
 
+    queryset = active_block.event_set.filter(date=d, category__visible_in_event_list=True)
+
     registrations = {}
     if request.user.is_authenticated():
         # Build a dictionary of user's registrations for this day:
@@ -201,11 +203,12 @@ def event_list(request, block_id=None):
                 reg = None
             registrations[block] = reg
 
-    queryset = active_block.event_set.filter(date=d, category__visible_in_event_list=True)
-
     for event in queryset:
         event.attendance = event.registration_set.filter(block=active_block).count()
-        event.available, event.explanation = event.is_available(request.user, active_block)
+        if request.user.is_authenticated():
+            event.available, event.explanation = event.is_available(request.user, active_block)
+        else:
+            event.available = True
 
     context = {
         "date_filter": date_query,
