@@ -23,3 +23,7 @@ a.navbar-brand > img {
 .input-group-unified input {
     width: 50% !important;
 }
+
+.responsive-wrap {
+    display: inline-block;
+}

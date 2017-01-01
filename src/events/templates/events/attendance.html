@@ -14,7 +14,7 @@
 
   <h1>Attendance - {{ event.title }}
     <small>
-      {{ event.date }}
+      <span class="responsive-wrap">{{ event.date }}</span>
       {% if not event.is_keypad_initialized %}<a class="btn btn-default pull-right" id="keypad_init"
          href="{% url 'events:attendance_keypad_init' event.id %}">Initialize Keypad Entry</a>
       {% endif %}
@@ -103,4 +103,5 @@
 
   <!-- Bootstrap Tables:  http://bootstrap-table.wenzhixin.net.cn/ -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
+  <script src="{% static 'js/bootstrap-table-mobile.js' %}"></script>
 {% endblock js %}
