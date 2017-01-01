@@ -8,11 +8,16 @@
       data-event-available="true"
     {% endif %}
 >
-  <td>{{ event.id }}</td>
-  <td>{{ event.date }}</td>
-  <td title="{{ event.blocks_str_explanation|default_if_none:'' }}" data-toggle="tooltip" data-placement="top" data-container="body" >{{ event.blocks_str }}</td>
-  <td>{{ event.block_selection_guide }}</td>
-  <td><b>
+  <td> {{ event.id }}</td>
+  <td> {{ event.date }}</td>
+  <td title="{{ event.blocks_str_explanation|default_if_none:'' }}"
+      data-toggle="tooltip"
+      data-placement="top"
+      data-container="body" >
+    {{ event.blocks_str }}
+  </td>
+  <td> {{ event.block_selection_guide }}</td>
+  <td> <b>
     {% if user.is_superuser or user in event.get_editors %}
       <a title="Click to Edit" href='{% url 'events:update' event.id %}'>{{ event.title }}</a>
     {% else %}
@@ -20,12 +25,12 @@
     {% endif %}
 
   </b></td>
-  <td>{{ event.title }}</td>
+  <td> {{ event.title }}</td>
   <td title="{{ event.location.name }}" data-toggle="tooltip" data-placement="top" data-container="body" >
     {{ event.location }}
   </td>
-  <td>{{ event.facilitator_string|safe }} </td>
-  <td>{{ event.category }}</td>
+  <td> {{ event.facilitator_string|safe }} </td>
+  <td> {{ event.category }}</td>
   <td>
     <div>
       {% if event.image %}

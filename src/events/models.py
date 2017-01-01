@@ -230,7 +230,7 @@ class Event(models.Model):
         count = 1
         for fac in facilitators:
             if count > 1:
-                fac_str += "<br>"
+                fac_str += ", "
             fac_str += fac.first_name + "&nbsp;" + fac.last_name
             count += 1
         return fac_str

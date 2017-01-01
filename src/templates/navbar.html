@@ -76,7 +76,7 @@
              <span class="caret"></span>
           </a>
           <ul class="dropdown-menu">
-            <li><a href="{% url 'auth_logout' %}">Logout</a></li>
+            <li><a href="{% url 'auth_logout' %}?next={% url 'home' %}">Logout</a></li>
             <li role="separator" class="divider"></li>
             <li><a href="{% url 'auth_password_change' %}">Change Password</a></li>
           </ul>
