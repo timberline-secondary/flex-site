@@ -44,8 +44,8 @@ class BlockAdmin(admin.ModelAdmin):
 
 class EventAdmin(admin.ModelAdmin):
 
-    list_display = ["title", "location", "created_timestamp", "updated_timestamp", ]
-    list_filter = ["created_timestamp", "updated_timestamp", ]
+    list_display = ["title", "date", "location", ]
+    list_filter = ["date", "blocks", ]
     # list_editable = ["title", ]
     # list_display_links = ["created_timestamp", ]
 
