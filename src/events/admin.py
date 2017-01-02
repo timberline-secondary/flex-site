@@ -12,10 +12,27 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 class RegistrationAdmin(admin.ModelAdmin):
-    list_display = ["event", "student"]
+    list_display = ["get_event_date", "event", "block", "student", "get_first_name", "get_last_name", ]
+    search_fields = ["event__title", "student__first_name", "student__last_name", ]
+    list_filter = ["event__date", "block", ]
 
     class Meta:
         model = Registration
+
+    def get_event_date(self, obj):
+        return obj.event.date
+    get_event_date.short_description = 'Date'
+    get_event_date.admin_order_field = 'event__date'
+
+    def get_first_name(self, obj):
+        return obj.student.first_name
+    get_first_name.short_description = 'First Name'
+    get_first_name.admin_order_field = 'student__first_name'
+
+    def get_last_name(self, obj):
+        return obj.student.last_name
+    get_last_name.short_description = 'Last Name'
+    get_last_name.admin_order_field = 'student__last_name'
 
 
 class BlockAdmin(admin.ModelAdmin):
