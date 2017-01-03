@@ -14,40 +14,39 @@
 
   <div class="row">
     <div class="col-md-5">
-      <h1 class="clearfix">Flex Events <small class="responsive-wrap">{{ date_object }}</small>
-          {% if user.is_staff %}
-          <div class="pull-right">
-            <a class="btn btn-success" href="{% url 'events:create' %}">
-              <i class="fa fa-plus-circle"></i> Create New Event
-            </a>
-          </div>
-          {% endif %}
-      </h1>
+      <h1>Flex Events <small class="responsive-wrap">{{ date_object }}</small></h1>
       {%  include 'events/date_filter.html' %}
     </div>
     <div class="col-md-7">
-      {% if user.is_authenticated and not user.is_staff %}
-      <div class="panel panel-info">
-        <div class="panel-heading " id="register-heading">You are registered for these events:</div>
-        <div class="panel-body" id="register-prompt">
-          <ul>
-            {% for key,value in registrations.items %}
-            <li><h4>{{ key }}:
-              {% if value %}{{ value.event }} ({{ value.event.location }})&nbsp;&nbsp;
-                {% if not value.past_cut_off %}
-                  <a class="text-danger wait-on-click" href="{% url 'events:registrations_delete' value.id %}">
-                    <i class="fa fa-trash"></i>
-                  </a>
+      {% if user.is_authenticated %}
+        {% if user.is_staff %}
+        <h1><div class="pull-right">
+          <a class="btn btn-success" href="{% url 'events:create' %}">
+            <i class="fa fa-plus-circle"></i> Create New Event
+          </a>
+        </div></h1>
+        {% else %}
+        <div class="panel panel-info">
+          <div class="panel-heading " id="register-heading">You are registered for these events:</div>
+          <div class="panel-body" id="register-prompt">
+            <ul>
+              {% for key,value in registrations.items %}
+              <li><h4>{{ key }}:
+                {% if value %}{{ value.event }} ({{ value.event.location }})&nbsp;&nbsp;
+                  {% if not value.past_cut_off %}
+                    <a class="text-danger wait-on-click" href="{% url 'events:registrations_delete' value.id %}">
+                      <i class="fa fa-trash"></i>
+                    </a>
+                  {% endif %}
+                {% else %}
+                  None
                 {% endif %}
-              {% else %}
-                None
-              {% endif %}
-            </h4></li>
-            {% endfor %}
-          </ul>
-
+              </h4></li>
+              {% endfor %}
+            </ul>
+          </div>
         </div>
-      </div>
+        {% endif %}
       {% endif %}
     </div>
   </div>
