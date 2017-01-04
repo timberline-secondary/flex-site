@@ -25,4 +25,9 @@ $(document).ready(function () {
     beforeShowDay: WednesdaysOnly,
 
   });
+    //Open calendar if calendar icon is selected
+	$( "#basic-addon1" ).click(function() {
+      $( "#datepicker" ).focus();
+	});
+
 });
