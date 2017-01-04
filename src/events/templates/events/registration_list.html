@@ -15,18 +15,20 @@
          data-classes="table table-no-bordered"
          data-search="true"
          data-id-field="id"
+         data-sort-name="date"
+         data-sort-order="desc"
          id="table">
     <thead>
     <tr>
       <th data-field="delete">Unregister</th>
       <th data-field="id" data-visible="false">ID</th>
-      <th data-field="date">Date</th>
-      <th data-field="block">Block</th>
-      <th data-field="event">Event</th>
-      <th data-field="location">Location</th>
-      <th data-field="absent">Absent</th>
-      <th data-field="late">Late</th>
-      <th data-field="excused">Excused</th>
+      <th data-field="date" data-sortable="true">Date</th>
+      <th data-field="block" data-sortable="true">Block</th>
+      <th data-field="event" data-sortable="true">Event</th>
+      <th data-field="location" data-sortable="true">Location</th>
+      <th data-field="absent" data-sortable="true">Absent</th>
+      <th data-field="late" data-sortable="true">Late</th>
+      <th data-field="excused" data-sortable="true">Excused</th>
     </tr>
     </thead>
     <tbody>
@@ -44,7 +46,7 @@
           {% endif %}
         </td>
         <td>{{ obj.id }}</td>
-        <td>{{ obj.event.date }}</td>
+        <td>{{ obj.event.date|date:"Y-m-d"}}</td>
         <td>{{ obj.block }}</td>
         <td>{{ obj.event.title }}</td>
         <td>{{ obj.event.location }}</td>
