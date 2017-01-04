@@ -250,17 +250,21 @@ class Event(models.Model):
         :param block:
         :return: A tuple (boolean, string) where string is a reason for False
         """
-        result = True, None
+        result = True, False, None
         if self.is_full(block):
-            result = False, "This event is full."
+            result = False, False, "This event is full."
         elif self.is_registration_closed(block):
-            result = False, "The deadline to register for this event has passed."
+            result = False, False, "The deadline to register for this event has passed."
         else:
             regs = user.registration_set.filter(event__date=self.date)
             for reg in regs:
-                if reg.is_conflict(self, block):
-                    result = False, "This event conflicts with another event you are already registered for." \
-                             "You will need to remove the conflicting event before you can register for this one."
+                if reg.is_same(self, block):
+                    result = False, True, "You are already registered for this event."
+                    break
+                else:
+                    conflict_response = reg.is_conflict(self, block)
+                if conflict_response is not None:
+                    result = False, False, conflict_response
         return result
 
     def is_registration_closed(self, block):
@@ -404,6 +408,12 @@ class Registration(models.Model):
     def __str__(self):
         return str(self.student) + ": " + str(self.event)
 
+    def is_same(self, event, block):
+        if self.event == event and self.block == block:
+            return True
+        else:
+            return False
+
     def is_conflict(self, event, block, user=None, event_date=None):
         """
         :param event:
@@ -412,17 +422,22 @@ class Registration(models.Model):
         :param event_date: if None assume the same date
         :return: True if the event & block conflicts with this registration
         """
+        result = None
         if (user and self.student is not user) or (event_date and event_date != self.event.date):
-            return False  # not same student or not same date
+            result = None  # not same student or not same date
         else:
-            if self.block == block or self.event.both_required() or event.both_required():
-                return True  # this event occurs in the same block (or multi block AND)
-            # Same event and XOR = conflict
+            if self.is_same(event, block):
+                result = "You are already registered for this event."
             elif self.event == event and self.event.multi_block_event == Event.F1_XOR_F2:
-                return True  # XOR event and already registered for one block = conflict
+                result = "You are already registered for this event in another block.  " \
+                         "This event only allows registration in one block."
+            elif self.block == block or self.event.both_required() or event.both_required():
+                result = "This event conflicts with another event you are already registered for. " \
+                    "You will need to remove the conflicting event before you can register for this one."
+                # this event occurs in the same block (or multi block AND)
 
         # did I miss anything?
-        return False
+        return result
 
     def past_cut_off(self):
         return self.event.is_registration_closed(self.block)

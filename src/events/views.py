@@ -206,7 +206,7 @@ def event_list(request, block_id=None):
     for event in queryset:
         event.attendance = event.registration_set.filter(block=active_block).count()
         if request.user.is_authenticated():
-            event.available, event.explanation = event.is_available(request.user, active_block)
+            event.available, event.already, event.explanation = event.is_available(request.user, active_block)
         else:
             event.available = True
 
