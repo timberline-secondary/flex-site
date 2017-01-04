@@ -27,3 +27,12 @@ a.navbar-brand > img {
 .responsive-wrap {
     display: inline-block;
 }
+/* IE 11 hack for responsive images.
+http://stackoverflow.com/questions/20541306/how-to-write-a-css-hack-for-ie-11
+*/
+_:-ms-fullscreen, :root .ie11up-img-responsive { width:100%; }
+
+/* http://stackoverflow.com/questions/19502040/if-ie-conditionals-not-working */
+/*@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {*/
+   /*!* Put your IE-only styles here. Works for IS 10 & IE 11*!*/
+/*}*/
