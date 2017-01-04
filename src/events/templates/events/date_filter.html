@@ -1,7 +1,8 @@
   <div style="width: 200px;">
     <form id="filter_form" method="GET" action="">
       <div class="input-group">
-        <span class="input-group-addon" id="basic-addon1"><i class="glyphicon glyphicon-calendar"></i> Date</span>
+        <span onclick="getfocus()" class="input-group-addon" id="basic-addon1"><i class="glyphicon glyphicon-calendar"></i>Date</span>
+
         <input type="text"
                       id="datepicker"
                       name="date"
@@ -12,3 +13,9 @@
       </div>
     </form>
   </div>
+
+  <script>
+    function getfocus() {
+        document.getElementById("datepicker").focus();
+    }
+  </script>
