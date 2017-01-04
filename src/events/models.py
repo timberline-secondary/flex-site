@@ -307,7 +307,9 @@ class RegistrationManager(models.Manager):
         # need to check if student already has an event on that date in this block, if so, modify.
         reg = self.create(event=event,
                           student=student,
-                          block=block)
+                          block=block,
+                          absent=event.is_keypad_initialized
+        )
         return reg
 
     def get_for_user_block_date(self, student, block, event_date):
