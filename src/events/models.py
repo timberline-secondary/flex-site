@@ -118,9 +118,9 @@ class Event(models.Model):
         default=True,
         help_text="If false, only the creator of the event can edit.")
     registration_cut_off = models.IntegerField(
-        "registration cut off [minutes]",
-        default=5,
-        help_text="How many minutes before the start of the flex block does registration close?  After this time, "
+        "registration cut off [hours]",
+        default=0,
+        help_text="How many hours before the start of the flex block does registration close?  After this time, "
                   "students will no longer be able to register for the event, nor will they be able to delete it"
                   "if they've already registered.")
     max_capacity = models.PositiveIntegerField(
@@ -265,14 +265,17 @@ class Event(models.Model):
 
     def is_registration_closed(self, block):
         now = timezone.now()
-        today = timezone.localtime(now)
-        if self.date < today.date():
+        today_local = timezone.localtime(now)
+        time = today_local.time()
+        if self.date < today_local.date():
             result = True
-        elif self.date > today.date():
+        elif self.date > today_local.date():
             result = False
         else:  # same day
-            cut_off = (today + timedelta(minutes=self.registration_cut_off)).time()
-            result = block.start_time < cut_off
+            result = block.start_time < today_local.time()
+            # datetime = date
+            # cut_off = (today_local + timedelta(hours=self.registration_cut_off)).time()
+            # result = block.start_time < cut_off
         return result
 
     def is_full(self, block=None):
