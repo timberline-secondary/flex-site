@@ -344,7 +344,7 @@ def register(request, id, block_id):
     event = get_object_or_404(Event, id=id)
     block = get_object_or_404(Block, id=block_id)
 
-    available, reason = event.is_available(request.user, block)
+    available, already, reason = event.is_available(request.user, block)
 
     if available:
         if event.both_required():

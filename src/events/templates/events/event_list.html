@@ -28,10 +28,10 @@
         {% else %}
         <div class="panel panel-info">
           <div class="panel-heading " id="register-heading">You are registered for these events:</div>
-          <div class="panel-body" id="register-prompt">
-            <ul>
-              {% for key,value in registrations.items %}
-              <li><h4>{{ key }}:
+          <ul class="list-group" id="register-prompt">
+            {% for key,value in registrations.items %}
+            <li class="list-group-item">
+              <h4>{{ key }} <small>({{key.start_time}} - {{ key.end_time }})</small>
                 {% if value %}{{ value.event }} ({{ value.event.location }})&nbsp;&nbsp;
                   {% if not value.past_cut_off %}
                     <a class="text-danger wait-on-click" href="{% url 'events:registrations_delete' value.id %}">
@@ -41,10 +41,10 @@
                 {% else %}
                   None
                 {% endif %}
-              </h4></li>
-              {% endfor %}
-            </ul>
-          </div>
+              </h4>
+            </li>
+            {% endfor %}
+          </ul>
         </div>
         {% endif %}
       {% endif %}
