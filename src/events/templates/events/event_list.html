@@ -26,28 +26,35 @@
       {%  include 'events/date_filter.html' %}
     </div>
     <div class="col-md-7">
-      {% if user.is_authenticated and not user.is_staff %}
-      <div class="panel panel-info">
-        <div class="panel-heading " id="register-heading">You are registered for these events:</div>
-        <div class="panel-body" id="register-prompt">
-          <ul>
-            {% for key,value in registrations.items %}
-            <li><h4>{{ key }}:
-              {% if value %}{{ value.event }} ({{ value.event.location }})&nbsp;&nbsp;
-                {% if not value.past_cut_off %}
-                  <a class="text-danger wait-on-click" href="{% url 'events:registrations_delete' value.id %}">
-                    <i class="fa fa-trash"></i>
-                  </a>
+      {% if user.is_authenticated %}
+        {% if user.is_staff %}
+        <h1><div class="pull-right">
+          <a class="btn btn-success" href="{% url 'events:create' %}">
+            <i class="fa fa-plus-circle"></i> Create New Event
+          </a>
+        </div></h1>
+        {% else %}
+        <div class="panel panel-info">
+          <div class="panel-heading " id="register-heading">You are registered for these events:</div>
+          <div class="panel-body" id="register-prompt">
+            <ul>
+              {% for key,value in registrations.items %}
+              <li><h4>{{ key }}:
+                {% if value %}{{ value.event }} ({{ value.event.location }})&nbsp;&nbsp;
+                  {% if not value.past_cut_off %}
+                    <a class="text-danger wait-on-click" href="{% url 'events:registrations_delete' value.id %}">
+                      <i class="fa fa-trash"></i>
+                    </a>
+                  {% endif %}
+                {% else %}
+                  None
                 {% endif %}
-              {% else %}
-                None
-              {% endif %}
-            </h4></li>
-            {% endfor %}
-          </ul>
-
+              </h4></li>
+              {% endfor %}
+            </ul>
+          </div>
         </div>
-      </div>
+        {% endif %}
       {% endif %}
     </div>
   </div>
@@ -72,27 +79,26 @@
       <table data-toggle="table"
              data-classes="table table-no-bordered table-hover"
              data-search="true"
-             data-sortable="true"
-
              data-id-field="id"
              data-unique-id="id"
              data-blocks="{{ blocks_json }}"
-{#             data-card-view="true"#}
              data-mobile-responsive="true"
              data-check-on-init="true"
              data-min-width="768"
+             data-sort-name="blocks"
+             data-sort-order="desc"
              id="table">
           <thead>
           <tr>
             <th data-field="id" data-visible="false">ID</th>
             <th data-field="date" data-visible="false">Date</th>
-            <th data-field="blocks">Blocks</th>
+            <th data-field="blocks" data-sortable="true">Blocks</th>
             <th data-field="blockselection" data-visible="false">Block Selection</th>
-            <th data-field="title">Title</th>
+            <th data-field="title" data-sortable="true">Title</th>
             <th data-field="titletext" data-visible="false">Title Plain Text</th>
-            <th data-field="location">Location</th>
-            <th data-field="teachers">Teachers</th>
-            <th data-field="category">Category</th>
+            <th data-field="location" data-sortable="true">Location</th>
+            <th data-field="teachers" >Teachers</th>
+            <th data-field="category" data-sortable="true">Category</th>
             <th data-field="description">Description</th>
 
           </tr>

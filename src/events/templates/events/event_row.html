@@ -9,7 +9,7 @@
     {% endif %}
 >
   <td> {{ event.id }}</td>
-  <td> {{ event.date }}</td>
+  <td> {{ event.date| date:"Y-m-d" }}</td>
   <td title="{{ event.blocks_str_explanation|default_if_none:'' }}"
       data-toggle="tooltip"
       data-placement="top"

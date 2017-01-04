@@ -118,9 +118,9 @@ class Event(models.Model):
         default=True,
         help_text="If false, only the creator of the event can edit.")
     registration_cut_off = models.IntegerField(
-        "registration cut off [minutes]",
-        default=5,
-        help_text="How many minutes before the start of the flex block does registration close?  After this time, "
+        "registration cut off [hours]",
+        default=0,
+        help_text="How many hours before the start of the flex block does registration close?  After this time, "
                   "students will no longer be able to register for the event, nor will they be able to delete it"
                   "if they've already registered.")
     max_capacity = models.PositiveIntegerField(
@@ -264,14 +264,18 @@ class Event(models.Model):
         return result
 
     def is_registration_closed(self, block):
-        if self.date < timezone.now().date():
+        now = timezone.now()
+        today_local = timezone.localtime(now)
+        time = today_local.time()
+        if self.date < today_local.date():
             result = True
-        elif self.date > timezone.now().date():
+        elif self.date > today_local.date():
             result = False
-        else: # same day
-            time_now = timezone.localtime(timezone.now())
-            cut_off = (time_now + timedelta(minutes=self.registration_cut_off)).time()
-            result = block.start_time < cut_off
+        else:  # same day
+            result = block.start_time < today_local.time()
+            # datetime = date
+            # cut_off = (today_local + timedelta(hours=self.registration_cut_off)).time()
+            # result = block.start_time < cut_off
         return result
 
     def is_full(self, block=None):
@@ -303,7 +307,9 @@ class RegistrationManager(models.Manager):
         # need to check if student already has an event on that date in this block, if so, modify.
         reg = self.create(event=event,
                           student=student,
-                          block=block)
+                          block=block,
+                          absent=event.is_keypad_initialized
+        )
         return reg
 
     def get_for_user_block_date(self, student, block, event_date):

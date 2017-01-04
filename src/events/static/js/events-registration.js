@@ -58,34 +58,36 @@ function whichFlexModal(row, $tr) {
 
     $blockConfirmModalTitle.text(row.titletext);
 
-    if (row.blockselection == F1_OR_F2) {
+    var eventBlocks = row.blockselection.trim()
+    if (eventBlocks == F1_OR_F2) {
         $btnConfirmFlex1.text(BTN_TEXT_F1);
         $btnConfirmFlex2.text(BTN_TEXT_F2);
         $blockConfirmModalBody.html(OR_HTML);
         $btnConfirmFlex2.show();
     }
-    else if (row.blockselection == F1_XOR_F2) {
+    else if (eventBlocks == F1_XOR_F2) {
         $btnConfirmFlex1.text(BTN_TEXT_F1);
         $btnConfirmFlex2.text(BTN_TEXT_F2);
         $blockConfirmModalBody.html(XOR_HTML);
         $btnConfirmFlex2.show();
     }
-    else if (row.blockselection == F1_AND_F2) {
+    else if (eventBlocks == F1_AND_F2) {
         $blockConfirmModalBody.html(AND_HTML);
         $btnConfirmFlex1.text(BTN_TEXT_BOTH);
         $btnConfirmFlex2.hide();
     }
-    else if (row.blockselection == FLEX1) {
+    else if (eventBlocks == FLEX1) {
         $blockConfirmModalBody.html(ONE_HTML);
         $btnConfirmFlex1.text(BTN_TEXT_F1);
         $btnConfirmFlex2.hide();
     }
-    else if (row.blockselection == FLEX2) {
+    else if (eventBlocks == FLEX2) {
         $blockConfirmModalBody.html(ONE_HTML);
         $btnConfirmFlex1.hide();
         $btnConfirmFlex2.text(BTN_TEXT_F2);
     }
     else {// shouldn't get here
+        console.log(eventBlocks) 
         console.log("Block selection not understood")
         return;
     }
