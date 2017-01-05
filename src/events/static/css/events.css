@@ -37,3 +37,7 @@
 tr[data-event-available="true"]:hover {
     cursor: pointer;
 }
+
+#datepicker:hover, #datepicker-label:hover {
+    cursor: pointer;
+}
