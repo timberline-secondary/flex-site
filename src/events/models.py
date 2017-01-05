@@ -149,7 +149,7 @@ class Event(models.Model):
     def get_absolute_url(self):
         return reverse("events:detail", kwargs={"id": self.id})
 
-    def copy(self, num, copy_date=None, user=None):
+    def copy(self, num, copy_date=None, user=None, dates=[]):
         """
         Create a copy of this event, one week later, recursively num times.
         """
@@ -166,12 +166,14 @@ class Event(models.Model):
             # https://docs.djangoproject.com/en/1.10/topics/db/queries/#copying-model-instances
             duplicate_event.pk = None  # autogen a new primary key (will create a new record)
             duplicate_event.date = new_date
+            dates.append(new_date)
             if user is not None:
                 duplicate_event.creator = user
             duplicate_event.save()
             duplicate_event.blocks.set(blocks)
             duplicate_event.facilitators.set(facilitators)
-            duplicate_event.copy(num - 1)  # recursive
+            dates = duplicate_event.copy(num - 1, dates=dates)  # recursive
+        return dates
 
     def get_video_embed_link(self, backend):
         if type(backend) is embed_video.backends.YoutubeBackend:

@@ -27,8 +27,7 @@ def location_create(request):
 
     if form.is_valid():
         loc = form.save()
-        messages.success(request,
-                         "New location added.")
+        messages.success(request, "New location added: <b>%s (%s)</b>" % (loc, loc.name))
         return redirect('events:create')
 
     context = {
@@ -49,12 +48,19 @@ def event_create(request):
         event.save()
         form.save_m2m()
 
+        msg = "New event created for %s: <b>%s</b>" % (event.date, event.title)
+
         num_duplicates = form.cleaned_data['duplicate']
         if num_duplicates:
-            event.copy(num_duplicates, user=request.user)
+            dupe_dates = event.copy(num_duplicates, user=request.user)
+            # http://stackoverflow.com/questions/9052433/overriding-default-format-when-printing-a-list-of-datetime-objects
+            msg += "; duplicates made for %s." % ', '.join(map(str, dupe_dates))
 
-        messages.success(request, "Successfully Created")
-        return HttpResponseRedirect(event.get_absolute_url())
+        messages.success(request, msg)
+
+        block_id = event.blocks.all()[0].id
+        date_query = event.date
+        return redirect("%s?date=%s" % (reverse('events:list_by_block', args=(block_id,)), date_query))
 
     context = {
         "title": "Create Event",
@@ -76,12 +82,18 @@ def event_update(request, id=None):
         event.save()
         form.save_m2m()
 
+        msg = "Edits saved for %s: <b>%s</b>" % (event.date, event.title)
         num_duplicates = form.cleaned_data['duplicate']
         if num_duplicates:
-            event.copy(num_duplicates, user=request.user)
+            dupe_dates = event.copy(num_duplicates, user=request.user)
+            # http://stackoverflow.com/questions/9052433/overriding-default-format-when-printing-a-list-of-datetime-objects
+            msg += "; duplicates made for %s." % ', '.join(map(str, dupe_dates))
 
-        messages.success(request, "Successfully Updated")
-        return HttpResponseRedirect(event.get_absolute_url())
+        messages.success(request, msg)
+
+        block_id = event.blocks.all()[0].id
+        date_query = event.date
+        return redirect("%s?date=%s" % (reverse('events:list_by_block', args=(block_id,)), date_query))
 
     context = {
         "title": event.title,
@@ -113,8 +125,11 @@ def event_copy(request, id):
     if form.is_valid():
         event = form.save()
 
-        messages.success(request, "New event created")
-        return HttpResponseRedirect(event.get_absolute_url())
+        messages.success(request, "New event created for %s: <b>%s</b>" % (event.date, event.title))
+
+        block_id = event.blocks.all()[0].id
+        date_query = event.date
+        return redirect("%s?date=%s" % (reverse('events:list_by_block', args=(block_id,)), date_query))
 
     context = {
         "title": new_event.title,
@@ -205,6 +220,7 @@ def event_attendance(request, id=None, block_id=None):
         )
         if formset1.is_valid():
             formset1.save()
+            messages.success(request, "Attendance saved for <b>%s</b> during <b>%s</b>" % (event, active_block))
 
     else:
         formset1 = AttendanceFormSet1(queryset=queryset1, prefix='flex1')
