@@ -54,13 +54,13 @@
   </div>
 
   {#  Registered event pop-up info #}
-  {% if user.is_authenticated and not user.is_staff %}
-    {% for key,value in registrations.items %}
-      {% if value %}
-        {% include 'events/event_info_modal.html' with event=value.event %}
-      {% endif %}
-    {% endfor %}
-  {% endif %}
+{#  {% if user.is_authenticated and not user.is_staff %}#}
+{#    {% for key,value in registrations.items %}#}
+{#      {% if value %}#}
+{#        {% include 'events/event_info_modal.html' with event=value.event %}#}
+{#      {% endif %}#}
+{#    {% endfor %}#}
+{#  {% endif %}#}
 
 
   <!-- Event lists -->
