@@ -38,6 +38,30 @@ tr[data-event-available="true"]:hover {
     cursor: pointer;
 }
 
+<<<<<<< HEAD
+.wrap-frame {
+	/*display: fixed;
+	table-layout: fixed;*/
+}
+
+.frame {
+	display: table-cell;
+}
+
+#image {
+	max-width:50%;
+	/*height:auto;*/
+	vertical-align:bottom;
+}
+
+.img-responsive-50 {
+	max-width: 50%;
+}
+
+.img-responsive-50-ie11-hack {
+	width: 50%;
+=======
 #datepicker:hover, #datepicker-label:hover {
     cursor: pointer;
+>>>>>>> 9a96174c342c836ccd2a497c7b5431e5151c3327
 }
