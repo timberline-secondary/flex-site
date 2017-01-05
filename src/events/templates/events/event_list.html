@@ -32,13 +32,37 @@
             {% for key,value in registrations.items %}
             <li class="list-group-item">
               <h4>{{ key }} <small>({{key.start_time}} - {{ key.end_time }})</small>
-                {% if value %}
-                  {{ value.event }}
-                  ({{ value.event.location }})
+                {% if value %}{{ value.event }} ({{ value.event.location }})&nbsp;&nbsp;
                   {% if not value.past_cut_off %}
                     <a class="text-danger wait-on-click" href="{% url 'events:registrations_delete' value.id %}">
-                      &nbsp;&nbsp;<i class="fa fa-trash"></i>
+                      <i class="fa fa-trash"></i>
                     </a>
+
+
+                    <!-- Trigger the modal with a button -->
+                    <a style="float:right; font-size: 10px; display: inline" role="button" data-toggle="modal" data-target="#myModal">Show Info</a>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="myModal" role="dialog">
+                      <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h4 style="display: inline-block;" class="modal-title">{{ value.event }}</h4>
+                            <H5 style="display: inline-block;">{{ value.event.location }} ({{ value.event.location.name }})</H5>
+                            <H5 style="display: inline-block; float:right;">{{ value.event.facilitator_string|safe}}</H5>
+                          </div>
+                          <div class="modal-body">
+                               {{ value.event.description|safe }}
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
                   {% endif %}
                 {% else %}
                   None
@@ -109,7 +133,7 @@
 
 
 
-  {% if user.is_authenticated and not user.is_staff%}
+  {% if user.is_authenticated %}
   <div id="block-confirmation-modal" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
