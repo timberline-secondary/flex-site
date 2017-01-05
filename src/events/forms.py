@@ -135,6 +135,18 @@ class EventForm(forms.ModelForm):
         queryset=Location.objects.all(),
         widget=RelatedFieldWidgetCanAdd(Location, 'events:location_create'),
     )
+    duplicate = forms.IntegerField(
+        label='Duplicate to future weeks',
+        required=False,
+        initial=0,
+        max_value=10,
+        min_value=0,
+        help_text="If 1 or more, a duplicate of this event will be created for this number of weeks beyond the event "
+                  "date. 0 = no duplicates, 1 = one duplicate, etc.  Each of these events will be unaware of each "
+                  "other, and will have to be edited individually.  I suggest you save new events without "
+                  "duplications first, to ensure it appears how you want it; then edit the event and change this "
+                  "number to create the duplicates.",
+    )
 
     class Meta:
         model = Event

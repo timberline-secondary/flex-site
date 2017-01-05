@@ -62,10 +62,12 @@
     </div>
     {% if request.user.is_superuser or request.user in event.get_editors %}
       <div class="btn-group pull-right" role="group">
-        <a class="btn btn-default wait" href="{% url 'events:update' event.id %}">
+        <a title="You can Edit, Delete, or Duplicate the event here."
+           class="btn btn-default wait" href="{% url 'events:update' event.id %}">
           <i class="fa fa-edit"></i> Edit
         </a>
-        <a class="btn btn-default wait" href="{% url 'events:copy' event.id %}">
+        <a title="Create a single copy of this event where you can edit the copy before saving it.  To duplicate an event multiple times for future weeks, use the Edit button and set the 'Duplicate to future weeks' field at the bottom of the form."
+            class="btn btn-default wait" href="{% url 'events:copy' event.id %}">
           <i class="fa fa-copy"></i> Copy
         </a>
         <a class="btn btn-primary wait" href="{% url 'events:attendance' event.id %}">

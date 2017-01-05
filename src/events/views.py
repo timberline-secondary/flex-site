@@ -48,6 +48,11 @@ def event_create(request):
         event.creator = request.user
         event.save()
         form.save_m2m()
+
+        num_duplicates = form.cleaned_data['duplicate']
+        if num_duplicates:
+            event.copy(num_duplicates)
+
         messages.success(request, "Successfully Created")
         return HttpResponseRedirect(event.get_absolute_url())
 
@@ -70,6 +75,11 @@ def event_update(request, id=None):
         event = form.save(commit=False)
         event.save()
         form.save_m2m()
+
+        num_duplicates = form.cleaned_data['duplicate']
+        if num_duplicates:
+            event.copy(num_duplicates)
+
         messages.success(request, "Successfully Updated")
         return HttpResponseRedirect(event.get_absolute_url())
 
@@ -77,6 +87,38 @@ def event_update(request, id=None):
         "title": event.title,
         "delete_btn": True,
         "event": event,
+        "form": form,
+        "btn_value": "Save"
+    }
+    return render(request, "events/event_form.html", context)
+
+
+@staff_member_required
+def event_copy(request, id):
+    new_event = get_object_or_404(Event, id=id)
+
+    blocks = new_event.blocks.all()
+    facilitators = new_event.facilitators.all()
+
+    new_event.pk = None  # autogen a new primary key (quest_id by default)
+    new_event.date = None
+
+    d = {'blocks': blocks,
+         'facilitators': facilitators,
+         }
+
+    form = EventForm(request.POST or None, instance=new_event, initial=d)
+
+    # not valid?
+    if form.is_valid():
+        event = form.save()
+
+        messages.success(request, "New event created")
+        return HttpResponseRedirect(event.get_absolute_url())
+
+    context = {
+        "title": new_event.title,
+        "event": new_event,
         "form": form,
         "btn_value": "Save"
     }
@@ -221,38 +263,6 @@ def event_list(request, block_id=None):
         "active_block": active_block,
     }
     return render(request, "events/event_list.html", context)
-
-
-@staff_member_required
-def event_copy(request, id=None):
-    new_event = get_object_or_404(Event, id=id)
-
-    blocks = new_event.blocks.all()
-    facilitators = new_event.facilitators.all()
-
-    new_event.pk = None  # autogen a new primary key (quest_id by default)
-    new_event.date = None
-
-    d = {'blocks': blocks,
-         'facilitators': facilitators,
-         }
-
-    form = EventForm(request.POST or None, instance=new_event, initial=d)
-
-    # not valid?
-    if form.is_valid():
-        event = form.save()
-
-        messages.success(request, "New event created")
-        return HttpResponseRedirect(event.get_absolute_url())
-
-    context = {
-        "title": new_event.title,
-        "event": new_event,
-        "form": form,
-        "btn_value": "Save"
-    }
-    return render(request, "events/event_form.html", context)
 
 
 @login_required

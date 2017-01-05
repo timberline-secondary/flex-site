@@ -116,7 +116,9 @@ class Event(models.Model):
                                           limit_choices_to={'is_staff': True})
     allow_facilitators_to_modify = models.BooleanField(
         default=True,
-        help_text="If false, only the creator of the event can edit.")
+        help_text="If false, only the creator of the event can edit.  If true, then any staff member that is listed as "
+                  "a facilitator will be able to edit the event.  The creator will always be able to edit this event, "
+                  "even if they are not listed as one of the facilitators.")
     registration_cut_off = models.IntegerField(
         "registration cut off [hours]",
         default=0,
@@ -146,6 +148,28 @@ class Event(models.Model):
 
     def get_absolute_url(self):
         return reverse("events:detail", kwargs={"id": self.id})
+
+    def copy(self, num, copy_date=None):
+        """
+        Create a copy of this event, one week later, recursively num times.
+        """
+        if num > 0:
+            if copy_date:
+                new_date = copy_date
+            else:
+                new_date = self.date + timedelta(7)
+                print(new_date)
+
+            facilitators = self.facilitators.all()
+            blocks = self.blocks.all()
+            duplicate_event = self
+            # https://docs.djangoproject.com/en/1.10/topics/db/queries/#copying-model-instances
+            duplicate_event.pk = None  # autogen a new primary key (will create a new record)
+            duplicate_event.date = new_date
+            duplicate_event.save()
+            duplicate_event.blocks.set(blocks)
+            duplicate_event.facilitators.set(facilitators)
+            duplicate_event.copy(num - 1)  # recursive
 
     def get_video_embed_link(self, backend):
         if type(backend) is embed_video.backends.YoutubeBackend:
