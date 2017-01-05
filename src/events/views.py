@@ -51,7 +51,7 @@ def event_create(request):
 
         num_duplicates = form.cleaned_data['duplicate']
         if num_duplicates:
-            event.copy(num_duplicates, request.user)
+            event.copy(num_duplicates, user=request.user)
 
         messages.success(request, "Successfully Created")
         return HttpResponseRedirect(event.get_absolute_url())
@@ -78,7 +78,7 @@ def event_update(request, id=None):
 
         num_duplicates = form.cleaned_data['duplicate']
         if num_duplicates:
-            event.copy(num_duplicates, request.user)
+            event.copy(num_duplicates, user=request.user)
 
         messages.success(request, "Successfully Updated")
         return HttpResponseRedirect(event.get_absolute_url())
