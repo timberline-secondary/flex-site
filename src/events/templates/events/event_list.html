@@ -32,42 +32,42 @@
             {% for key,value in registrations.items %}
             <li class="list-group-item">
               <h4>{{ key }} <small>({{key.start_time}} - {{ key.end_time }})</small>
-                {% if value %}{{ value.event }} ({{ value.event.location }})&nbsp;&nbsp;
+                {% if value %}
+                  <a href="#" data-toggle="modal" data-target="#event-info-modal-{{ value.event.id }}">{{ value.event }}</a>
+                  ({{ value.event.location }})&nbsp;&nbsp;
                   {% if not value.past_cut_off %}
                     <a class="text-danger wait-on-click" href="{% url 'events:registrations_delete' value.id %}">
                       <i class="fa fa-trash"></i>
                     </a>
-
-
-                    <!-- Trigger the modal with a button -->
-                    <a style="float:right; font-size: 10px; display: inline" role="button" data-toggle="modal" data-target="#myModal">Show Info</a>
-
-                    <!-- Modal -->
-                    <div class="modal fade" id="myModal" role="dialog">
-                      <div class="modal-dialog">
-
-                        <!-- Modal content-->
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h4 style="display: inline-block;" class="modal-title">{{ value.event }}</h4>
-                            <H5 style="display: inline-block;">{{ value.event.location }} ({{ value.event.location.name }})</H5>
-                            <H5 style="display: inline-block; float:right;">{{ value.event.facilitator_string|safe}}</H5>
-                          </div>
-                          <div class="modal-body">
-                               {{ value.event.description|safe }}
-                          </div>
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                          </div>
-                        </div>
-
-                      </div>
-                    </div>
                   {% endif %}
-                {% else %}
-                  None
-                {% endif %}
               </h4>
+                  <!-- Modal -->
+                  <div class="modal fade" id="event-info-modal-{{ value.event.id }}" role="dialog" tabindex="-1">
+                    <div class="modal-dialog">
+
+                      <!-- Modal content-->
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                          <h4 class="modal-title">{{ value.event.title }}</h4>
+                        </div>
+                        <div class="modal-body">
+                          <b>Teachers:</b> {{ value.event.facilitator_string|safe }}<br>
+                          <b>Location:</b> {{ value.event.location }} ({{ value.event.location.name }})<br>
+                          <b>Description:</b> {{ value.event.description|safe }}
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                      </div><!-- /.modal-content -->
+                    </div><!-- /.modal-dialog -->
+                  </div><!-- /.modal -->
+
+                {% else %}
+                  None</h4>
+                {% endif %}
+
             </li>
             {% endfor %}
           </ul>
