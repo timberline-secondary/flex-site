@@ -13,28 +13,25 @@
 >
   <td> {{ event.id }}</td>
   <td> {{ event.date| date:"Y-m-d" }}</td>
-  <td title="{{ event.blocks_str_explanation|default_if_none:'' }}"
+  <td class="col-sm-1"
+      title="{{ event.blocks_str_explanation|default_if_none:'' }}"
       data-toggle="tooltip"
       data-placement="top"
       data-container="body" >
     {{ event.blocks_str }}
   </td>
   <td> {{ event.block_selection_guide }}</td>
-  <td> <b>
-    {% if user.is_superuser or user in event.get_editors %}
-      <a title="Click to Edit" href='{% url 'events:update' event.id %}'>{{ event.title }}</a>
-    {% else %}
-      {{ event.title }}
-    {% endif %}
-
-  </b></td>
-  <td> {{ event.title }}</td>
-  <td title="{{ event.location.name }}" data-toggle="tooltip" data-placement="top" data-container="body" >
+  <td> <b>{{ event.title }}</b></td>
+  <td class="col-sm-2">
+    {{ event.title }}
+  </td>
+  <td class="col-sm-1"
+      title="{{ event.location.name }}" data-toggle="tooltip" data-placement="top" data-container="body" >
     {{ event.location }}
   </td>
-  <td> {{ event.facilitator_string|safe }} </td>
-  <td> {{ event.category }}</td>
-  <td>
+  <td class="col-sm-2"> {{ event.facilitator_string|safe }} </td>
+  <td class="col-sm-1"> {{ event.category }}</td>
+  <td class="col-sm-5">
     <div class="clearfix">
       {% if event.image %}
         <img src="{{ event.description_link }}"
@@ -62,7 +59,7 @@
     </div>
     {% if request.user.is_superuser or request.user in event.get_editors %}
       <div class="btn-group pull-right" role="group">
-        <a title="You can Edit, Delete, or Duplicate the event here."
+        <a title="Here you can Edit, Delete, or Duplicate to Future Weeks."
            class="btn btn-default wait" href="{% url 'events:update' event.id %}">
           <i class="fa fa-edit"></i> Edit
         </a>
@@ -70,7 +67,8 @@
             class="btn btn-default wait" href="{% url 'events:copy' event.id %}">
           <i class="fa fa-copy"></i> Copy
         </a>
-        <a class="btn btn-primary wait" href="{% url 'events:attendance' event.id %}">
+        <a title="Numbers indicate how many students have registered for this event in each block it is available."
+           class="btn btn-primary wait" href="{% url 'events:attendance' event.id %}">
           <i class="fa fa-users"></i> Attendance
           {% for num in event.get_attendances %}
             <span class="badge">{{ num }}</span>
