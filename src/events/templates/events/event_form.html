@@ -7,6 +7,11 @@
   {{ form.media.css }}
 
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <style>
+    #div_id_multi_block_event {
+      display:none;
+    }
+  </style>
 {% endblock style %}
 
 {% block content %}
@@ -48,4 +53,27 @@
 
   <script id="event-datepicker" data-date-input-id="id_date" src="{% static 'js/events-datepicker.js' %}" ></script>
 
+  <script>
+    // display the multi block event field if more than one block is ticked.
+    function updateMultiBlockEventField($blocks) {
+        var $multiblock = $('#div_id_multi_block_event');
+        var numBlocksTicked = $blocks.find('input:checked').length;
+        if (numBlocksTicked > 1) {
+          $multiblock.slideDown();
+        }
+        else {
+          $multiblock.slideUp();
+        }
+    }
+
+    $(document).ready(function() {
+      // container for tick boxes and labels for flex-1 and flex-2
+      var $blocks = $('#div_id_blocks>div.controls label');
+      // update when page loads in case already more than one block ticked (possible if editing an existing event)
+      updateMultiBlockEventField($blocks)
+      $blocks.click(function() { // when changing number of blocks, display multiEvent field as appropriate
+        updateMultiBlockEventField($blocks);
+      });
+    });
+  </script>
 {% endblock js %}
