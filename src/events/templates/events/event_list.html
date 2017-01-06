@@ -165,8 +165,16 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
   <script src="{% static 'js/bootstrap-table-mobile.js' %}"></script>
 
-  {% if not user.is_staff %}
+  {% if user.is_authenticated and not user.is_staff %}
     <script src="{% static 'js/events-registration.js' %}"></script>
+  {% elif not user.is_authenticated %}
+    <script>
+    $('#table').bootstrapTable({
+      onClickRow: function (row, $element, field) {
+        $('#login-modal').modal('show');
+      }
+    });
+    </script>
   {% endif %}
 
   <script>
