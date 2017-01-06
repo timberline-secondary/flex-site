@@ -62,6 +62,11 @@
   {% block content %}
   {% endblock content %}
 
+    <!-- Modal: http://getbootstrap.com/javascript/#modals -->
+  {% if not request.user.is_authenticated and not "/accounts/login/" in request.get_full_path %}
+    {% include "login_modal.html" %}
+  {% endif %}
+
 </div>
 
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -91,6 +96,16 @@ $(document).ready(function() {
   $("div.alert.slide").on("click", "button.close", function() {
     $(this).parent().slideUp();
   });
+
+  {% if not request.user.is_authenticaed and not "/accounts/login/" in request.get_full_path %}
+    if(!sessionStorage.showLoginModal) // if the session cookie exists, don't show.
+    $('#login-modal')
+      .modal('show') // show the login modal
+      .on('hidden.bs.modal', function (e) {
+        sessionStorage.showLoginModal = false // don't show again this session.
+      });
+  {% endif %}
+
 
 });
 </script>
