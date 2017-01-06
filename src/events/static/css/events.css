@@ -42,21 +42,6 @@ tr[data-event-available="true"]:hover {
     cursor: pointer;
 }
 
-.wrap-frame {
-	/*display: fixed;
-	table-layout: fixed;*/
-}
-
-.frame {
-	display: table-cell;
-}
-
-#image {
-	max-width:50%;
-	/*height:auto;*/
-	vertical-align:bottom;
-}
-
 .img-responsive-50 {
 	max-width: 50%;
 }
