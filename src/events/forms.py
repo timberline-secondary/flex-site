@@ -33,7 +33,7 @@ class AttendanceForm(forms.ModelForm):
         fields = (
             "absent",
             "late",
-            "excused",
+            # "excused",
             # "student",
         )
 

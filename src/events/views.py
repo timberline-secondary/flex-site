@@ -206,10 +206,12 @@ def event_attendance(request, id=None, block_id=None):
     else:
         active_block = event.blocks.all()[0]
 
-    queryset1 = Registration.objects.filter(event=event, block=active_block)
+    queryset1 = Registration.objects.filter(event=event, block=active_block).order_by('student__last_name')
 
     # https://docs.djangoproject.com/en/1.9/topics/forms/modelforms/#model-formsets
-    AttendanceFormSet1 = modelformset_factory(Registration, form=AttendanceForm, extra=0)
+    AttendanceFormSet1 = modelformset_factory(Registration,
+                                              form=AttendanceForm,
+                                              extra=0)
     helper = AttendanceFormSetHelper()
 
     if request.method =="POST":
