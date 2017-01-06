@@ -385,7 +385,7 @@ def register(request, id, block_id):
 
         messages.success(request, "Successfully registered for <b>%s</b> during <b>%s</b> " % (event, block_text))
     else:
-        messages.error(request, reason)
+        messages.danger(request, reason)
     return redirect("%s?date=%s" % (reverse('events:list_by_block', args=(block_id,)), date_query))
 
 
