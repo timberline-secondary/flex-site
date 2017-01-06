@@ -87,7 +87,7 @@ function whichFlexModal(row, $tr) {
         $btnConfirmFlex2.text(BTN_TEXT_F2);
     }
     else {// shouldn't get here
-        console.log(eventBlocks) 
+        console.log(eventBlocks)
         console.log("Block selection not understood")
         return;
     }
@@ -122,4 +122,15 @@ $( document ).ready(function() {
     });
 });
 
+//if IE11
+$( document ).ready(function() {
+    var ua = window.navigator.userAgent;
+    var msie = ua.indexOf("MSIE ");
 
+    if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))  // If Internet Explorer, return version number
+    {
+        $(".img-responsive-50").addClass("img-responsive-50-ie11-hack");
+    }
+
+    return false;
+});
