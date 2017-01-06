@@ -42,8 +42,14 @@ tr[data-event-available="true"]:hover {
     cursor: pointer;
 }
 
+/*IE Hacks working, so set widths for now...*/
 .img-responsive-50 {
-	max-width: 50%;
+	/*max-width: 50%;*/
+    width: 50%;
+}
+
+.img-responsive {
+    width: 100%;
 }
 
 .img-responsive-50-ie11-hack {
