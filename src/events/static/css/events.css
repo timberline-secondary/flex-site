@@ -49,3 +49,7 @@ tr[data-event-available="true"]:hover {
 .img-responsive-50-ie11-hack {
 	width: 50%;
 }
+
+.img-responsive-ie11-hack {
+	width: 100%;
+}

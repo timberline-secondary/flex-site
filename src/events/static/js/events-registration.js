@@ -129,7 +129,8 @@ $( document ).ready(function() {
 
     if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))  // If Internet Explorer, return version number
     {
-        $(".img-responsive-50").addClass("img-responsive-50-ie11-hack");
+        $(".img-responsive-50").addClass("img-responsive-50-ie11-hack").removeClass("img-responsive-50");
+        $(".img-responsive").addClass("img-responsive-ie11-hack").removeClass("img-responsive");;
     }
 
     return false;
