@@ -41,3 +41,11 @@ tr[data-event-available="true"]:hover {
 #datepicker:hover, #datepicker-label:hover {
     cursor: pointer;
 }
+
+.img-responsive-50 {
+	max-width: 50%;
+}
+
+.img-responsive-50-ie11-hack {
+	width: 50%;
+}

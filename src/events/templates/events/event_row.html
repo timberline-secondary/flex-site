@@ -33,12 +33,11 @@
   <td class="col-sm-1"> {{ event.category }}</td>
   <td class="col-sm-5">
     <div class="clearfix">
-      {% if event.image %}
-        <img src="{{ event.description_link }}"
-           class="img-rounded img-responsive pull-right hidden-xs hidden-sm"
-           style="max-width:50%; width:50%"
-        >
-      {% endif %}
+          {% if event.image %}
+            <img src="{{ event.description_link }}"
+               class="img-rounded img-responsive-50 pull-right hidden-xs hidden-sm"
+            >
+          {% endif %}
       {{ event.description|safe }}
       {% if event.image %}
         <p><img src="{{ event.description_link }}"
