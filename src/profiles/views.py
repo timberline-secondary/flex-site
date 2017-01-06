@@ -23,7 +23,7 @@ def reset_password_to_default(request, id):
     student = get_object_or_404(User, id=id)
     this_user = request.user
 
-    if student.profile.homeroom_teacher is this_user or this_user.is_superuser:
+    if student.profile.homeroom_teacher == this_user or this_user.is_superuser:
         student.password = make_password("wolf")
         student.save()
         messages.success(request, 'Password reset to "wolf".')
