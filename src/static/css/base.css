@@ -20,6 +20,14 @@ a.navbar-brand > img {
     height: 40px;
 }
 
+/* Small Devices, Tablets (and lower) */
+@media only screen and (max-width : 768px) {
+    .navbar-default .navbar-nav .open .dropdown-menu > li > a{
+        color: #fff;
+    }
+}
+
+
 .input-group-unified input {
     width: 50% !important;
 }
