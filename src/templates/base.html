@@ -61,6 +61,7 @@
   {% include "messages_display.html" %}
   {% block content %}
   {% endblock content %}
+
 </div>
 
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -80,10 +81,13 @@ $(document).ready(function() {
   $('.navbar-nav li.active').removeClass('active');
   $('a[href="' + location.pathname + '"]').closest('li').addClass('active');
 
+  //set the cursor to loading/wait cursor right before page changes.  Cursor provides feedback as sometimes generating
+  // data for the new page can take a second or two.
   $(window).on('beforeunload', function(){
    $('*').css("cursor", "wait");
   });
 
+  // close message alerts that appear at the top of the page sometimes as feedback.
   $("div.alert.slide").on("click", "button.close", function() {
     $(this).parent().slideUp();
   });

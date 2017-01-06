@@ -372,12 +372,18 @@ def register(request, id, block_id):
 
     available, already, reason = event.is_available(request.user, block)
 
+    block_text = ""
     if available:
         if event.both_required():
             for block in event.blocks.all():
                 Registration.objects.create_registration(event=event, student=request.user, block=block)
+                block_text += str(block) + " "
+
         else:
             Registration.objects.create_registration(event=event, student=request.user, block=block)
+            block_text = str(block)
+
+        messages.success(request, "Successfully registered for <b>%s</b> during <b>%s</b> " % (event, block_text))
     else:
         messages.error(request, reason)
     return redirect("%s?date=%s" % (reverse('events:list_by_block', args=(block_id,)), date_query))
@@ -402,7 +408,7 @@ def registrations_delete(request, id=None):
         regs.delete()
     else:
         reg.delete()
-    messages.success(request, "Successfully Deleted")
+    messages.success(request, "You've been removed from <b>%s</b>" % reg.event)
 
     # Return to page that got us here.
     # http://stackoverflow.com/questions/12758786/redirect-return-to-same-previous-page-in-django
