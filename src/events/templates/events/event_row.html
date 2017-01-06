@@ -29,21 +29,15 @@
       title="{{ event.location.name }}" data-toggle="tooltip" data-placement="top" data-container="body" >
     {{ event.location }}
   </td>
-<<<<<<< HEAD
-  <td> {{ event.facilitator_string|safe }} </td>
-  <td> {{ event.category }}</td>
-  <td id="imgdes">
-=======
   <td class="col-sm-2"> {{ event.facilitator_string|safe }} </td>
   <td class="col-sm-1"> {{ event.category }}</td>
   <td class="col-sm-5">
->>>>>>> 9a96174c342c836ccd2a497c7b5431e5151c3327
-    <div class="clearfix">
-		      {% if event.image %}
-		        <img src="{{ event.description_link }}"
-		           class="img-rounded img-responsive-50 pull-right hidden-xs hidden-sm"
-		        >
-		      {% endif %}
+      <div class="clearfix">
+  		      {% if event.image %}
+  		        <img src="{{ event.description_link }}"
+  		           class="img-rounded img-responsive-50 pull-right hidden-xs hidden-sm"
+  		        >
+  		      {% endif %}
       {{ event.description|safe }}
       {% if event.image %}
         <p><img src="{{ event.description_link }}"

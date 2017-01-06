@@ -87,7 +87,7 @@ function whichFlexModal(row, $tr) {
         $btnConfirmFlex2.text(BTN_TEXT_F2);
     }
     else {// shouldn't get here
-        console.log(eventBlocks) 
+        console.log(eventBlocks)
         console.log("Block selection not understood")
         return;
     }
