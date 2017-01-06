@@ -26,7 +26,7 @@ def reset_password_to_default(request, id):
     if student.profile.homeroom_teacher == this_user or this_user.is_superuser:
         student.password = make_password("wolf")
         student.save()
-        messages.success(request, 'Password reset to "wolf".')
+        messages.success(request, "Password has been reset to \"wolf\" for %s." % student.get_full_name())
         return redirect('events:registrations_homeroom')
     else:
         raise Http404("You are not this student's homeroom teacher.")
