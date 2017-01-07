@@ -172,8 +172,10 @@ class Event(models.Model):
             self.description_image_file.save(os.path.basename(img_url), File(img_temp))
             self.save()
             return True
-
-        return False
+        else:
+            self.description_image_file = None
+            self.save()
+            return False
 
     def copy(self, num, copy_date=None, user=None, dates=[]):
         """
@@ -201,6 +203,7 @@ class Event(models.Model):
             dates = duplicate_event.copy(num - 1, dates=dates)  # recursive
         return dates
 
+
     def get_video_embed_link(self, backend):
         if type(backend) is embed_video.backends.YoutubeBackend:
             return "https://www.youtube.com/embed/" + backend.get_code() + "?rel=0"
@@ -209,11 +212,18 @@ class Event(models.Model):
         else:
             return None
 
+    def get_image_url(self): #assumes its an image already.
+        if self.description_image_file:
+            return self.description_image_file.url
+        else:
+            return self.description_link
+
     def video(self):
         if not self.description_link:
             return None
         try:
             backend = detect_backend(self.description_link)
+
             return self.get_video_embed_link(backend)
         except UnknownBackendException:
             return None
