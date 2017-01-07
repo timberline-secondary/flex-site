@@ -13,25 +13,24 @@
 >
   <td> {{ event.id }}</td>
   <td> {{ event.date| date:"Y-m-d" }}</td>
-  <td class="col-sm-1"
+  <td class="col-md-1"
       title="{{ event.blocks_str_explanation|default_if_none:'' }}"
       data-toggle="tooltip"
       data-placement="top"
-      data-container="body" >
+      data-container="body"
+  >
     {{ event.blocks_str }}
   </td>
-  <td> {{ event.block_selection_guide }}</td>
-  <td> <b>{{ event.title }}</b></td>
-  <td class="col-sm-2">
-    {{ event.title }}
-  </td>
-  <td class="col-sm-1"
+  <td>{{ event.block_selection_guide }}</td>
+  <td class="col-md-2"><b> {{ event.title }}</b></td>
+  <td>{{ event.title }}</td> <!-- data required for jQuery, should be moved to data-title-text attr -->
+  <td class="col-md-1"
       title="{{ event.location.name }}" data-toggle="tooltip" data-placement="top" data-container="body" >
     {{ event.location }}
   </td>
-  <td class="col-sm-2"> {{ event.facilitator_string|safe }} </td>
-  <td class="col-sm-1"> {{ event.category }}</td>
-  <td class="col-sm-5">
+  <td class="col-md-2"> {{ event.facilitator_string|safe }} </td>
+  <td class="col-md-1"> {{ event.category }}</td>
+  <td class="col-md-5">
     <div class="clearfix">
           {% if event.image %}
             <img src="{{ event.description_link }}"
