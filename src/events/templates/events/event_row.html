@@ -42,12 +42,12 @@
       {{ event.description|safe }}
       {% if event.image %}
         <p><img src="{{ event.description_link }}"
-             class="img-rounded img-responsive hidden-md hidden-lg"
+                class="img-rounded img-responsive hidden-md hidden-lg"
         ></p>
       {% endif %}
       {% if event.video %}
         <!-- 16:9 aspect ratio -->
-        <div class="embed-responsive embed-responsive-16by9 img-rounded">
+        <div class="embed-responsive embed-responsive-16by9 img-rounded" style="margin: 0 0 8px 0;">
           <iframe class="embed-responsive-item" src="{{ event.video }}" allowfullscreen></iframe>
         </div>
       {% elif event.description_link and not event.image %}
