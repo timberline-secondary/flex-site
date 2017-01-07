@@ -40,32 +40,11 @@
                       <i class="fa fa-trash"></i>
                     </a>
                   {% endif %}
-              </h4>
-                  <!-- Modal -->
-                  <div class="modal fade" id="event-info-modal-{{ value.event.id }}" role="dialog" tabindex="-1">
-                    <div class="modal-dialog">
+                    </h4> <!-- END H4 -->
 
-                      <!-- Modal content-->
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
-                          <h4 class="modal-title">{{ value.event.title }}</h4>
-                        </div>
-                        <div class="modal-body">
-                          <b>Teachers:</b> {{ value.event.facilitator_string|safe }}<br>
-                          <b>Location:</b> {{ value.event.location }} ({{ value.event.location.name }})<br>
-                          <b>Description:</b> {{ value.event.description|safe }}
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        </div>
-                      </div><!-- /.modal-content -->
-                    </div><!-- /.modal-dialog -->
-                  </div><!-- /.modal -->
-
+                    {% include 'events/event_info_modal.html' with event=value.event %}
                 {% else %}
-                  None</h4>
+                  None</h4> <!-- END H4 -->
                 {% endif %}
 
             </li>
