@@ -165,7 +165,15 @@ class Event(models.Model):
             img_url = self.description_link
             img_temp = NamedTemporaryFile(delete=True)
             try:
-                img_temp.write(urllib.request.urlopen(img_url).read())
+                request = urllib.request.Request(
+                    img_url,
+                    data=None,
+                    headers={
+                        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'
+                    }
+                )
+                img_temp.write(urllib.request.urlopen(request).read())
+                # img_temp = urllib.request.urlretrieve(img_url)
             except urllib.error.HTTPError:
                 return False
             img_temp.flush()

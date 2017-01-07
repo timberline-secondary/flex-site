@@ -58,6 +58,10 @@ def event_create(request):
 
         messages.success(request, msg)
 
+        if not event.cache_remote_image():
+            messages.warning(request, "Failed to properly cache your image.  Don't worry about it for now... unless "
+                                      "you didn't provide an image link, in which case please let Tylere know!")
+
         block_id = event.blocks.all()[0].id
         date_query = event.date
         return redirect("%s?date=%s" % (reverse('events:list_by_block', args=(block_id,)), date_query))
@@ -90,6 +94,11 @@ def event_update(request, id=None):
             msg += "; duplicates made for %s." % ', '.join(map(str, dupe_dates))
 
         messages.success(request, msg)
+
+        if not event.cache_remote_image():
+            messages.warning(request, "Failed to properly cache your image.  Don't worry about it for now... unless "
+                                      "you didn't provide an image link, in which case please let Tylere know!")
+
 
         block_id = event.blocks.all()[0].id
         date_query = event.date
