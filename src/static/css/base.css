@@ -45,6 +45,11 @@ http://stackoverflow.com/questions/20541306/how-to-write-a-css-hack-for-ie-11
    /*!* Put your IE-only styles here. Works for IS 10 & IE 11*!*/
 /*}*/
 
+
+.nav-tabs > li.active > a {
+    font-weight: bold;
+}
+
 /**********************************
 /*
 /*      PRINTING
@@ -61,5 +66,10 @@ http://stackoverflow.com/questions/20541306/how-to-write-a-css-hack-for-ie-11
     }
     .table-condensed input {
         margin-top: 1px;
+    }
+
+    /* by default bootstrap prints the link with text (www.example.com), don't want that. */
+    a[href]:after {
+        content: none !important;
     }
 }
