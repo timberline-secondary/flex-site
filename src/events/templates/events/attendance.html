@@ -15,16 +15,18 @@
   <h1>Attendance - {{ event.title }}
     <small>
       <span class="responsive-wrap">{{ event.date }}</span>
-      {% if not event.is_keypad_initialized %}<a class="btn btn-default pull-right" id="keypad_init"
-         href="{% url 'events:attendance_keypad_init' event.id %}">Initialize Keypad Entry</a>
-      {% endif %}
+      <div class="hidden-print pull-right">
+        {% if not event.is_keypad_initialized %}<a class="btn btn-default" id="keypad_init"
+           href="{% url 'events:attendance_keypad_init' event.id %}">Initialize Keypad Entry</a>
+        {% endif %}
+      </div>
     </small>
   </h1>
 
   <div class="hidden-print">
     {% include 'events/event_single_table.html' %}
-    <br>
   </div>
+  <br>
 
   <!-- Button trigger modal -->
   {% if event.is_keypad_initialized %}
@@ -112,6 +114,13 @@
   <script>
 
     $(document).ready(function() {
+
+      // PRINTING
+      $('a.print').click(function(){
+        window.print();
+      });
+
+
       // https://github.com/codedance/jquery.AreYouSure
       // warn if leaving page when unsaved form data
       $('form').areYouSure();
