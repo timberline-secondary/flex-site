@@ -1,12 +1,17 @@
 import mimetypes
+import urllib
 from datetime import date, timedelta
 
 import embed_video
+import os
 
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.files import File
+from django.core.files.temp import NamedTemporaryFile
 from django.db import models
 from django.core.urlresolvers import reverse
+from django.db.models.signals import post_save
 from django.utils import timezone
 
 from embed_video.backends import detect_backend, UnknownBackendException
@@ -102,7 +107,8 @@ class Event(models.Model):
         null=True, blank=True,
         help_text="An optional link to provide with the text description. If the link is to a video (YouTube or Vimeo) "
                   "or an image (png, jpg, etc.) it will be embedded with the description if there is enough "
-                  "screen space.")
+                  "screen space.  If it is to another web page or a file, it will just display the link.")
+
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     date = models.DateField(default=default_event_date)
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
@@ -131,6 +137,7 @@ class Event(models.Model):
                   "students will no longer be able to register for this event.")
 
     # generally non-editable fields
+    description_image_file = models.ImageField(upload_to='images/', null=True, blank=True)
     creator = models.ForeignKey(User)
     updated_timestamp = models.DateTimeField(auto_now=True, auto_now_add=False)
     created_timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
@@ -148,6 +155,22 @@ class Event(models.Model):
 
     def get_absolute_url(self):
         return reverse("events:detail", kwargs={"id": self.id})
+
+    def cache_remote_image(self):
+        """
+        Take an image from the description field and save it to the database in description_image_file
+        Reset the link to point to the local file
+        """
+        if self.image():  # and not self.image_file:
+            img_url = self.description_link
+            img_temp = NamedTemporaryFile(delete=True)
+            img_temp.write(urllib.request.urlopen(img_url).read())
+            img_temp.flush()
+            self.description_image_file.save(os.path.basename(img_url), File(img_temp))
+            self.save()
+            return True
+
+        return False
 
     def copy(self, num, copy_date=None, user=None, dates=[]):
         """
@@ -332,6 +355,13 @@ class Event(models.Model):
             for block in self.blocks.all():
                 result.append(self.registration_set.filter(block=block).count())
         return result
+
+
+def event_post_save(sender, instance, **kwargs):
+    post_save.disconnect(event_post_save, sender=sender)  # prevent recursion
+    instance.cache_remote_image()
+    post_save.connect(event_post_save, sender=sender)
+post_save.connect(event_post_save, sender=Event)
 
 
 class RegistrationManager(models.Manager):
