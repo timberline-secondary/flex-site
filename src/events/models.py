@@ -164,7 +164,10 @@ class Event(models.Model):
         if self.image():  # and not self.image_file:
             img_url = self.description_link
             img_temp = NamedTemporaryFile(delete=True)
-            img_temp.write(urllib.request.urlopen(img_url).read())
+            try:
+                img_temp.write(urllib.request.urlopen(img_url).read())
+            except urllib.error.HTTPError:
+                return False
             img_temp.flush()
             self.description_image_file.save(os.path.basename(img_url), File(img_temp))
             self.save()
