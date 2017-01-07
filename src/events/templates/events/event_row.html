@@ -25,8 +25,8 @@
   <td class="col-md-2"><b> {{ event.title }}</b></td>
   <td>{{ event.title }}</td> <!-- data required for jQuery, should be moved to data-title-text attr -->
   <td class="col-md-1"
-      title="{{ event.location.name }}" data-toggle="tooltip" data-placement="top" data-container="body" >
-    {{ event.location }}
+      title="{{ event.location.get_name }}" data-toggle="tooltip" data-placement="top" data-container="body" >
+    {{ event.location }}<span class="visible-xs-inline"> ({{ event.location.get_name }})</span>
   </td>
   <td class="col-md-1"> {{ event.facilitator_string|safe }} </td>
   <td class="col-md-1"> {{ event.category }}</td>
