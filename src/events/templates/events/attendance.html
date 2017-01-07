@@ -21,8 +21,10 @@
     </small>
   </h1>
 
-  {% include 'events/event_single_table.html' %}
-  <br>
+  <div class="hidden-print">
+    {% include 'events/event_single_table.html' %}
+    <br>
+  </div>
 
   <!-- Button trigger modal -->
   {% if event.is_keypad_initialized %}
