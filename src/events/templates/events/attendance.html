@@ -101,7 +101,40 @@
   {% endif %}
 
 
-  <!-- Bootstrap Tables:  http://bootstrap-table.wenzhixin.net.cn/ -->
+{#  <!-- Bootstrap Tables:  http://bootstrap-table.wenzhixin.net.cn/ -->#}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
   <script src="{% static 'js/bootstrap-table-mobile.js' %}"></script>
+
+  <script src="{% static 'js/jquery.are-you-sure.js' %}"></script>
+  <script src="{% static 'js/ays-beforeunload-shim.js' %}"></script>
+  <script>
+
+    $(document).ready(function() {
+      // https://github.com/codedance/jquery.AreYouSure
+      // warn if leaving page when unsaved form data
+      $('form').areYouSure();
+
+      /*
+      *  Dirtyness Change Events
+      *  Are-You-Sure fires off "dirty" and "clean" events when the form's state
+      *  changes. You can bind() or on(), these events to implement your own form
+      *  state logic.  A good example is enabling/disabling a Save button.
+      *
+      *  "this" refers to the form that fired the event.
+      */
+      $('form').find('input[type="submit"]').attr('disabled', 'disabled');  // disable submits initially
+      $('form').on('dirty.areYouSure', function() {
+        // Enable save button only as the form is dirty.
+        $(this).find('input[type="submit"]').removeAttr('disabled');
+      });
+      $('form').on('clean.areYouSure', function() {
+        // Form is clean so nothing to save - disable the save button.
+        $(this).find('input[type="submit"]').attr('disabled', 'disabled');
+      });
+
+    });
+  </script>
+
+
+
 {% endblock js %}

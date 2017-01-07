@@ -52,7 +52,7 @@ class AttendanceFormSetHelper(FormHelper):
         # self.field_template = 'bootstrap3/layout/inline_field.html'
         self.template = 'events/attendance_table_inline_formset.html'
 
-        self.add_input(Submit('submit', 'Save Attendance'))
+        self.add_input(Submit('submit', 'Save Attendance (this block only)'))
 
 
 class RegistrationForm(forms.ModelForm):
