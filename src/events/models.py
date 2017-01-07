@@ -17,6 +17,8 @@ from django.utils import timezone
 from embed_video.backends import detect_backend, UnknownBackendException
 
 # Create your models here.
+from imagekit.models import ProcessedImageField
+from pilkit.processors import ResizeToFill, SmartResize, ResizeToFit
 
 
 class Category(models.Model):
@@ -106,7 +108,7 @@ class Event(models.Model):
     description_link = models.URLField(
         null=True, blank=True,
         help_text="An optional link to provide with the text description. If the link is to a video (YouTube or Vimeo) "
-                  "or an image (png, jpg, etc.) it will be embedded with the description if there is enough "
+                  "or an image (png, jpg, or gif) it will be embedded with the description if there is enough "
                   "screen space.  If it is to another web page or a file, it will just display the link.")
 
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
@@ -137,7 +139,10 @@ class Event(models.Model):
                   "students will no longer be able to register for this event.")
 
     # generally non-editable fields
-    description_image_file = models.ImageField(upload_to='images/', null=True, blank=True)
+    description_image_file = ProcessedImageField(upload_to='images/', null=True, blank=True,
+                                                        processors=[ResizeToFit(400, 400, upscale=False)],
+                                                        format='JPEG',
+                                                        options={'quality': 80})
     creator = models.ForeignKey(User)
     updated_timestamp = models.DateTimeField(auto_now=True, auto_now_add=False)
     created_timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
@@ -158,12 +163,13 @@ class Event(models.Model):
 
     def cache_remote_image(self):
         """
-        Take an image from the description field and save it to the database in description_image_file
-        Reset the link to point to the local file
+        Take an image from the description field, download it to a temp file, and save it to the database in
+        description_image_file.
         """
         if self.image():  # and not self.image_file:
             img_url = self.description_link
             img_temp = NamedTemporaryFile(delete=True)
+            # http://stackoverflow.com/questions/24226781/changing-user-agent-in-python-3-for-urrlib-request-urlopen
             try:
                 request = urllib.request.Request(
                     img_url,
@@ -173,7 +179,6 @@ class Event(models.Model):
                     }
                 )
                 img_temp.write(urllib.request.urlopen(request).read())
-                # img_temp = urllib.request.urlretrieve(img_url)
             except urllib.error.HTTPError:
                 return False
             img_temp.flush()
@@ -183,7 +188,7 @@ class Event(models.Model):
         else:
             self.description_image_file = None
             self.save()
-            return False
+            return True
 
     def copy(self, num, copy_date=None, user=None, dates=[]):
         """
