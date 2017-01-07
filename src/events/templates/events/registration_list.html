@@ -3,6 +3,7 @@
 {% load crispy_forms_tags %}
 
 {% block style %}
+  <link rel="stylesheet" href="{% static 'css/events.css' %}">
 {% endblock style %}
 
 
@@ -25,8 +26,8 @@
       <th data-field="date" data-sortable="true">Date</th>
       <th data-field="block" data-sortable="true">Block</th>
       <th data-field="event" data-sortable="true">Event</th>
-      <th data-field="absent" data-sortable="true">Absent</th>
-      <th data-field="late" data-sortable="true">Late</th>
+      <th class="hidden-xs" data-field="absent" data-sortable="true">Absent</th>
+      <th class="hidden-xs" data-field="late" data-sortable="true">Late</th>
     </tr>
     </thead>
     <tbody>
@@ -48,8 +49,8 @@
         <td>{{ obj.block }}</td>
         <td><a href="#" data-toggle="modal" data-target="#event-info-modal-{{ obj.event.id }}">{{ obj.event.title }}</a></td>
 {#        <td>{{ obj.event.location }}</td>#}
-        <td>{{ obj.absent }} </td>
-        <td>{{ obj.late }}</td>
+        <td class="hidden-xs">{{ obj.absent }} </td>
+        <td class="hidden-xs">{{ obj.late }}</td>
 
       </tr>
     {% endfor %}
