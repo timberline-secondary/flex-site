@@ -13,16 +13,21 @@
   {% endif %}
   {% if event.video %}
     <!-- 16:9 aspect ratio -->
-    <div class="embed-responsive embed-responsive-16by9 img-rounded" style="margin: 0 0 8px 0;">
+    <div class="embed-responsive embed-responsive-16by9 img-rounded hidden-print" style="margin: 0 0 8px 0;">
       <iframe class="embed-responsive-item" src="{{ event.video }}" allowfullscreen></iframe>
     </div>
+    <div class="visible-print-block">
+      <p>Video link: {{ event.video }}</p>
+    </div>
   {% elif event.description_link and not event.image %}
-    <p><a href="{{ event.description_link }}" target="_blank" ><i class="fa fa-link">&nbsp;&nbsp;</i>Link</a></p>
+    <p><a href="{{ event.description_link }}" target="_blank" ><i class="fa fa-link">&nbsp;&nbsp;</i>Link</a>
+    <span class="visible-print-inline">: {{ event.description_link }}</span>
+    </p>
   {% endif %}
 </div>
 {% if not no_buttons %}
   {% if request.user.is_superuser or request.user in event.get_editors %}
-    <div class="btn-group pull-right" role="group">
+    <div class="btn-group pull-right hidden-print" role="group">
       <a title="Here you can Edit, Delete, or Duplicate to Future Weeks."
          class="btn btn-default wait" href="{% url 'events:update' event.id %}">
         <i class="fa fa-edit"></i> Edit
