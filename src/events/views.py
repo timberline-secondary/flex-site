@@ -402,9 +402,15 @@ def register(request, id, block_id):
 
 @staff_member_required
 def registrations_all(request):
-    queryset = Registration.objects.all()
+    date_query = request.GET.get("date", str(default_event_date()))
+    d = datetime.strptime(date_query, "%Y-%m-%d").date()
+
+    profile_queryset = Registration.objects.filter(event__date=d)
     context = {
-        "object_list": queryset
+        "object_list": profile_queryset,
+        # "students": students,
+        "date_filter": date_query,
+        "date_object": d,
     }
     return render(request, "events/registration_all.html", context)
 
