@@ -410,7 +410,7 @@ class RegistrationManager(models.Manager):
         qs = self.get_queryset()
         return qs.filter(student=student).filter(event__date=event_date).filter(block=block)
 
-    def homeroom_registration_check(self, event_date, homeroom_teacher):
+    def registration_check(self, event_date, homeroom_teacher):
         students = User.objects.all().filter(
             is_staff=False,
             profile__homeroom_teacher=homeroom_teacher

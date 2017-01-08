@@ -457,7 +457,7 @@ def registrations_homeroom(request, user_id=None):
     profile_queryset = Profile.objects.select_related('user').filter(homeroom_teacher=homeroom_teacher)
     profile_queryset.annotate()
 
-    students = Registration.objects.homeroom_registration_check(d, homeroom_teacher)
+    students = Registration.objects.registration_check(d, homeroom_teacher)
 
     context = {
         "object_list": profile_queryset,
