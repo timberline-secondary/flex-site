@@ -410,21 +410,24 @@ class RegistrationManager(models.Manager):
         qs = self.get_queryset()
         return qs.filter(student=student).filter(event__date=event_date).filter(block=block)
 
-    def registration_check(self, event_date, homeroom_teacher):
-        students = User.objects.all().filter(
-            is_staff=False,
-            profile__homeroom_teacher=homeroom_teacher
-        )
-        students = students.values('id', 'username', 'first_name', 'last_name')
-        students = list(students)
+    def registration_check(self, event_date, homeroom_teacher=None):
+        if homeroom_teacher:
+            students = User.objects.all().filter(
+                is_staff=False,
+                profile__homeroom_teacher=homeroom_teacher
+            )
+            # get queryset with events? optimization for less hits on db
+            qs = self.get_queryset().filter(
+                event__date=event_date,
+                student__profile__homeroom_teacher=homeroom_teacher
+            )
+        else:
+            students = User.objects.all().filter(is_staff=False)
+            # get queryset with events? optimization for less hits on db
+            qs = self.get_queryset().filter(event__date=event_date)
 
-        block_ids = Block.objects.values('id')
+        students = students.values('id', 'username', 'first_name', 'last_name', 'profile__grade')
 
-        # get queryset with events? optimization for less hits on db
-        qs = self.get_queryset().filter(
-            event__date=event_date,
-            student__profile__homeroom_teacher=homeroom_teacher
-        )
         for student in students:
             user_regs_qs = qs.filter(student_id=student['id'])
 

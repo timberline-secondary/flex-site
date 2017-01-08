@@ -400,21 +400,6 @@ def register(request, id, block_id):
     return redirect("%s?date=%s" % (reverse('events:list_by_block', args=(block_id,)), date_query))
 
 
-@staff_member_required
-def registrations_all(request):
-    date_query = request.GET.get("date", str(default_event_date()))
-    d = datetime.strptime(date_query, "%Y-%m-%d").date()
-
-    profile_queryset = Registration.objects.filter(event__date=d)
-    context = {
-        "object_list": profile_queryset,
-        # "students": students,
-        "date_filter": date_query,
-        "date_object": d,
-    }
-    return render(request, "events/registration_all.html", context)
-
-
 @login_required
 def registrations_delete(request, id=None):
     reg = get_object_or_404(Registration, id=id)
@@ -454,15 +439,31 @@ def registrations_homeroom(request, user_id=None):
         homeroom_teacher = get_object_or_404(User, id=user_id)
     else:
         homeroom_teacher = request.user
-    profile_queryset = Profile.objects.select_related('user').filter(homeroom_teacher=homeroom_teacher)
-    profile_queryset.annotate()
+
+    # profile_queryset = Profile.objects.select_related('user').filter(homeroom_teacher=homeroom_teacher)
+    # # profile_queryset.annotate()  # runs the query? why?
 
     students = Registration.objects.registration_check(d, homeroom_teacher)
 
     context = {
-        "object_list": profile_queryset,
+        "heading": "Homeroom Students for " + homeroom_teacher.get_full_name(),
         "students": students,
-        "teacher": homeroom_teacher,
+        "date_filter": date_query,
+        "date_object": d,
+    }
+    return render(request, "events/homeroom_list.html", context)
+
+
+@staff_member_required
+def registrations_all(request):
+    date_query = request.GET.get("date", str(default_event_date()))
+    d = datetime.strptime(date_query, "%Y-%m-%d").date()
+
+    students = Registration.objects.registration_check(d)
+
+    context = {
+        "heading": "All Student Registrations",
+        "students": students,
         "date_filter": date_query,
         "date_object": d,
     }

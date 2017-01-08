@@ -41,7 +41,7 @@
         <td>{{ obj.event.date }}</td>
         <td>{{ obj.block }}</td>
         <td>{{ obj.student }} - {{ obj.student.get_full_name }}</td>
-        <td><a href="{% url 'events:registrations_delete' obj.id%}"><i class="fa fa-trash"></i></a> {{ obj.event.title }}</td>
+        <td><a href="{{ obj.event.get_absolute_url }}">{{ obj.event.title }}</a></td>
         <td>{{ obj.event.location }}</td>
         <td>{{ obj.absent }} </td>
         <td>{{ obj.late }}</td>
