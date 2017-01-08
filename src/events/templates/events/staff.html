@@ -41,7 +41,7 @@
             {% endfor %}
         </td>
         <td>{% for event in obj.FLEX2 %}
-          {{ event.title }} ({{ event.location }}){% if not forloop.last %}; {% endif %}
+          <a href="{% url 'events:detail' event.id %}">{{ event.title }}</a> ({{ event.location }}){% if not forloop.last %}; {% endif %}
             {% empty %}-
             {% endfor %}
         </td>
