@@ -33,20 +33,20 @@
             <li class="list-group-item">
               <h4>{{ key }} <small>({{key.start_time}} - {{ key.end_time }})</small>
                 {% if value %}
-                  <a href="#" data-toggle="modal" data-target="#event-info-modal-{{ value.event.id }}">{{ value.event }}</a>
-                  ({{ value.event.location }})&nbsp;&nbsp;
-                  {% if not value.past_cut_off %}
-                    <a class="text-danger wait-on-click" href="{% url 'events:registrations_delete' value.id %}">
-                      <i class="fa fa-trash"></i>
-                    </a>
-                  {% endif %}
-                    </h4> <!-- END H4 -->
-
-                    {% include 'events/event_info_modal.html' with event=value.event %}
+                  <div class="responsive-wrap">
+                    <a href="#" data-toggle="modal" data-target="#event-info-modal-{{ value.event.id }}">{{ value.event }}</a>
+                    ({{ value.event.location }})&nbsp;&nbsp;
+                    {% if not value.past_cut_off %}
+                      <a class="text-danger wait-on-click" href="{% url 'events:registrations_delete' value.id %}">
+                        <i class="fa fa-trash"></i>
+                      </a>
+                    {% endif %}
+                  </div>
                 {% else %}
-                  None</h4> <!-- END H4 -->
+                  None <!-- END H4 -->
                 {% endif %}
-
+              </h4>
+              {% include 'events/event_info_modal.html' with event=value.event %}
             </li>
             {% endfor %}
           </ul>
