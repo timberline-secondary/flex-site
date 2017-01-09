@@ -92,7 +92,7 @@
              data-check-on-init="true"
              data-min-width="753"
              data-sort-name="blocks"
-             data-sort-order="desc"
+             data-sort-order="{% if active_block.id == 2 %}asc{% else %}desc{% endif %}"
              id="table">
           <thead>
           <tr>

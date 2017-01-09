@@ -279,6 +279,8 @@ def event_list(request, block_id=None):
         else:
             event.available = True
 
+    print(active_block)
+
     context = {
         "date_filter": date_query,
         "date_object": d,
