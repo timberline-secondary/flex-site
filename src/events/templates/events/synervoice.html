@@ -31,7 +31,11 @@
                         value="{{ date_filter }}"
           >
         </div><br>
-        <input class="btn btn-primary" type="submit" value="Generate"/>
+          <p><small>This report includes both students who did not register for one or more events,
+              as well as students who were marked absent for one or more events.<br></small>
+              <input class="btn btn-primary" name="attendance" type="submit" value="Generate Attendance Report"/></p>
+          <p><small>This report only includes students who have not yet registered for one or more events.<br></small>
+              <input class="btn btn-primary" name="registration" type="submit" value="Generate Registration Report"/></p>
       </form>
     </div>
   </div>

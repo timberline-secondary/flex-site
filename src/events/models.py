@@ -443,7 +443,7 @@ class RegistrationManager(models.Manager):
 
         return students
 
-    def all_attendance(self, event_date):
+    def all_attendance(self, event_date, reg_only=False):
         students = User.objects.all().filter(
             is_active=True,
             is_staff=False,
@@ -468,9 +468,9 @@ class RegistrationManager(models.Manager):
             for block in Block.objects.all():
                 try:
                     reg = user_regs_qs.get(block=block)
-                    if reg.absent and not reg.excused:
-                        student[block.constant_string()] = block.synervoice_string()
-                except ObjectDoesNotExist:
+                    if reg.absent and not reg.excused and not reg_only:
+                        student[block.constant_string()] = block.synervoice_string()  # absent
+                except ObjectDoesNotExist:  # not registered
                     student[block.constant_string()] = block.synervoice_string()
 
         return students

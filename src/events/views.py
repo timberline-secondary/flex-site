@@ -321,7 +321,7 @@ def staff_locations(request):
 
 
 @staff_member_required
-def generate_synervoice_csv(request, d):
+def generate_synervoice_csv(request, d, no_reg_only=False):
     # def blocks_absent(s):
     #     str = ""
     #     if 'FLEX1' in s:
@@ -331,13 +331,20 @@ def generate_synervoice_csv(request, d):
     #     return str
 
     d_str = d.strftime("%y%m%d")
-    attendance_data = Registration.objects.all_attendance(d)
+    attendance_data = Registration.objects.all_attendance(d, no_reg_only)
     # A 8th column exists if the student was absent or didn't register
     absent_data = [s for s in attendance_data if len(s) > 7]
 
+    filename = "synervoice"
+    if no_reg_only:
+        filename += "-registration"
+    else:
+        filename += "-attendance"
+    filename += "-%s.csv" % d_str
+
     # https://docs.djangoproject.com/en/1.10/howto/outputting-csv/
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="synervoice.csv"'
+    response['Content-Disposition'] = 'attachment; filename=' + filename
 
     writer = csv.writer(response)
     for s in absent_data:
@@ -347,7 +354,7 @@ def generate_synervoice_csv(request, d):
                          s['profile__phone'],
                          d_str,
                          "F",  # blocks_absent(s),  # Add F regardless of whether absent or didn't register, one or both
-                        ])
+                         ])
 
     return response
 
@@ -360,7 +367,11 @@ def synervoice(request):
     if request.method == "POST":
         event_date = request.POST.get("date")
         d = datetime.strptime(event_date, "%Y-%m-%d").date()
-        return generate_synervoice_csv(request, d)
+        no_reg_only = False
+        if request.POST.get('registration'):
+            no_reg_only = True
+
+        return generate_synervoice_csv(request, d, no_reg_only)
 
     context = {
         "date_filter": date_query,
@@ -375,6 +386,15 @@ def synervoice(request):
 #       REGISTRATION VIEWS
 #
 ################################################
+@login_required
+def registrations_list(request):
+    queryset = Registration.objects.filter(student=request.user)
+    context = {
+        "object_list": queryset
+    }
+    return render(request, "events/registration_list.html", context)
+
+
 @login_required
 def registrations_list(request):
     queryset = Registration.objects.filter(student=request.user)
