@@ -322,16 +322,17 @@ def staff_locations(request):
 
 @staff_member_required
 def generate_synervoice_csv(request, d):
-    def blocks_absent(s):
-        str = ""
-        if 'FLEX1' in s:
-            str += s['FLEX1']
-        if 'FLEX2' in s:
-            str += s['FLEX2']
-        return str
+    # def blocks_absent(s):
+    #     str = ""
+    #     if 'FLEX1' in s:
+    #         str += s['FLEX1']
+    #     if 'FLEX2' in s:
+    #         str += s['FLEX2']
+    #     return str
 
     d_str = d.strftime("%y%m%d")
     attendance_data = Registration.objects.all_attendance(d)
+    # A 8th column exists if the student was absent or didn't register
     absent_data = [s for s in attendance_data if len(s) > 7]
 
     # https://docs.djangoproject.com/en/1.10/howto/outputting-csv/
@@ -345,20 +346,28 @@ def generate_synervoice_csv(request, d):
                          s['profile__grade'],
                          s['profile__email'],
                          d_str,
-                         blocks_absent(s),
-                       ])
+                         "F",  # blocks_absent(s),  # Add F regardless of whether absent or didn't register, one or both
+                        ])
 
     return response
 
 
 @staff_member_required
 def synervoice(request):
+    date_query = request.GET.get("date", str(default_event_date()))
+    d = datetime.strptime(date_query, "%Y-%m-%d").date()
+
     if request.method == "POST":
         event_date = request.POST.get("date")
         d = datetime.strptime(event_date, "%Y-%m-%d").date()
         return generate_synervoice_csv(request, d)
 
-    return render(request, "events/synervoice.html")
+    context = {
+        "date_filter": date_query,
+        "d": d,
+    }
+
+    return render(request, "events/synervoice.html", context)
 
 
 ###############################################

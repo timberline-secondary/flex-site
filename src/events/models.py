@@ -78,6 +78,9 @@ class Block(models.Model):
         else:
             return "FLEX2"
 
+    def synervoice_string(self):
+        return "F"
+
 
 def default_event_date():
     today = date.today()
@@ -466,9 +469,9 @@ class RegistrationManager(models.Manager):
                 try:
                     reg = user_regs_qs.get(block=block)
                     if reg.absent and not reg.excused:
-                        student[block.constant_string()] = block.constant_string()
+                        student[block.constant_string()] = block.synervoice_string()
                 except ObjectDoesNotExist:
-                    student[block.constant_string()] = block.constant_string() + "-NOREG"
+                    student[block.constant_string()] = block.synervoice_string()
 
         return students
 
