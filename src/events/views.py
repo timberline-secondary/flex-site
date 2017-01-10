@@ -344,7 +344,7 @@ def generate_synervoice_csv(request, d):
         writer.writerow([s['last_name'] + ", " + s['first_name'],
                          s['username'],
                          s['profile__grade'],
-                         s['profile__email'],
+                         s['profile__phone'],
                          d_str,
                          "F",  # blocks_absent(s),  # Add F regardless of whether absent or didn't register, one or both
                         ])
