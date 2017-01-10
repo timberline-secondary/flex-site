@@ -352,6 +352,7 @@ def generate_synervoice_csv(request, d, no_reg_only=False):
                          s['username'],
                          s['profile__grade'],
                          s['profile__phone'],
+                         s['profile__email'],
                          d_str,
                          "F",  # blocks_absent(s),  # Add F regardless of whether absent or didn't register, one or both
                          ])
