@@ -524,10 +524,17 @@ class Registration(models.Model):
             elif self.event == event and self.event.multi_block_event == Event.F1_XOR_F2:
                 result = "You are already registered for this event in another block.  " \
                          "This event only allows registration in one block."
-            elif self.block == block or self.event.both_required() or event.both_required():
+            elif self.event.both_required() or event.both_required():
                 result = "This event conflicts with another event you are already registered for. " \
                     "You will need to remove the conflicting event before you can register for this one."
                 # this event occurs in the same block (or multi block AND)
+            elif self.block == block:
+                if self.event.multi_block_event == Event.F1_OR_F2 or self.event.multi_block_event == Event.F1_XOR_F2:
+                    result = "You are already registered for a different event in %s.  " \
+                             "If you want to register for this event in another block, select the other block's tab " \
+                             "at the top of this list." % str(block)
+                else:
+                    result = "You are already registered for a different event in %s." % str(block)
 
         # did I miss anything?
         return result

@@ -45,12 +45,16 @@
                       <a href="#" data-toggle="modal" data-target="#event-info-modal-{{ value.event.id }}">{{ value.event }}</a>
                       ({{ value.event.location }})&nbsp;&nbsp;
                       {% if not value.past_cut_off %}
-                        <a class="text-danger wait-on-click" href="{% url 'events:registrations_delete' value.id %}">
+                        <a class="text-danger wait-on-click"
+                           title="Remove this event."
+                           href="{% url 'events:registrations_delete' value.id %}">
                           <i class="fa fa-trash"></i>
                         </a>
                       {% endif %}
                   {% else %}
-                    None.
+                    None. <a href="#" data-toggle="modal" data-target="#help-modal" title="Click for help.">
+                            <i class="fa fa-question-circle"></i>
+                          </a>
                   {% endif %}
                   </h4>
                 </div>
@@ -142,6 +146,31 @@
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal -->
   {% endif %}
+
+
+
+  <!-- Help Modal -->
+  <div class="modal fade" id="help-modal" tabindex="-1" role="dialog" aria-labelledby="help-modal-label">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="help-modal-label"><i class="fa fa-question-circle"></i> Registration Help</h4>
+        </div>
+        <div class="modal-body">
+          <p>To register for an event:</p>
+          <ol>
+            <li>Select the block you want to register for by clicking on one of the tabs at the top of the events list.
+            These tabs trigger what events are displayed and what events are available to you during that block.</li>
+            <li>Click the event you want to register for and follow the instructions.</li>
+          </ol>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 {% endblock content %}
 
