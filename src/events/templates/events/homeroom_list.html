@@ -28,10 +28,15 @@
          id="table">
     <thead>
     <tr>
-      <th data-field="id" data-sortable="true">Student Number</th>
+      <th data-field="id" data-sortable="true">Number</th>
       <th data-field="first" data-sortable="true">First Name</th>
       <th data-field="last" data-sortable="true">Last Name</th>
       <th data-field="grade" data-sortable="true">Grade</th>
+      <th data-field="homeroom"
+          data-sortable="true"
+          data-visible="{{ include_homeroom_teacher }}"
+      >
+          Homeroom</th>
       <th data-field="absent" data-sortable="true">Flex 1</th>
       <th data-field="late" data-sortable="true">Flex 2</th>
       <th>Reset PW</th>
@@ -44,6 +49,7 @@
         <td>{{ student.first_name }}</td>
         <td>{{ student.last_name }}</td>
         <td>{{ student.profile__grade }}</td>
+        <td>{{ student.profile__homeroom_teacher}}</td>
         <td>{{ student.FLEX1|default_if_none:'-' }}</td>
         <td>{{ student.FLEX2|default_if_none:'-' }}</td>
         <td>

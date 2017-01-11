@@ -496,5 +496,6 @@ def registrations_all(request):
         "students": students,
         "date_filter": date_query,
         "date_object": d,
+        "include_homeroom_teacher": 'true',
     }
     return render(request, "events/homeroom_list.html", context)

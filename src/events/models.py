@@ -429,10 +429,20 @@ class RegistrationManager(models.Manager):
             # get queryset with events? optimization for less hits on db
             qs = self.get_queryset().filter(event__date=event_date)
 
-        students = students.values('id', 'username', 'first_name', 'last_name', 'profile__grade')
+        students = students.values('id',
+                                   'username',
+                                   'first_name',
+                                   'last_name',
+                                   'profile__grade',
+                                   'profile__homeroom_teacher')
 
         for student in students:
             user_regs_qs = qs.filter(student_id=student['id'])
+
+            #provide homeroom teacher's name instead of id
+            if student['profile__homeroom_teacher']:
+                hr_teacher = User.objects.get(id=student['profile__homeroom_teacher'])
+                student['profile__homeroom_teacher'] = hr_teacher.get_full_name()
 
             for block in Block.objects.all():
                 try:
