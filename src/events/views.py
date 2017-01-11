@@ -322,17 +322,20 @@ def staff_locations(request):
 
 @staff_member_required
 def generate_synervoice_csv(request, d, no_reg_only=False):
-    # def blocks_absent(s):
-    #     str = ""
-    #     if 'FLEX1' in s:
-    #         str += s['FLEX1']
-    #     if 'FLEX2' in s:
-    #         str += s['FLEX2']
-    #     return str
+    def blocks_absent(s):
+        str = ""
+        sep = ""
+        if 'FLEX1' in s:
+            str += s['FLEX1']
+            sep = " "
+        if 'FLEX2' in s:
+            str += sep + s['FLEX2']
+        return str
 
     d_str = d.strftime("%y%m%d")
     attendance_data = Registration.objects.all_attendance(d, no_reg_only)
-    # A 8th column exists if the student was absent or didn't register
+    # A 9h column exists if the student was absent or didn't register
+    # maybe check for key instead?
     absent_data = [s for s in attendance_data if len(s) > 8]
 
     filename = "synervoice"
@@ -355,7 +358,7 @@ def generate_synervoice_csv(request, d, no_reg_only=False):
                          s['profile__phone'],
                          s['profile__email'],
                          d_str,
-                         "F",  # blocks_absent(s),  # Add F regardless of whether absent or didn't register, one or both
+                         blocks_absent(s),  # Add F regardless of whether absent or didn't register, one or both
                          ])
 
     return response

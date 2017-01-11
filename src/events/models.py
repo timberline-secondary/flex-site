@@ -73,14 +73,13 @@ class Block(models.Model):
         return self.name
 
     def constant_string(self):
-        if self.id == 1:
-            return "FLEX1"
-        else:
-            return "FLEX2"
+        return "FLEX" + str(self.id)
 
-    def synervoice_string(self):
-        return "F"
+    def synervoice_absent_string(self):
+        return "F" + str(self.id) + "-ABS"
 
+    def synervoice_noreg_string(self):
+        return "F" + str(self.id) + "-NOREG"
 
 def default_event_date():
     today = date.today()
@@ -224,7 +223,6 @@ class Event(models.Model):
             duplicate_event.facilitators.set(facilitators)
             dates = duplicate_event.copy(num - 1, dates=dates)  # recursive
         return dates
-
 
     def get_video_embed_link(self, backend):
         if type(backend) is embed_video.backends.YoutubeBackend:
@@ -486,9 +484,9 @@ class RegistrationManager(models.Manager):
                 try:
                     reg = user_regs_qs.get(block=block)
                     if reg.absent and not reg.excused and not reg_only:
-                        student[block.constant_string()] = block.synervoice_string()  # absent
+                        student[block.constant_string()] = block.synervoice_absent_string()  # absent
                 except ObjectDoesNotExist:  # not registered
-                    student[block.constant_string()] = block.synervoice_string()
+                    student[block.constant_string()] = block.synervoice_noreg_string()
 
         return students
 
