@@ -13,10 +13,13 @@ $(document).ready(function () {
       $numberField.focus();
       $numberField.val("");
       $numberField.val("99");
+      // fancy footwork seems to be required to get the cursor to appear at the end of the 99
     }
 
     $modal.on('shown.bs.modal', function () {
         resetKeyInput();
+        //enable save button when keypad entry modal is launched
+        $('form').find('input[type="submit"]').removeAttr('disabled');
     });
 
     // Bind "Enter" key to the submit button:
