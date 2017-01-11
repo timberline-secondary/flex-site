@@ -333,7 +333,7 @@ def generate_synervoice_csv(request, d, no_reg_only=False):
     d_str = d.strftime("%y%m%d")
     attendance_data = Registration.objects.all_attendance(d, no_reg_only)
     # A 8th column exists if the student was absent or didn't register
-    absent_data = [s for s in attendance_data if len(s) > 7]
+    absent_data = [s for s in attendance_data if len(s) > 8]
 
     filename = "synervoice"
     if no_reg_only:
@@ -350,6 +350,7 @@ def generate_synervoice_csv(request, d, no_reg_only=False):
     for s in absent_data:
         writer.writerow([s['last_name'] + ", " + s['first_name'],
                          s['username'],
+                         s['profile__homeroom_teacher'],
                          s['profile__grade'],
                          s['profile__phone'],
                          s['profile__email'],

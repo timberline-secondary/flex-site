@@ -465,7 +465,9 @@ class RegistrationManager(models.Manager):
                                    'last_name',
                                    'profile__grade',
                                    'profile__phone',
-                                   'profile__email')
+                                   'profile__email',
+                                   'profile__homeroom_teacher',
+                                   )
         students = list(students)
 
         # get queryset with events? optimization for less hits on db
@@ -474,6 +476,11 @@ class RegistrationManager(models.Manager):
         )
         for student in students:
             user_regs_qs = qs.filter(student_id=student['id'])
+
+            # provide homeroom teacher's name instead of id
+            if student['profile__homeroom_teacher']:
+                hr_teacher = User.objects.get(id=student['profile__homeroom_teacher'])
+                student['profile__homeroom_teacher'] = hr_teacher.get_full_name()
 
             for block in Block.objects.all():
                 try:
