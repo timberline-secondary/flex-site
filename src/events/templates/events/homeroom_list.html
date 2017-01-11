@@ -39,7 +39,7 @@
           Homeroom</th>
       <th data-field="absent" data-sortable="true">Flex 1</th>
       <th data-field="late" data-sortable="true">Flex 2</th>
-      <th>Reset PW</th>
+      <th {% if include_homeroom_teacher %}data-visible="false"{% endif %}>Reset PW</th>
     </tr>
     </thead>
     <tbody>
