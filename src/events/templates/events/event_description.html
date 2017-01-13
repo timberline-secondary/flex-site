@@ -26,8 +26,9 @@
   {% endif %}
 </div>
 {% if not no_buttons %}
-  {% if request.user.is_superuser or request.user in event.get_editors %}
-    <div class="btn-group pull-right hidden-print" role="group">
+{#  {% if request.user.is_superuser or request.user in event.get_editors %}#}
+    {% if request.user.is_staff %}
+    <div class="btn-group btn-group-sm pull-right hidden-print" role="group">
       <a title="Here you can Edit, Delete, or Duplicate to Future Weeks."
          class="btn btn-default wait" href="{% url 'events:update' event.id %}">
         <i class="fa fa-edit"></i> Edit
@@ -36,11 +37,11 @@
           class="btn btn-default wait" href="{% url 'events:copy' event.id %}">
         <i class="fa fa-copy"></i> Copy
       </a>
-      <a title="Numbers indicate how many students have registered for this event in each block it is available."
+      <a title="Numbers indicate how many students have registered for this event in each block it is available.  Red indicates the event is full."
          class="btn btn-primary wait" href="{% url 'events:attendance' event.id %}">
         <i class="fa fa-users"></i> Attendance
         {% for num in event.get_attendances %}
-          <span class="badge">{{ num }}</span>
+          <span class="badge {% if event.max_capacity == num %}badge-attendance-full{% endif %}">{{ num }}</span>
         {% endfor %}
       </a>
     </div>

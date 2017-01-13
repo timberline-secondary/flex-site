@@ -60,6 +60,10 @@ tr[data-event-available="true"]:hover {
 	width: 100%;
 }
 
+.badge-attendance-full {
+    color: #a94442 !important;
+}
+
 
 /* JQUERY ARE YOU SURE PLUG IN */
 
