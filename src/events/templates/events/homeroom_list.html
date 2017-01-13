@@ -50,12 +50,16 @@
         <td>{{ student.last_name }}</td>
         <td>{{ student.profile__grade }}</td>
         <td>{{ student.profile__homeroom_teacher}}</td>
-        <td>{% if student.FLEX1 %}<a href="{{ student.FLEX1_url }}attendance/">
-            {{ student.FLEX1 }}
-        </a>{% else %}-{% endif %}</td>
-        <td>{% if student.FLEX2 %}<a href="{{ student.FLEX2_url }}attendance/">
-            {{ student.FLEX2 }}
-        </a>{% else %}-{% endif %}</td>
+        <td>
+          {% if student.FLEX1 %}<a href="{{ student.FLEX1_url }}attendance/">{{ student.FLEX1 }}</a>
+          {% elif student.profile__excused %}Excused ({{ student.profile__excused_reason}})
+          {% else %}-{% endif %}
+        </td>
+        <td>
+          {% if student.FLEX2 %}<a href="{{ student.FLEX2_url }}attendance/">{{ student.FLEX2 }}</a>
+          {% elif student.profile__excused %}Excused ({{ student.profile__excused_reason}})
+          {% else %}-{% endif %}
+        </td>
         <td>
           <a class="reset-password"
              data-user="{{ student.username }}"

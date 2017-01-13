@@ -42,6 +42,9 @@ class Profile(models.Model):
     grade = models.IntegerField(null=True, blank=True)
     phone = models.CharField(max_length=13, null=True, blank=True, help_text="Format: (000)000-0000")
     email = models.EmailField(null=True, blank=True)
+    excused = models.BooleanField(default=False, help_text="Student is excused from registering for Flex.")
+    excused_reason = models.CharField(null=True, blank=True, max_length=25, help_text='This reason will show in place '
+                                                                                      'of an event name on the lists')
     password_change_required = models.BooleanField(default=True)
 
     def __str__(self):

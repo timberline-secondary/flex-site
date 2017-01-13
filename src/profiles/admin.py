@@ -5,8 +5,8 @@ from .models import Profile
 
 
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ["user", "get_first_name", "get_last_name", "homeroom_teacher", "grade", "phone", "email", ]
-    list_filter = ["homeroom_teacher", "grade"]
+    list_display = ["user", "get_first_name", "get_last_name", "homeroom_teacher", "grade", "phone", "email", "excused"]
+    list_filter = ["grade", "excused"]
     # list_editable = ["title", ]
     # list_display_links = ["created_timestamp", ]
 

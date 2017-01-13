@@ -432,7 +432,9 @@ class RegistrationManager(models.Manager):
                                    'first_name',
                                    'last_name',
                                    'profile__grade',
-                                   'profile__homeroom_teacher')
+                                   'profile__homeroom_teacher',
+                                   'profile__excused',
+                                   'profile__excused_reason',)
 
         for student in students:
             user_regs_qs = qs.filter(student_id=student['id'])
@@ -457,6 +459,7 @@ class RegistrationManager(models.Manager):
         students = User.objects.all().filter(
             is_active=True,
             is_staff=False,
+            profile__excused=False,
         )
 
         students = students.values('id',

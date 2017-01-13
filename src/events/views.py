@@ -340,7 +340,7 @@ def generate_synervoice_csv(request, d, no_reg_only=False):
 
     filename = "synervoice"
     if no_reg_only:
-        filename += "-registration"
+        filename += "-not-registered"
     else:
         filename += "-attendance"
     filename += "-%s.csv" % d_str
