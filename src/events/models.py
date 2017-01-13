@@ -446,8 +446,10 @@ class RegistrationManager(models.Manager):
                 try:
                     reg = user_regs_qs.get(block=block)
                     student[block.constant_string()] = str(reg.event)
+                    student[block.constant_string() + "_url"] = str(reg.event.get_absolute_url())
                 except ObjectDoesNotExist:
                     student[block.constant_string()] = None
+                    student[block.constant_string() + "_url"] = "#"
 
         return students
 
