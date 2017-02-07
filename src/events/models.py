@@ -6,7 +6,7 @@ import embed_video
 import os
 
 from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 from django.db import models
@@ -445,13 +445,23 @@ class RegistrationManager(models.Manager):
                 student['profile__homeroom_teacher'] = hr_teacher.get_full_name()
 
             for block in Block.objects.all():
+                event_str = None
+                event_url = "#"
                 try:
                     reg = user_regs_qs.get(block=block)
-                    student[block.constant_string()] = str(reg.event)
-                    student[block.constant_string() + "_url"] = str(reg.event.get_absolute_url())
+                    event_str = str(reg.event)
+                    event_url = str(reg.event.get_absolute_url())
                 except ObjectDoesNotExist:
-                    student[block.constant_string()] = None
-                    student[block.constant_string() + "_url"] = "#"
+                    pass
+                except MultipleObjectsReturned:
+                    regs = user_regs_qs.filter(block=block)
+                    event_str = "CONFLICT: "
+                    for reg in regs:
+                        event_str += str(reg.event) + "; "
+                        event_url = reg.event.get_absolute_url()
+
+                student[block.constant_string()] = event_str
+                student[block.constant_string() + "_url"] = event_url
 
         return students
 
