@@ -64,6 +64,11 @@ tr[data-event-available="true"]:hover {
     color: #a94442 !important;
 }
 
+.change-notice {
+    display: inline-block;
+    color: red;
+}
+
 
 /* JQUERY ARE YOU SURE PLUG IN */
 

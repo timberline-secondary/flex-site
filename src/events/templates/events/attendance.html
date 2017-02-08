@@ -123,8 +123,8 @@
 
       // https://github.com/codedance/jquery.AreYouSure
       // warn if leaving page when unsaved form data
-      $('form').areYouSure();
-
+      // the custom message doesn't seem to work...
+      $('form').areYouSure( {'message':'You have unsaved changes to your attendance.  If you continue you will lose these changes!'} );
       /*
       *  Dirtyness Change Events
       *  Are-You-Sure fires off "dirty" and "clean" events when the form's state
@@ -133,14 +133,18 @@
       *
       *  "this" refers to the form that fired the event.
       */
-      $('form').find('input[type="submit"]').attr('disabled', 'disabled');  // disable submits initially
+      //$('form').find('input[type="submit"]').attr('disabled', 'disabled');  // disable submits initially
+      $(this).find('input[type="submit"]').removeAttr('disabled');
+      $(this).find('.change-notice').hide()
       $('form').on('dirty.areYouSure', function() {
         // Enable save button only as the form is dirty.
-        $(this).find('input[type="submit"]').removeAttr('disabled');
+        //$(this).find('input[type="submit"]').removeAttr('disabled');
+        $(this).find('.change-notice').show();
       });
       $('form').on('clean.areYouSure', function() {
         // Form is clean so nothing to save - disable the save button.
-        $(this).find('input[type="submit"]').attr('disabled', 'disabled');
+        //$(this).find('input[type="submit"]').attr('disabled', 'disabled');
+        $(this).find('.change-notice').hide()
       });
 
     });
