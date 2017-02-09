@@ -216,16 +216,19 @@ def event_manage(request):
 
 
 @staff_member_required
-def event_attendance_keypad(request, id=None, block_id=None):
+def event_attendance_keypad(request, id, block_id=None, absent_value=True):
     event = get_object_or_404(Event, id=id)
-    # The first time this view is called, initialize the event for keypad entry
-    # and set all the attendance to False
-    if not event.is_keypad_initialized:
-        registrations = event.registration_set.all()
-        registrations.update(absent=True)
-        event.is_keypad_initialized = True
-        event.save()
+
+    registrations = event.registration_set.all()
+    registrations.update(absent=absent_value)
+    event.is_keypad_initialized = True
+    event.save()
     return event_attendance(request, id, block_id)
+
+
+@staff_member_required
+def event_attendance_keypad_disable(request, id, block_id=None):
+    return event_attendance_keypad(request, id, block_id, absent_value=False)
 
 
 @staff_member_required

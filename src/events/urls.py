@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^(?P<pk>\d+)/delete/$', views.EventDelete.as_view(), name='delete'),
     url(r'^(?P<id>\d+)/attendance/$', views.event_attendance, name='attendance'),
     url(r'^(?P<id>\d+)/attendance/keypad/$', views.event_attendance_keypad, name='attendance_keypad_init'),
+    url(r'^(?P<id>\d+)/attendance/keypad/disable$', views.event_attendance_keypad_disable, name='attendance_keypad_disable'),
     url(r'^(?P<id>\d+)/attendance/block/(?P<block_id>\d+)/$', views.event_attendance, name='attendance_by_block'),
     url(r'^staff/$', views.staff_locations, name='staff_locations'),
     url(r'^synervoice/$', views.synervoice, name='synervoice'),

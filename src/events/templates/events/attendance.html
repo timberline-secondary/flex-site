@@ -30,9 +30,13 @@
 
   <!-- Button trigger modal -->
   {% if event.is_keypad_initialized %}
-  <p><a type="button" class="btn btn-default" data-toggle="modal" data-target="#keypadEntryModal">
-    <i class="fa fa-keyboard-o"></i> Launch Keypad Entry
-  </a></p>
+  <p class="hidden-print">
+    <a type="button" class="btn btn-success" data-toggle="modal" data-target="#keypadEntryModal">
+      <i class="fa fa-keyboard-o"></i> Launch Keypad Entry
+    </a>
+    <a type="button" class="btn btn-default" id="keypad_disable"
+       href="{% url 'events:attendance_keypad_disable' event.id %}">Disable Keypad Entry</a>
+  </p>
   {% endif %}
 
   <div class="row">
@@ -78,30 +82,45 @@
   </div>
 </div>
 
-
 {% endblock content %}
 
 {% block js %}
   <script src="{% static 'js/confirm-bootstrap.js' %}"></script>
 
   {% if not event.is_keypad_initialized %}
-  <script>
-    var confirmMessage = "<p>Keypad entry has not been initialized for this event yet.  This requires marking " +
-        "all students as absent for all blocks, which will overwrite any attendance already completed.</p>" +
-        "<p>You are still be able to manually edit the attendance.</p>" +
-        "<p>Are you sure you want to initialize keypad entry mode?</p>";
+    <script>
+      var confirmMessage = "<p>Keypad entry has not been initialized for this event yet.  This requires marking " +
+          "all students as absent for all blocks, which will overwrite any attendance already completed.</p>" +
+          "<p>You are still be able to manually edit the attendance.</p>" +
+          "<p>Are you sure you want to initialize keypad entry mode?</p>";
 
-    $('#keypad_init').confirmModal({
-      confirmTitle     : 'Initialize keypad entry mode',
-      confirmMessage   : confirmMessage,
-      confirmOk        : 'Yes',
-      confirmCancel    : 'Cancel',
-      confirmStyle     : 'success',
-      confirmDismiss   : true,
-      confirmAutoOpen  : false
-    });
-  </script>
-  {% else %}<script src="{% static 'js/events-attendance-keypad.js' %}"> </script>
+      $('#keypad_init').confirmModal({
+        confirmTitle     : 'Initialize keypad entry mode',
+        confirmMessage   : confirmMessage,
+        confirmOk        : 'Yes',
+        confirmCancel    : 'Cancel',
+        confirmStyle     : 'success',
+        confirmDismiss   : true,
+        confirmAutoOpen  : false
+      });
+    </script>
+  {% else %}
+    <script src="{% static 'js/events-attendance-keypad.js' %}"> </script>
+    <script>
+      var confirmMessage = "<p>Disabling keypad entry will remove absense marks from all students for all blocks, " +
+          "which will overwrite any attendance already completed.</p>" +
+          "<p>Are you sure you want to disable keypad entry mode?</p>";
+
+      $('#keypad_disable').confirmModal({
+        confirmTitle     : 'Disable keypad entry mode',
+        confirmMessage   : confirmMessage,
+        confirmOk        : 'Yes',
+        confirmCancel    : 'Cancel',
+        confirmStyle     : 'success',
+        confirmDismiss   : true,
+        confirmAutoOpen  : false
+      });
+    </script>
   {% endif %}
 
 
