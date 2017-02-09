@@ -71,36 +71,50 @@
           var $blocks = $('#div_id_blocks>div.controls label');
           // update when page loads in case already more than one block ticked (possible if editing an existing event)
           updateMultiBlockEventField($blocks)
-          $blocks.click(function () { // when changing number of blocks, display multiEvent field as appropriate
-              updateMultiBlockEventField($blocks);
-          });
 
           // disable some form elements if the event already has registrants
           {% if has_registrants %}
+              var disabled_elms = [];
+
               var $date = $('#id_date');
-              $date.prop("disabled", true);
+              disabled_elms.push($date)
               $date.after("<p class='help-block'>You can't change the date of an event that already has students " +
                   "registered for it.  If there is a problem with this event, you can delete it; " +
                   "This will boot out any registered students.  If you want to make a copy of this event for a " +
-                  "future date, go back and hit the copy button.</p>")
+                  "future date, go back and hit the copy button.</p>");
 
               var $blocks = $("input[name='blocks']");
-              $blocks.prop("disabled", true);
+              disabled_elms.push($blocks)
               $("#hint_id_blocks")
                   .html("<p class='help-block'>You can't change available blocks of an event that already has " +
                   "students registered for it.  If there is a problem with this event, you can delete it; " +
-                  "This will boot out any registered students.</p>")
+                  "This will boot out any registered students.</p>");
 
               var $multi_block = $("#id_multi_block_event");
-              $multi_block.prop("disabled", true);
-
+              disabled_elms.push($multi_block)
               $("#hint_id_multi_block_event")
                   .html("<p class='help-block'>You can't change the block options of an event that already has " +
                   "students registered for it.  If there is a problem with this event, you can delete it; " +
-                  "This will boot out any registered students.</p>")
+                  "This will boot out any registered students.</p>");
+
+              // create a copy of the disabled fields, enable them, and hide them
+              // these are needed so the data will get sent with the form.  Otherwise required fields will be blank
+              disabled_elms.forEach(function($elm) {
+                  $elm.prop('disabled', true);
+                  var $clone = $elm.clone()
+                  $clone.prop('disabled', false);
+                  $clone.hide();
+                  $elm.after($clone);
+              });
+
+
+          {% else %}
+
+            $blocks.click(function () { // when changing number of blocks, display multiEvent field as appropriate
+                updateMultiBlockEventField($blocks);
+            });
 
           {% endif %}
-
       });
   </script>
 {% endblock js %}

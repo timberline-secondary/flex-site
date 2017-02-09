@@ -79,30 +79,44 @@ def event_update(request, id=None):
     event = get_object_or_404(Event, id=id)
     has_registrants = event.registration_set.all().exists()
 
+    if has_registrants:
+        regs_dict_by_block = {}  # empty dict
+        for block in Block.objects.all():
+            regs_dict_by_block[block.id] = block.registration_set.filter(event=event).count()
+
     form = EventForm(request.POST or None, instance=event)
 
     # not valid?
     if form.is_valid():
-        event = form.save(commit=False)
-        event.save()
-        form.save_m2m()
+        new_max_capacity = form.cleaned_data['max_capacity']
+        if has_registrants and new_max_capacity < max(regs_dict_by_block.values()):
+            messages.warning(request,
+                             "<i class='fa fa-warning'></i> You can't reduce the max capacity (%d) below the current number of registered students "
+                             "in a block (%d).  If this is a problem, you can delete the event to boot "
+                             " all students, then recreate it with the capacity you want."
+                             "" % (new_max_capacity, max(regs_dict_by_block.values())))
 
-        msg = "Edits saved for %s: <b>%s</b>" % (event.date, event.title)
-        num_duplicates = form.cleaned_data['duplicate']
-        if num_duplicates:
-            dupe_dates = event.copy(num_duplicates, user=request.user)
-            # http://stackoverflow.com/questions/9052433/overriding-default-format-when-printing-a-list-of-datetime-objects
-            msg += "; duplicates made for %s." % ', '.join(map(str, dupe_dates))
+        else:
+            event = form.save(commit=False)
+            event.save()
+            form.save_m2m()
 
-        messages.success(request, msg)
+            msg = "Edits saved for %s: <b>%s</b>" % (event.date, event.title)
+            num_duplicates = form.cleaned_data['duplicate']
+            if num_duplicates:
+                dupe_dates = event.copy(num_duplicates, user=request.user)
+                # http://stackoverflow.com/questions/9052433/overriding-default-format-when-printing-a-list-of-datetime-objects
+                msg += "; duplicates made for %s." % ', '.join(map(str, dupe_dates))
 
-        if not event.cache_remote_image():
-            messages.warning(request, "Failed to properly cache your image.  Don't worry about it for now... unless "
-                                      "you didn't provide an image link, in which case please let Tylere know!")
+            messages.success(request, msg)
 
-        block_id = event.blocks.all()[0].id
-        date_query = event.date
-        return redirect("%s?date=%s" % (reverse('events:list_by_block', args=(block_id,)), date_query))
+            if not event.cache_remote_image():
+                messages.warning(request, "Failed to properly cache your image.  Don't worry about it for now... unless "
+                                          "you didn't provide an image link, in which case please let Tylere know!")
+
+            block_id = event.blocks.all()[0].id
+            date_query = event.date
+            return redirect("%s?date=%s" % (reverse('events:list_by_block', args=(block_id,)), date_query))
 
     context = {
         "title": event.title,
@@ -111,6 +125,7 @@ def event_update(request, id=None):
         "form": form,
         "btn_value": "Save",
         "has_registrants": has_registrants,
+        # "regs_dict_by_block": regs_dict_by_block,
     }
     return render(request, "events/event_form.html", context)
 
