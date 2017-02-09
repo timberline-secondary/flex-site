@@ -122,7 +122,7 @@ class Event(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     date = models.DateField(default=default_event_date)
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
-    blocks = models.ManyToManyField(Block)
+    blocks = models.ManyToManyField(Block, help_text="In which block(s) will this event occur?")
     multi_block_event = models.IntegerField(
         default=F1_OR_F2,
         choices=MULTI_BLOCK_CHOICES,

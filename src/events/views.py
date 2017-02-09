@@ -77,6 +77,7 @@ def event_create(request):
 @staff_member_required
 def event_update(request, id=None):
     event = get_object_or_404(Event, id=id)
+    has_registrants = event.registration_set.all().exists()
 
     form = EventForm(request.POST or None, instance=event)
 
@@ -99,7 +100,6 @@ def event_update(request, id=None):
             messages.warning(request, "Failed to properly cache your image.  Don't worry about it for now... unless "
                                       "you didn't provide an image link, in which case please let Tylere know!")
 
-
         block_id = event.blocks.all()[0].id
         date_query = event.date
         return redirect("%s?date=%s" % (reverse('events:list_by_block', args=(block_id,)), date_query))
@@ -109,7 +109,8 @@ def event_update(request, id=None):
         "delete_btn": True,
         "event": event,
         "form": form,
-        "btn_value": "Save"
+        "btn_value": "Save",
+        "has_registrants": has_registrants,
     }
     return render(request, "events/event_form.html", context)
 

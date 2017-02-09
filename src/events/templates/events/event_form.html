@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <style>
     #div_id_multi_block_event {
-      display:none;
+      display: none;
     }
   </style>
 {% endblock style %}
@@ -23,26 +23,26 @@
           <div class="btn-group pull-right" role="group">
 
             <a class="btn btn-default" href="{% url 'events:list' %}">Cancel</a>
-            <input class="btn btn-primary" type="submit" value="{{ btn_value }}" />
+            <input class="btn btn-primary" type="submit" value="{{ btn_value }}"/>
             {% if delete_btn %}<a class="btn btn-danger" href="{% url 'events:delete' event.id %}">Delete</a>{% endif %}
 
           </div>
         </h1>
-        {{ form|crispy}}
-          <div class="btn-group pull-right" role="group">
+        {{ form|crispy }}
+        <div class="btn-group pull-right" role="group">
 
-            <a class="btn btn-default" href="{% url 'events:list' %}">Cancel</a>
-            <input class="btn btn-primary" type="submit" value="{{ btn_value }}" />
-            {% if delete_btn %}<a class="btn btn-danger" href="{% url 'events:delete' event.id %}">Delete</a>{% endif %}
+          <a class="btn btn-default" href="{% url 'events:list' %}">Cancel</a>
+          <input class="btn btn-primary" type="submit" value="{{ btn_value }}"/>
+          {% if delete_btn %}<a class="btn btn-danger" href="{% url 'events:delete' event.id %}">Delete</a>{% endif %}
 
-          </div>
+        </div>
       </form>
 
 
     </div>
 
   </div>
-  <br />
+  <br/>
 
 
 {% endblock content %}
@@ -51,29 +51,56 @@
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   {{ form.media.js }}
 
-  <script id="event-datepicker" data-date-input-id="id_date" src="{% static 'js/events-datepicker.js' %}" ></script>
+  <script id="event-datepicker" data-date-input-id="id_date" src="{% static 'js/events-datepicker.js' %}"></script>
 
   <script>
-    // display the multi block event field if more than one block is ticked.
-    function updateMultiBlockEventField($blocks) {
-        var $multiblock = $('#div_id_multi_block_event');
-        var numBlocksTicked = $blocks.find('input:checked').length;
-        if (numBlocksTicked > 1) {
-          $multiblock.slideDown();
-        }
-        else {
-          $multiblock.slideUp();
-        }
-    }
+      // display the multi block event field if more than one block is ticked.
+      function updateMultiBlockEventField($blocks) {
+          var $multiblock = $('#div_id_multi_block_event');
+          var numBlocksTicked = $blocks.find('input:checked').length;
+          if (numBlocksTicked > 1) {
+              $multiblock.slideDown();
+          }
+          else {
+              $multiblock.slideUp();
+          }
+      }
 
-    $(document).ready(function() {
-      // container for tick boxes and labels for flex-1 and flex-2
-      var $blocks = $('#div_id_blocks>div.controls label');
-      // update when page loads in case already more than one block ticked (possible if editing an existing event)
-      updateMultiBlockEventField($blocks)
-      $blocks.click(function() { // when changing number of blocks, display multiEvent field as appropriate
-        updateMultiBlockEventField($blocks);
+      $(document).ready(function () {
+          // container for tick boxes and labels for flex-1 and flex-2
+          var $blocks = $('#div_id_blocks>div.controls label');
+          // update when page loads in case already more than one block ticked (possible if editing an existing event)
+          updateMultiBlockEventField($blocks)
+          $blocks.click(function () { // when changing number of blocks, display multiEvent field as appropriate
+              updateMultiBlockEventField($blocks);
+          });
+
+          // disable some form elements if the event already has registrants
+          {% if has_registrants %}
+              var $date = $('#id_date');
+              $date.prop("disabled", true);
+              $date.after("<p class='help-block'>You can't change the date of an event that already has students " +
+                  "registered for it.  If there is a problem with this event, you can delete it; " +
+                  "This will boot out any registered students.  If you want to make a copy of this event for a " +
+                  "future date, go back and hit the copy button.</p>")
+
+              var $blocks = $("input[name='blocks']");
+              $blocks.prop("disabled", true);
+              $("#hint_id_blocks")
+                  .html("<p class='help-block'>You can't change available blocks of an event that already has " +
+                  "students registered for it.  If there is a problem with this event, you can delete it; " +
+                  "This will boot out any registered students.</p>")
+
+              var $multi_block = $("#id_multi_block_event");
+              $multi_block.prop("disabled", true);
+
+              $("#hint_id_multi_block_event")
+                  .html("<p class='help-block'>You can't change the block options of an event that already has " +
+                  "students registered for it.  If there is a problem with this event, you can delete it; " +
+                  "This will boot out any registered students.</p>")
+
+          {% endif %}
+
       });
-    });
   </script>
 {% endblock js %}
