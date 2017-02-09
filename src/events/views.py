@@ -221,7 +221,7 @@ def event_attendance_keypad(request, id, block_id=None, absent_value=True):
 
     registrations = event.registration_set.all()
     registrations.update(absent=absent_value)
-    event.is_keypad_initialized = True
+    event.is_keypad_initialized = absent_value
     event.save()
     return event_attendance(request, id, block_id)
 

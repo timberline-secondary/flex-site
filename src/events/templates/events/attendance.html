@@ -15,11 +15,6 @@
   <h1>Attendance - {{ event.title }}
     <small>
       <span class="responsive-wrap">{{ event.date }}</span>
-      <div class="hidden-print pull-right">
-        {% if not event.is_keypad_initialized %}<a class="btn btn-default" id="keypad_init"
-           href="{% url 'events:attendance_keypad_init' event.id %}">Initialize Keypad Entry</a>
-        {% endif %}
-      </div>
     </small>
   </h1>
 
@@ -28,16 +23,20 @@
   </div>
   <br>
 
-  <!-- Button trigger modal -->
-  {% if event.is_keypad_initialized %}
   <p class="hidden-print">
+    {% if event.is_keypad_initialized %}
     <a type="button" class="btn btn-success" data-toggle="modal" data-target="#keypadEntryModal">
       <i class="fa fa-keyboard-o"></i> Launch Keypad Entry
     </a>
     <a type="button" class="btn btn-default" id="keypad_disable"
-       href="{% url 'events:attendance_keypad_disable' event.id %}">Disable Keypad Entry</a>
+       href="{% url 'events:attendance_keypad_disable' event.id %}">Disable Keypad Entry
+    </a>
+    {% else %}
+      <a class="btn btn-default" id="keypad_init" href="{% url 'events:attendance_keypad_init' event.id %}">
+        <i class="fa fa-keyboard-o"></i> Initialize Keypad Entry
+      </a>
+    {% endif %}
   </p>
-  {% endif %}
 
   <div class="row">
     <div class="col-sm-10 col-md-9 col-lg-7" role="navigation">
