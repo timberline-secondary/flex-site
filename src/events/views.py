@@ -158,12 +158,17 @@ def event_detail(request, id=None):
     return render(request, "events/event_detail.html", context)
 
 
-@staff_member_required
-def event_delete(request, id=None):
-    event = get_object_or_404(Event, id=id)
-    event.delete()
-    messages.success(request, "Successfully deleted")
-    return redirect("events/events:list")
+# @staff_member_required
+# def event_delete(request, id=None):
+#     event = get_object_or_404(Event, id=id)
+#     registrants = event.registration_set
+#     event.delete()
+#     if registrants is not None:
+#         messages.warning(request, "You deleted an event that already had students registered for it.  "
+#                                   "You may want to notify the students: " + registrants)
+#     else:
+#         messages.success(request, "Successfully deleted")
+#     return redirect("events/events:list")
 
 
 @method_decorator(staff_member_required, name='dispatch')
@@ -319,6 +324,11 @@ def staff_locations(request):
     }
     return render(request, "events/staff.html", context)
 
+###############################################
+#
+#       SYNERVOICE VIEWS
+#
+################################################
 
 @staff_member_required
 def generate_synervoice_csv(request, d, no_reg_only=False):

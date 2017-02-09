@@ -9,6 +9,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse
 
+
 class PasswordResetRequiredMiddleware(object):
 
     def process_request(self, request):
