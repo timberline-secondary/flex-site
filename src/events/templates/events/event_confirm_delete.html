@@ -6,7 +6,7 @@
   <h1>Confirm Deletion: {{ object }}</h1>
 
   {% with registrations=object.registration_set.all %}
-    {% if registrations is not None %}
+    {% if registrations|length > 0 %}
       <div class="panel panel-warning">
         <div class="panel-heading">
           <h3 class="panel-title"><i class="fa fa-warning"></i>  This event already has students registered for it.</h3>
