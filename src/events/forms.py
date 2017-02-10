@@ -159,9 +159,10 @@ class EventForm(forms.ModelForm):
             "category",
             "location",
             "max_capacity",
-            "cut_off",
             "description",
             "description_link",
+            "cut_off",
+            "allow_registration_after_event_has_started"
             # "allow_facilitators_to_modify",
         ]
         widgets = {

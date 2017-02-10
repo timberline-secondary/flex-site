@@ -144,6 +144,12 @@ class Event(models.Model):
                   "students will no longer be able to register for the event, nor will they be able to delete it "
                   "if they've already registered. FORMAT: days hours:minutes:seconds. E.g five minutes would be 5:00; "
                   "one hour would be 1:00:00; 24hrs would be 24:00:00 or 2 00:00:00; etc.")
+    allow_registration_after_event_has_started = models.BooleanField(
+        default=False,
+        help_text="E.g. if you put 5:00 (5 minutes) for the registration cut off and tick this option, "
+                  "students will still be able to register for your event until 5 minutes AFTER your event has started "
+                  "(rather than being cut off 5 minutes BEFORE your event starts)."
+    )
     max_capacity = models.PositiveIntegerField(
         default=30,
         help_text="The maximum number of students that can register for this event.  Once the maximum is reached, "
@@ -356,7 +362,11 @@ class Event(models.Model):
 
     def is_registration_closed(self, block):
         event_start = timezone.make_aware(datetime.combine(self.date, block.start_time))
-        cut_off = event_start - self.cut_off
+        if self.allow_registration_after_event_has_started:
+            cut_off = event_start + self.cut_off
+        else:
+            cut_off = event_start - self.cut_off
+
         now = timezone.localtime(timezone.now())
         return now > cut_off
 
