@@ -363,9 +363,9 @@ class Event(models.Model):
     def is_registration_closed(self, block):
         event_start = timezone.make_aware(datetime.combine(self.date, block.start_time))
         if self.allow_registration_after_event_has_started:
-            cut_off = event_start + self.registration_cut_off_time
+            cut_off = event_start + self.registration_cut_off
         else:
-            cut_off = event_start - self.registration_cut_off_time
+            cut_off = event_start - self.registration_cut_off
 
         now = timezone.localtime(timezone.now())
         return now > cut_off
