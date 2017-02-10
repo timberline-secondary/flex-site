@@ -136,7 +136,7 @@ class Event(models.Model):
         help_text="If false, only the creator of the event can edit.  If true, then any staff member that is listed as "
                   "a facilitator will be able to edit the event.  The creator will always be able to edit this event, "
                   "even if they are not listed as one of the facilitators.")
-    registration_cut_off = models.DurationField(
+    cut_off = models.DurationField(
         "registration cut off [dd hh:mm:ss]",
         default=timedelta(days=0, hours=0, minutes=5, seconds=0),
         help_text="How long before the start of the flex block does registration close?  After this time, "
@@ -355,7 +355,7 @@ class Event(models.Model):
 
     def is_registration_closed(self, block):
         event_start = timezone.make_aware(datetime.combine(self.date, block.start_time))
-        cut_off = event_start - self.registration_cut_off
+        cut_off = event_start - self.cut_off
         now = timezone.localtime(timezone.now())
         return now > cut_off
 
