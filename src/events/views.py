@@ -282,7 +282,7 @@ def event_list(request, block_id=None):
     blocks = Block.objects.all()
     blocks_json = serializers.serialize('json', blocks, fields=('id', 'name', ))
 
-    queryset = active_block.event_set.filter(date=d, category__visible_in_event_list=True)
+    queryset = active_block.event_set.filter(date=d, category__visible_in_event_list=True).select_related('location')
 
     registrations = {}
     if request.user.is_authenticated():
@@ -442,13 +442,24 @@ def registrations_list(request):
 def register(request, id, block_id):
     date_query = request.GET.get("date", str(default_event_date()))
     event = get_object_or_404(Event, id=id)
-    block = get_object_or_404(Block, id=block_id)
 
-    available, already, reason = event.is_available(request.user, block)
+    available = True  # preset to True, then check both blocks, a conflict will switch this to False
+
+    # block_id = 0 indicates register for all block in an optional OR event.
+    both_on_or = False
+    if block_id == '0':
+        both_on_or = True
+        for block in event.blocks.all():
+            if available:
+                available, already, reason = event.is_available(request.user, block)
+                block_id = block.id  # need to give it a valid id for page redirection. 0 not valid!
+    else:
+        block = get_object_or_404(Block, id=block_id)
+        available, already, reason = event.is_available(request.user, block)
 
     block_text = ""
     if available:
-        if event.both_required():
+        if event.both_required() or both_on_or:
             for block in event.blocks.all():
                 Registration.objects.create_registration(event=event, student=request.user, block=block)
                 block_text += str(block) + " "

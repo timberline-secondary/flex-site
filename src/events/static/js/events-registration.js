@@ -10,7 +10,8 @@ var $table = $('#table'),
     $blockConfirmModalTitle = $('#block-confirmation-modal').find('.modal-title'),
     $blockConfirmModalBody = $('#block-confirmation-modal').find('.modal-body'),
     $btnConfirmFlex1 = $('#btn-confirm-flex-1'),
-    $btnConfirmFlex2 = $('#btn-confirm-flex-2');
+    $btnConfirmFlex2 = $('#btn-confirm-flex-2'),
+    $btnConfirmBoth = $('#btn-confirm-both');
     // $btnCancel = $('#btn-confirm-cancel');
 
 // function getIdSelections() {
@@ -45,55 +46,6 @@ REG_STATUS_1_ONLY = "The Flex 2 block is empty on your registration form. Click 
 REG_STATUS_2_ONLY = "The Flex 1 block is empty on your registration form. Click on one of the available events below."
 
 
-/**
- * Set the prompts and button text for the modal then display it.
- * @param row
- */
-function whichFlexModal(row, $tr) {
-
-    $btnConfirmFlex1.data("event-id", row.id);
-    $btnConfirmFlex1.attr("href", $tr.data("flex1-register-url"))
-    $btnConfirmFlex2.data("event-id", row.id);
-    $btnConfirmFlex2.attr("href", $tr.data("flex2-register-url"))
-
-    $blockConfirmModalTitle.text(row.titletext);
-
-    var eventBlocks = row.blockselection.trim()
-    if (eventBlocks == F1_OR_F2) {
-        $btnConfirmFlex1.text(BTN_TEXT_F1);
-        $btnConfirmFlex2.text(BTN_TEXT_F2);
-        $blockConfirmModalBody.html(OR_HTML);
-        $btnConfirmFlex2.show();
-    }
-    else if (eventBlocks == F1_XOR_F2) {
-        $btnConfirmFlex1.text(BTN_TEXT_F1);
-        $btnConfirmFlex2.text(BTN_TEXT_F2);
-        $blockConfirmModalBody.html(XOR_HTML);
-        $btnConfirmFlex2.show();
-    }
-    else if (eventBlocks == F1_AND_F2) {
-        $blockConfirmModalBody.html(AND_HTML);
-        $btnConfirmFlex1.text(BTN_TEXT_BOTH);
-        $btnConfirmFlex2.hide();
-    }
-    else if (eventBlocks == FLEX1) {
-        $blockConfirmModalBody.html(ONE_HTML);
-        $btnConfirmFlex1.text(BTN_TEXT_F1);
-        $btnConfirmFlex2.hide();
-    }
-    else if (eventBlocks == FLEX2) {
-        $blockConfirmModalBody.html(ONE_HTML);
-        $btnConfirmFlex1.hide();
-        $btnConfirmFlex2.text(BTN_TEXT_F2);
-    }
-    else {// shouldn't get here
-        console.log(eventBlocks)
-        console.log("Block selection not understood")
-        return;
-    }
-    $blockConfirmModal.modal();
-}
-
 // EVENTS
 /**
  * When a row is clicked, open a modal dialog to confirm
@@ -105,6 +57,65 @@ $table.bootstrapTable({
         }
     }
 });
+
+/**
+ * Set the prompts and button text for the modal then display it.
+ * @param row
+ */
+function whichFlexModal(row, $tr) {
+
+    $btnConfirmFlex1.data("event-id", row.id);
+    $btnConfirmFlex1.attr("href", $tr.data("flex1-register-url"))
+    $btnConfirmFlex2.data("event-id", row.id);
+    $btnConfirmFlex2.attr("href", $tr.data("flex2-register-url"))
+    $btnConfirmBoth.data("event-id", row.id);
+    $btnConfirmBoth.attr("href", $tr.data("both-register-url"))
+
+    $blockConfirmModalTitle.text(row.titletext);
+
+    var eventBlocks = row.blockselection.trim()
+    if (eventBlocks == F1_OR_F2) {
+        $btnConfirmFlex1.text(BTN_TEXT_F1);
+        $btnConfirmFlex2.text(BTN_TEXT_F2);
+        $btnConfirmBoth.text(BTN_TEXT_BOTH);
+        $blockConfirmModalBody.html(OR_HTML);
+        $btnConfirmFlex2.show();
+        $btnConfirmBoth.show();
+    }
+    else if (eventBlocks == F1_XOR_F2) {
+        $btnConfirmFlex1.text(BTN_TEXT_F1);
+        $btnConfirmFlex2.text(BTN_TEXT_F2);
+        $blockConfirmModalBody.html(XOR_HTML);
+        $btnConfirmFlex2.show();
+        $btnConfirmBoth.hide();
+    }
+    else if (eventBlocks == F1_AND_F2) {
+        $blockConfirmModalBody.html(AND_HTML);
+        $btnConfirmFlex1.text(BTN_TEXT_BOTH);
+        $btnConfirmFlex2.hide();
+        $btnConfirmBoth.hide();
+    }
+    else if (eventBlocks == FLEX1) {
+        $blockConfirmModalBody.html(ONE_HTML);
+        $btnConfirmFlex1.text(BTN_TEXT_F1);
+        $btnConfirmFlex2.hide();
+        $btnConfirmBoth.hide();
+    }
+    else if (eventBlocks == FLEX2) {
+        $blockConfirmModalBody.html(ONE_HTML);
+        $btnConfirmFlex1.hide();
+        $btnConfirmFlex2.text(BTN_TEXT_F2);
+        $btnConfirmBoth.hide();
+    }
+    else {// shouldn't get here
+        console.log(eventBlocks)
+        console.log("Block selection not understood")
+        return;
+    }
+    $blockConfirmModal.modal();
+}
+
+
 
 $( document ).ready(function() {
     // resolve conflict between jquery UI and Bootstrap stuff

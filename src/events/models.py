@@ -139,7 +139,7 @@ class Event(models.Model):
     cut_off = models.DurationField(
         "registration cut off [dd hh:mm:ss]",
         default=timedelta(days=0, hours=0, minutes=5, seconds=0),
-        help_text="How long before the start of the flex block does registration close?  After this time, "
+        help_text="How long before the start of the event does registration close?  After this time, "
                   "students will no longer be able to register for the event, nor will they be able to delete it "
                   "if they've already registered. FORMAT: days hours:minutes:seconds. E.g five minutes would be 5:00; "
                   "one hour would be 1:00:00; 24hrs would be 24:00:00 or 2 00:00:00; etc.")
