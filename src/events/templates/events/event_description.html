@@ -5,7 +5,7 @@
          style="margin: 0 0 8px 8px;"
     >
   {% endif %}
-  {{ event.description|safe }}
+  {{ event.description|safe|linebreaks }}
 
   {% if event.image %}
     <img src="{{ event.get_image_url }}"
