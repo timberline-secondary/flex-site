@@ -115,10 +115,11 @@ class Event(models.Model):
     title = models.CharField(max_length=120)
     description = models.TextField(null=True, blank=True)  # MCE widget validation fails if required
     description_link = models.URLField(
+        "Description link (image, video, file, or webpage)",
         null=True, blank=True,
         help_text="An optional link to provide with the text description. If the link is to a video (YouTube or Vimeo) "
-                  "or an image (png, jpg, or gif) it will be embedded with the description if there is enough "
-                  "screen space.  If it is to another web page or a file, it will just display the link.")
+                  "or an image (png, jpg, or gif), the media will be embedded with the description."
+                  "If the link is to another web page or a file, it will just display the link.")
 
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     date = models.DateField(default=default_event_date)

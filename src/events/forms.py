@@ -165,8 +165,8 @@ class EventForm(forms.ModelForm):
             # "allow_facilitators_to_modify",
         ]
         widgets = {
-            'description': TinyMCE(mce_attrs={'theme': 'simple',
-                                              }),
+            # 'description': TinyMCE(mce_attrs={'theme': 'simple',
+            #                                   }),
             'facilitators': UserCustomTitleWidget,
             'blocks': CheckboxSelectMultiple,
             # 'location': RelatedFieldWidgetCanAdd(Location, reverse_lazy('events:location_create')),

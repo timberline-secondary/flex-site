@@ -130,6 +130,10 @@ CACHES = {
     }
 }
 
-# TINYMCE_DEFAULT_CONFIG = {
-#    'theme': 'advanced',
+# TINYMCE_EXTRA_MEDIA = {
+#     'css': {
+#         'all': [
+#             'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css',
+#         ],
+#     },
 # }
