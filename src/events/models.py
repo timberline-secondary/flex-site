@@ -1,6 +1,6 @@
 import mimetypes
 import urllib
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 import embed_video
 import os
@@ -81,6 +81,7 @@ class Block(models.Model):
     def synervoice_noreg_string(self):
         return "F" + str(self.id) + "-NOREG"
 
+
 def default_event_date():
     today = date.today()
     # Wednesday = 2
@@ -135,12 +136,13 @@ class Event(models.Model):
         help_text="If false, only the creator of the event can edit.  If true, then any staff member that is listed as "
                   "a facilitator will be able to edit the event.  The creator will always be able to edit this event, "
                   "even if they are not listed as one of the facilitators.")
-    registration_cut_off = models.IntegerField(
-        "registration cut off [hours]",
-        default=0,
-        help_text="How many hours before the start of the flex block does registration close?  After this time, "
-                  "students will no longer be able to register for the event, nor will they be able to delete it"
-                  "if they've already registered.")
+    registration_cut_off = models.DurationField(
+        "registration cut off [dd hh:mm:ss]",
+        default=timedelta(days=0, hours=0, minutes=5, seconds=0),
+        help_text="How long before the start of the flex block does registration close?  After this time, "
+                  "students will no longer be able to register for the event, nor will they be able to delete it "
+                  "if they've already registered. FORMAT: days hours:minutes:seconds. E.g five minutes would be 5:00; "
+                  "one hour would be 1:00:00; 24hrs would be 24:00:00 or 2 00:00:00; etc.")
     max_capacity = models.PositiveIntegerField(
         default=30,
         help_text="The maximum number of students that can register for this event.  Once the maximum is reached, "
@@ -352,19 +354,10 @@ class Event(models.Model):
         return result
 
     def is_registration_closed(self, block):
-        now = timezone.now()
-        today_local = timezone.localtime(now)
-        time = today_local.time()
-        if self.date < today_local.date():
-            result = True
-        elif self.date > today_local.date():
-            result = False
-        else:  # same day
-            result = block.start_time < today_local.time()
-            # datetime = date
-            # cut_off = (today_local + timedelta(hours=self.registration_cut_off)).time()
-            # result = block.start_time < cut_off
-        return result
+        event_start = timezone.make_aware(datetime.combine(self.date, block.start_time))
+        cut_off = event_start - self.registration_cut_off
+        now = timezone.localtime(timezone.now())
+        return now > cut_off
 
     def is_full(self, block=None):
         """

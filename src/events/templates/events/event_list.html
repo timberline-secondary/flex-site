@@ -54,7 +54,6 @@
                   {% elif user.profile.excused %}
                     Excused ({{user.profile.excused_reason}})
                   {% else %}
-                    {{ user.profile.excused }}
                     None. <a href="#" data-toggle="modal" data-target="#help-modal" title="Click for help.">
                             <i class="fa fa-question-circle"></i>
                           </a>

@@ -159,10 +159,10 @@ class EventForm(forms.ModelForm):
             "category",
             "location",
             "max_capacity",
-            # "registration_cut_off",
+            "registration_cut_off",
             "description",
             "description_link",
-            "allow_facilitators_to_modify",
+            # "allow_facilitators_to_modify",
         ]
         widgets = {
             'description': TinyMCE(mce_attrs={'theme': 'simple',
