@@ -1,0 +1,25 @@
+.durationpicker-container {
+    background-color: white;
+    border: 1px solid darkgrey;
+    display: inline-block;
+    width: auto;
+}
+
+.durationpicker-innercontainer {
+    display: inline-block;
+    width: auto;
+    padding-right: 5px;
+}
+
+.durationpicker-duration {
+    background-color: white;
+    width: 50px;
+    display: inline-block;
+    border: none;
+    margin-left: -5px;
+    text-align: right;
+}
+
+.durationpicker-label {
+    display: inline-block;
+}

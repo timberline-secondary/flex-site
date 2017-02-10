@@ -137,18 +137,18 @@ class Event(models.Model):
         help_text="If false, only the creator of the event can edit.  If true, then any staff member that is listed as "
                   "a facilitator will be able to edit the event.  The creator will always be able to edit this event, "
                   "even if they are not listed as one of the facilitators.")
-    cut_off = models.DurationField(
-        "registration cut off [dd hh:mm:ss]",
+    registration_cut_off = models.DurationField(
         default=timedelta(days=0, hours=0, minutes=5, seconds=0),
         help_text="How long before the start of the event does registration close?  After this time, "
                   "students will no longer be able to register for the event, nor will they be able to delete it "
-                  "if they've already registered. FORMAT: days hours:minutes:seconds. E.g five minutes would be 5:00; "
-                  "one hour would be 1:00:00; 24hrs would be 24:00:00 or 2 00:00:00; etc.")
+                  "if they've already registered.")
     allow_registration_after_event_has_started = models.BooleanField(
         default=False,
-        help_text="E.g. if you put 5:00 (5 minutes) for the registration cut off and tick this option, "
-                  "students will still be able to register for your event until 5 minutes AFTER your event has started "
-                  "(rather than being cut off 5 minutes BEFORE your event starts)."
+        help_text="Students can continue to register for this event after it has already started, for the amount of "
+                  "time indicated in the 'Registration cut off time'.  For example, if your cut off time is set to "
+                  "5 minutes and this option is selected, then students will still be able to register for your event "
+                  "until 5 minutes AFTER your event has started (rather than being cut off 5 minutes BEFORE your "
+                  "event starts)."
     )
     max_capacity = models.PositiveIntegerField(
         default=30,
@@ -363,9 +363,9 @@ class Event(models.Model):
     def is_registration_closed(self, block):
         event_start = timezone.make_aware(datetime.combine(self.date, block.start_time))
         if self.allow_registration_after_event_has_started:
-            cut_off = event_start + self.cut_off
+            cut_off = event_start + self.registration_cut_off_time
         else:
-            cut_off = event_start - self.cut_off
+            cut_off = event_start - self.registration_cut_off_time
 
         now = timezone.localtime(timezone.now())
         return now > cut_off
