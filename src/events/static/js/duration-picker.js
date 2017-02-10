@@ -41,7 +41,6 @@
                 });
                 value += "00"; // add second on the end for django DurationField
                 // value = value.slice(0, -1);
-                console.log(value);
                 element.val(value);
             });
 
