@@ -39,16 +39,18 @@ class Location(models.Model):
 
     def __str__(self):
         return self.room_number
-        # str = self.room_number
-        # if self.name:
-        #     str += " (" + self.name + ")"
-        # return str
 
     def get_name(self):
         if self.name:
             return self.name
         else:
             return ""
+
+    def get_detailed_name(self):
+        name_str = self.room_number
+        if self.name:
+            name_str += " (" + self.name + ")"
+        return name_str
 
     class Meta:
         ordering = ['room_number']

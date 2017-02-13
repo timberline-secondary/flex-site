@@ -14,8 +14,6 @@ from tinymce.widgets import TinyMCE
 from .models import Event, Registration, Location
 
 
-
-
 class LocationForm(forms.ModelForm):
     class Meta:
         model = Location
@@ -130,7 +128,7 @@ class RelatedFieldWidgetCanAdd(widgets.Select):
 
 class LocationModelChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
-        return "%s (%s)" % (obj.room_number, obj.name)
+        return obj.get_detailed_name()
 
 
 class EventForm(forms.ModelForm):
