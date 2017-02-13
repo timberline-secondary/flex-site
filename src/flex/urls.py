@@ -34,6 +34,7 @@ urlpatterns = [
     # custom apps
     url(r'^events/', include('events.urls', namespace='events')),
     url(r'^profiles/', include('profiles.urls', namespace='profiles')),
+    url(r'^excuses/', include('excuses.urls', namespace='excuses')),
 ]
 
 if settings.DEBUG:

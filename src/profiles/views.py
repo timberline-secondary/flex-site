@@ -10,9 +10,13 @@ from django.contrib.auth.models import User
 from django.http import Http404
 
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.generic import DeleteView
 
 from .models import Profile
 from .forms import UserImportForm
+
 
 ######################################
 #
@@ -147,11 +151,3 @@ def mass_update(request):
         "form": form,
     }
     return render(request, "profiles/profile_imports.html", context)
-
-
-######################################
-#
-#   EXCUSE VIEWS
-#
-######################################
-

@@ -20,6 +20,9 @@ from embed_video.backends import detect_backend, UnknownBackendException
 from imagekit.models import ProcessedImageField
 from pilkit.processors import ResizeToFill, SmartResize, ResizeToFit
 
+from excuses.models import Excuse
+from flex.utils import default_event_date
+
 
 class Category(models.Model):
     name = models.CharField(max_length=120)
@@ -82,13 +85,6 @@ class Block(models.Model):
 
     def synervoice_noreg_string(self):
         return "F" + str(self.id) + "-NOREG"
-
-
-def default_event_date():
-    today = date.today()
-    # Wednesday = 2
-    wednesday = today + timedelta((2 - today.weekday()) % 7)
-    return wednesday
 
 
 class EventManager(models.Manager):
@@ -422,37 +418,42 @@ class RegistrationManager(models.Manager):
         return qs.filter(student=student).filter(event__date=event_date).filter(block=block)
 
     def registration_check(self, event_date, homeroom_teacher=None):
+        '''
+        :param event_date:
+        :param homeroom_teacher: if not provided, will return all students
+        :return: a list of student dicts, including their events for each block and excuses, if any
+        '''
+
+        registrations_qs = self.get_queryset().filter(event__date=event_date)
+        students = User.objects.all().filter(is_staff=False)
+        # excuses_qs = Excuse.objects.all_excused_on_day(date=event_date)
+
         if homeroom_teacher:
-            students = User.objects.all().filter(
-                is_staff=False,
-                profile__homeroom_teacher=homeroom_teacher
-            )
-            # get queryset with events? optimization for less hits on db
-            qs = self.get_queryset().filter(
-                event__date=event_date,
-                student__profile__homeroom_teacher=homeroom_teacher
-            )
-        else:
-            students = User.objects.all().filter(is_staff=False)
-            # get queryset with events? optimization for less hits on db
-            qs = self.get_queryset().filter(event__date=event_date)
+            students = students.filter(profile__homeroom_teacher=homeroom_teacher)
+            registrations_qs = registrations_qs.filter(student__profile__homeroom_teacher=homeroom_teacher)
 
-        students = students.values('id',
-                                   'username',
-                                   'first_name',
-                                   'last_name',
-                                   'profile__grade',
-                                   'profile__homeroom_teacher',
-                                   'profile__excused',
-                                   'profile__excused_reason',)
+        students_dict = students.values('id',
+                                        'username',
+                                        'first_name',
+                                        'last_name',
+                                        'profile__grade',
+                                        'profile__homeroom_teacher',
+                                        'profile__excused',
+                                        'profile__excused_reason',)
 
-        for student in students:
-            user_regs_qs = qs.filter(student_id=student['id'])
+        for student_dict in students_dict:
+            user_regs_qs = registrations_qs.filter(student_id=student_dict['id'])
 
-            #provide homeroom teacher's name instead of id
-            if student['profile__homeroom_teacher']:
-                hr_teacher = User.objects.get(id=student['profile__homeroom_teacher'])
-                student['profile__homeroom_teacher'] = hr_teacher.get_full_name()
+            student = User.objects.get(id=student_dict['id'])
+            excuses = student.excuse_set.all().date(event_date)
+            for excuse in excuses:
+                for block in excuse.blocks.all():
+                    student_dict[block.constant_string() + "_excuse"] = excuse.reason
+
+            # provide homeroom teacher's name instead of id
+            if student_dict['profile__homeroom_teacher']:
+                hr_teacher = User.objects.get(id=student_dict['profile__homeroom_teacher'])
+                student_dict['profile__homeroom_teacher'] = hr_teacher.get_full_name()
 
             for block in Block.objects.all():
                 event_str = None
@@ -470,10 +471,10 @@ class RegistrationManager(models.Manager):
                         event_str += str(reg.event) + "; "
                         event_url = reg.event.get_absolute_url()
 
-                student[block.constant_string()] = event_str
-                student[block.constant_string() + "_url"] = event_url
+                student_dict[block.constant_string()] = event_str
+                student_dict[block.constant_string() + "_url"] = event_url
 
-        return students
+        return students_dict
 
     def all_attendance(self, event_date, reg_only=False):
         students = User.objects.all().filter(
@@ -491,27 +492,34 @@ class RegistrationManager(models.Manager):
                                    'profile__email',
                                    'profile__homeroom_teacher',
                                    )
-        students = list(students)
+        students_list = list(students)
 
         # get queryset with events? optimization for less hits on db
         qs = self.get_queryset().filter(
             event__date=event_date,
         )
-        for student in students:
-            user_regs_qs = qs.filter(student_id=student['id'])
+
+        for student_dict in students_list:
+            user_regs_qs = qs.filter(student_id=student_dict['id'])
 
             # provide homeroom teacher's name instead of id
-            if student['profile__homeroom_teacher']:
-                hr_teacher = User.objects.get(id=student['profile__homeroom_teacher'])
-                student['profile__homeroom_teacher'] = hr_teacher.get_full_name()
+            if student_dict['profile__homeroom_teacher']:
+                hr_teacher = User.objects.get(id=student_dict['profile__homeroom_teacher'])
+                student_dict['profile__homeroom_teacher'] = hr_teacher.get_full_name()
 
             for block in Block.objects.all():
                 try:
                     reg = user_regs_qs.get(block=block)
-                    if reg.absent and not reg.excused and not reg_only:
-                        student[block.constant_string()] = block.synervoice_absent_string()  # absent
+                    if reg.absent and not reg_only:
+                        # need to check if excused this block
+                        student_dict[block.constant_string()] = block.synervoice_absent_string()  # absent
                 except ObjectDoesNotExist:  # not registered
-                    student[block.constant_string()] = block.synervoice_noreg_string()
+
+                    # If not registered, then check if they were excused
+                    student = User.objects.get(id=student_dict['id'])
+                    excuses = student.excuse_set.all().date(event_date).in_block(block)
+                    if not excuses:
+                        student_dict[block.constant_string()] = block.synervoice_noreg_string()
 
         return students
 
@@ -533,7 +541,7 @@ class Registration(models.Model):
     created_timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
     absent = models.BooleanField(default=False)
     late = models.BooleanField(default=False)
-    excused = models.BooleanField(default=False)
+    excused = models.BooleanField(default=False)  # not used
 
     objects = RegistrationManager()
 

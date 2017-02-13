@@ -54,6 +54,7 @@ INSTALLED_APPS = (
     # My custom apps
     'profiles',
     'events',
+    'excuses',
 )
 
 AUTHENTICATION_BACKENDS = (

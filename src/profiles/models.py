@@ -1,5 +1,4 @@
 from django.contrib import messages
-from django.contrib.auth import user_logged_in
 from django.contrib.auth.models import User
 from django.db import models
 from django.conf import settings
@@ -8,8 +7,6 @@ from django.db.models.signals import post_save
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse
-
-from events.models import default_event_date
 
 
 class PasswordResetRequiredMiddleware(object):
@@ -34,41 +31,6 @@ class PasswordResetRequiredMiddleware(object):
             messages.error(request, "You don't seem to have a profile?")
 
         return result
-
-
-class ExcuseReasons(models.Model):
-    reason = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.reason
-
-    class Meta:
-        ordering = ['reason']
-
-
-class ExcuseManager(models.Manager):
-    def excused_on_day(self, date):
-        qs = self.get_querset().filter(first_date__lte=date, last_date__gte=date)
-        qs = qs.select_related('student', 'reason')
-        return qs
-
-
-class Excuse(models.Model):
-    student = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'is_staff': False})
-    reason = models.ForeignKey(ExcuseReasons, on_delete=models.SET_NULL, null=True)
-    first_date = models.DateField(
-        default=default_event_date,
-        help_text="This is the first date that the student is excused for the given reason."
-    )
-    last_date = models.DateField(
-        default=default_event_date,
-        help_text="This is the last date that the student is excuses for the given reason."
-    )
-
-    objects = ExcuseManager()
-
-    class Meta:
-        ordering = ['-first_date']
 
 
 class Profile(models.Model):

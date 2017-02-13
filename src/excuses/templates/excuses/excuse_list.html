@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block style %}{% endblock style %}
+
+{% block head_title %}Excused | {{ block.super }}{% endblock %}
+
+{% block content %}
+
+  <h1>Excused Students List</h1>
+  <a role="button" class="btn btn-primary" href="{% url 'excuses:excuse_create' %}">New</a>
+  <table data-toggle="table"
+         data-classes="table table-no-bordered table-hover"
+         data-search="true"
+         data-sort-name="first_date"
+         data-sort-order="desc"
+         id="table">
+
+      <thead>
+      <tr>
+        <th>Actions</th>
+        <th data-field="first_date" data-sortable="true">Start</th>
+        <th data-field="last_date" data-sortable="true">End</th>
+        <th data-field="blocks" data-sortable="true">Blocks</th>
+        <th data-field="reason" data-sortable="true">Reason</th>
+        <th data-field="students">Students</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for excuse in object_list %}
+        <tr>
+          <td>
+            <a href="{% url 'excuses:excuse_edit' excuse.id %}">Edit</a>
+          </td>
+          <td>{{ excuse.first_date }}</td>
+          <td>{{ excuse.last_date }}</td>
+          <td><small>
+            {% for block in excuse.blocks.all %}
+              {{block}};
+            {% endfor %}
+          </small></td>
+          <td>{{ excuse.reason }}</td>
+          <td><small>
+            {% for student in excuse.students.all %}
+              {{student.get_full_name}};
+            {% endfor %}
+          </small></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+  </table>
+
+{% endblock content %}
+
+{% block js %}
+  <!-- Bootstrap Tables:  http://bootstrap-table.wenzhixin.net.cn/ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
+{% endblock %}

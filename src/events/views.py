@@ -16,7 +16,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import DeleteView
-from profiles.models import Profile, Excuse
+from profiles.models import Profile
 from .models import Event, default_event_date, Registration, Block
 from .forms import EventForm, AttendanceForm, AttendanceFormSetHelper, RegistrationForm, LocationForm
 
@@ -514,9 +514,6 @@ def registrations_homeroom(request, user_id=None):
     else:
         homeroom_teacher = request.user
 
-    # profile_queryset = Profile.objects.select_related('user').filter(homeroom_teacher=homeroom_teacher)
-    # # profile_queryset.annotate()  # runs the query? why?
-
     students = Registration.objects.registration_check(d, homeroom_teacher)
 
     context = {
@@ -535,13 +532,9 @@ def registrations_all(request):
 
     students = Registration.objects.registration_check(d)
 
-    #excuses_qs = Excuse.objects.excused_on_day(d)
-    #excuses = excuses_qs
-
     context = {
         "heading": "All Student Registrations",
         "students": students,
-        #"excuses": excuses,
         "date_filter": date_query,
         "date_object": d,
         "include_homeroom_teacher": 'true',
