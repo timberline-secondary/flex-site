@@ -1,3 +1,4 @@
+bleach==1.5.0
 Django==1.10.4
 django-appconf==1.0.2
 django-crispy-forms==1.6.1
@@ -7,6 +8,7 @@ django-registration-redux==1.4
 Django-Select2==5.8.10
 django-tinymce==2.4.0
 html2text==2014.12.29
+html5lib==0.9999999
 pilkit==1.1.13
 Pillow==3.4.2
 requests==2.12.4

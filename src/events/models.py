@@ -200,6 +200,10 @@ class Event(models.Model):
                 img_temp.write(urllib.request.urlopen(request).read())
             except urllib.error.HTTPError:
                 return False
+            except Exception as e:
+                # don't worry about errors in this process for now, just ignore broken links etc.
+                return False
+
             img_temp.flush()
             self.description_image_file.save(os.path.basename(img_url), File(img_temp))
             self.save()

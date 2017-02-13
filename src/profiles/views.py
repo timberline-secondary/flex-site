@@ -14,7 +14,11 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Profile
 from .forms import UserImportForm
 
-
+######################################
+#
+#   PROFILE VIEWS
+#
+######################################
 # class ProfileList(ListView):
 #     model = Profile
 
@@ -143,4 +147,11 @@ def mass_update(request):
         "form": form,
     }
     return render(request, "profiles/profile_imports.html", context)
+
+
+######################################
+#
+#   EXCUSE VIEWS
+#
+######################################
 

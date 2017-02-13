@@ -1,6 +1,9 @@
+import bleach as bleach
 from django.contrib import admin
 
 # Register your models here.
+from django.db import transaction
+
 from .models import Event, Block, Location, Category, Registration
 
 
@@ -42,9 +45,25 @@ class BlockAdmin(admin.ModelAdmin):
         model = Block
 
 
-def resave(EventAdmin, request, queryset):
+# Was used to cache images from link that existed before caching was implemented
+def resave(eventadmin, request, queryset):
     for event in queryset:
         event.save()
+
+
+# Used to remove tags when description was switched to plain text
+@transaction.atomic
+def bleach_html(eventadmin, request, queryset):
+    for event in queryset:
+        description = event.description
+        description = description.replace("</p>", "\n\n")
+        description = description.replace("</P>", "\n\n")
+        description = description.replace("<br>", "\n")
+        description = description.replace("<br />", "\n")
+        description = description.replace("<br/>", "\n")
+        event.description = bleach.clean(description, strip=True)
+        event.save()
+bleach_html.short_description = "Remove undesired HTML tags from event descriptions."
 
 
 class EventAdmin(admin.ModelAdmin):
@@ -53,7 +72,7 @@ class EventAdmin(admin.ModelAdmin):
     list_filter = ["date", "blocks", ]
     # list_editable = ["title", ]
     # list_display_links = ["created_timestamp", ]
-    actions = [resave]
+    actions = [resave, bleach_html]
 
     search_fields = ["title", "description"]
 
