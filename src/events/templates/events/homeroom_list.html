@@ -52,6 +52,7 @@
         <td>{{ student.profile__homeroom_teacher}}</td>
         <td>
           {% if student.FLEX1 %}<a href="{{ student.FLEX1_url }}attendance/">{{ student.FLEX1 }}</a>
+{#          {% elif student in excuses %} !!!!!!!!!!!!!#}
           {% elif student.profile__excused %}Excused ({{ student.profile__excused_reason}})
           {% else %}-{% endif %}
         </td>
