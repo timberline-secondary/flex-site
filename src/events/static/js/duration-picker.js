@@ -48,9 +48,9 @@
             window.addEventListener('resize', this.resize);
         },
         resize: function() {
-            if (!this.settings.responsive) {
-                return
-            }
+            // if (!this.settings.responsive) {
+            //     return
+            // }
             var padding = parseInt(this.jqitem.css('padding-left').split('px')[0]) + parseInt(this.jqitem.css('padding-right').split('px')[0]);
             var minwidth = padding;
             var minheight = padding;

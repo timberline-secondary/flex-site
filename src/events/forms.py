@@ -133,54 +133,6 @@ class LocationModelChoiceField(forms.ModelChoiceField):
         return "%s (%s)" % (obj.room_number, obj.name)
 
 
-class SplitDurationWidget(forms.MultiWidget):
-    """
-    A Widget that splits duration input into four number input boxes.
-    """
-
-    def __init__(self, attrs=None):
-        widgets = (forms.NumberInput(attrs=attrs),
-                   forms.NumberInput(attrs=attrs),
-                   forms.NumberInput(attrs=attrs),
-                   forms.NumberInput(attrs=attrs))
-        super(SplitDurationWidget, self).__init__(widgets, attrs)
-
-    def decompress(self, value):
-        if value:
-            d = value
-            if d:
-                hours = d.seconds // 3600
-                minutes = (d.seconds % 3600) // 60
-                seconds = d.seconds % 60
-                return [int(d.days), int(hours), int(minutes), int(seconds)]
-        return [0, 1, 0, 0]
-
-
-class MultiValueDurationField(forms.MultiValueField):
-    widget = SplitDurationWidget
-
-    def __init__(self, *args, **kwargs):
-        fields = (
-            forms.IntegerField(),
-            forms.IntegerField(),
-            forms.IntegerField(),
-            forms.IntegerField(),
-        )
-        super(MultiValueDurationField, self).__init__(
-            fields=fields,
-            require_all_fields=True, *args, **kwargs)
-
-    def compress(self, data_list):
-        if len(data_list) == 4:
-            return timedelta(
-                days=int(data_list[0]),
-                hours=int(data_list[1]),
-                minutes=int(data_list[2]),
-                seconds=int(data_list[3]))
-        else:
-            return timedelta(0)
-
-
 class EventForm(forms.ModelForm):
     location = LocationModelChoiceField(
         queryset=Location.objects.all(),
@@ -225,13 +177,3 @@ class EventForm(forms.ModelForm):
             # 'location': RelatedFieldWidgetCanAdd(Location, 'events:location_create'),
         }
 
-    # https://github.com/koss-lebedev/bootstrap-duration-picker
-    #     http://www.jqueryscript.net/time-clock/Lightweight-Duration-Picker-Plugin-For-jQuery-Semantic-UI.html
-    #     http://www.jqueryscript.net/demo/Easy-Responsive-jQuery-Duration-Picker-Plugin-duration-picker-js/
-    #     https://github.com/Tartarus762/jquery-duration-picker
-    # def __init__(self, *args, **kwargs):
-    #     super(EventForm, self).__init__(*args, **kwargs)
-    #     self.fields['cut_off'] = MultiValueDurationField()
-
-        # self.fields["description"].widget = TinyMCE(attrs={'theme': 'advanced', })
-        # # self.fields["facilitators"].widget.attrs.update({'class': 'chosen-select', })
