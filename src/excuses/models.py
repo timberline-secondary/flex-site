@@ -22,6 +22,9 @@ class ExcuseQuerySet(models.QuerySet):
     def in_block(self, block):
         return self.filter(blocks=block)
 
+    def for_student(self, user):
+        return self.filter(students=user)
+
 
 class ExcuseManager(models.Manager):
     def get_queryset(self):

@@ -285,16 +285,23 @@ def event_list(request, block_id=None):
     queryset = active_block.event_set.filter(date=d, category__visible_in_event_list=True).select_related('location')
 
     registrations = {}
-    if request.user.is_authenticated():
+    excuses_dict = {}
+    if request.user.is_authenticated() and not request.user.is_staff:
         # Build a dictionary of user's registrations for this day:
         # {block_name: event,}
-        registrations = {}
         for block in blocks:
+            registrations[block] = {}
             try:
                 reg = Registration.objects.get(student=request.user, block=block, event__date=d)
             except Registration.DoesNotExist:
                 reg = None
-            registrations[block] = reg
+
+                # Are they excused?
+                excuses = request.user.excuse_set.all().date(d).in_block(block)
+                if excuses:
+                    registrations[block]["excuse"] = excuses[0]
+
+            registrations[block]["reg"] = reg
 
     for event in queryset:
         event.attendance = event.registration_set.filter(block=active_block).count()
@@ -309,6 +316,7 @@ def event_list(request, block_id=None):
         "title": "List",
         "object_list": queryset,
         "registrations": registrations,
+        "excuses": excuses_dict,
         "blocks_json": blocks_json,
         "blocks": blocks,
         "active_block": active_block,
