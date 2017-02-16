@@ -438,8 +438,7 @@ class RegistrationManager(models.Manager):
                                         'last_name',
                                         'profile__grade',
                                         'profile__homeroom_teacher',
-                                        'profile__excused',
-                                        'profile__excused_reason',)
+                                        )
 
         for student_dict in students_dict:
             user_regs_qs = registrations_qs.filter(student_id=student_dict['id'])
@@ -480,7 +479,6 @@ class RegistrationManager(models.Manager):
         students = User.objects.all().filter(
             is_active=True,
             is_staff=False,
-            profile__excused=False,
         )
 
         students = students.values('id',
@@ -528,7 +526,6 @@ class RegistrationManager(models.Manager):
                                           student__is_active=True,
                                           student__is_staff=False,
                                           absent=True,
-                                          excused=False,
                                           )
 
 
@@ -541,7 +538,6 @@ class Registration(models.Model):
     created_timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
     absent = models.BooleanField(default=False)
     late = models.BooleanField(default=False)
-    excused = models.BooleanField(default=False)  # not used
 
     objects = RegistrationManager()
 
