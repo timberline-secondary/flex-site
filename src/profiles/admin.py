@@ -5,7 +5,9 @@ from .models import Profile
 
 
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ["user", "get_first_name", "get_last_name", "homeroom_teacher", "grade", "phone", "email", ]
+    list_display = ["user", "get_first_name", "get_last_name", "homeroom_teacher",
+                    "grade", "phone", "email", "updated", ]
+    readonly_fields = ["updated", ]
     list_filter = ["grade", ]
     # list_editable = ["title", ]
     # list_display_links = ["created_timestamp", ]

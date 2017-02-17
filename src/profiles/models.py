@@ -45,6 +45,7 @@ class Profile(models.Model):
     phone = models.CharField(max_length=13, null=True, blank=True, help_text="Format: (000)000-0000")
     email = models.EmailField(null=True, blank=True)
     password_change_required = models.BooleanField(default=True)
+    updated = models.DateTimeField(auto_now=True)  # Used to determine if student is still active after an import.
 
     def __str__(self):
         return str(self.user.username) + " (" + str(self.user.first_name) + " " + str(self.user.last_name) + ")"
