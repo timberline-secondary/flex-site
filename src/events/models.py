@@ -425,7 +425,7 @@ class RegistrationManager(models.Manager):
         '''
 
         registrations_qs = self.get_queryset().filter(event__date=event_date)
-        students = User.objects.all().filter(is_staff=False)
+        students = User.objects.all().filter(is_staff=False, is_active=True)
         # excuses_qs = Excuse.objects.all_excused_on_day(date=event_date)
 
         if homeroom_teacher:

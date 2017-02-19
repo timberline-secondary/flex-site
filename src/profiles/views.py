@@ -10,10 +10,7 @@ from django.contrib.auth.models import User
 from django.http import Http404
 
 from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse_lazy
 from django.utils import timezone
-from django.utils.decorators import method_decorator
-from django.views.generic import DeleteView
 
 from .models import Profile
 from .forms import UserImportForm
@@ -166,8 +163,6 @@ def mass_update(request):
             inactive_students = students_qs.filter(profile__updated__lt=update_start_time)
             num_deactivated = inactive_students.update(is_active=False)
 
-    # student_import=True
-    # new_student_list = User.objects.all().filter(is_staff=False)
     context = {
         "new_staff_list": new_staff_list,
         "staff_import": staff_import,

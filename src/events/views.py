@@ -329,7 +329,7 @@ def staff_locations(request):
     date_query = request.GET.get("date", str(default_event_date()))
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
 
-    users = User.objects.filter(is_staff=True).values('id', 'first_name', 'last_name')
+    users = User.objects.filter(is_staff=True, is_active=True).values('id', 'first_name', 'last_name')
     users = list(users)
 
     events = Event.objects.filter(date=d)
