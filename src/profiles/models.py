@@ -38,9 +38,11 @@ class PasswordResetRequiredMiddleware(object):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
     homeroom_teacher = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                         on_delete=models.SET_NULL,
                                          limit_choices_to={'is_staff': True},
                                          related_name='profiles',
-                                         null=True, blank=True)
+                                         null=True, blank=True
+                                         )
     grade = models.IntegerField(null=True, blank=True)
     phone = models.CharField(max_length=13, null=True, blank=True, help_text="Format: (000)000-0000")
     email = models.EmailField(null=True, blank=True)

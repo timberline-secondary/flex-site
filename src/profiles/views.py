@@ -51,28 +51,34 @@ def mass_update(request):
     student_import = False
     form = UserImportForm(request.POST or None, request.FILES or None)
 
+    positions_to_import = ["TEACH", "CL10", "ADM"]  # currently not included: EA, CUST
+
     if form.is_valid():
         if 'staff_csv_file' in request.FILES:
             file = request.FILES['staff_csv_file']
             reader = csv.reader(codecs.iterdecode(file, 'utf-8'))
             staff_import = True
             for row in reader:
-                if row:  # check for blank rows
-                    qs = User.objects.all()
+                if row and row[3] in positions_to_import:  # check for blank rows and staff position
+                    try:
+                        username = row[0]
+                        int(username)  # will throw an error if not an integer
 
-                    username = row[0]
-                    # check if user exists, else create new user
-                    if username and not qs.filter(username=username).exists():
-                        user = User.objects.create_user(
-                            username=username,
-                            password="wolf",
-                            first_name=row[1],
-                            last_name=row[2],
-                            is_staff=True,
-                        )
-                        new_staff_list.append(user)
-                    else:
-                        print("user: " + str(username))
+                        qs = User.objects.all()
+
+                        # check if user exists, else create new user
+                        if username and not qs.filter(username=username).exists():
+                            user = User.objects.create_user(
+                                username=username,
+                                password="wolf",
+                                first_name=row[1],
+                                last_name=row[2],
+                                email=row[4],
+                                is_staff=True,
+                            )
+                            new_staff_list.append(user)
+                    except ValueError:  # ID is not an integer
+                        pass
 
         if 'student_csv_file' in request.FILES:
             file = request.FILES['student_csv_file']

@@ -16,5 +16,5 @@ class UserImportForm(forms.Form):
 
     staff_csv_file = forms.FileField(label="Staff Data File",
                                      required=False,
-                                     help_text="A csv file without headings in the format: id, first_name, last_name")
+                                     help_text="A csv file without headings in the format: id, first_name, last_name, position, email")
 
