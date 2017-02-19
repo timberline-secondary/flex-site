@@ -11,5 +11,6 @@ html2text==2014.12.29
 html5lib==0.9999999
 pilkit==1.1.13
 Pillow==3.4.2
+pytz==2016.10
 requests==2.12.4
 six==1.10.0

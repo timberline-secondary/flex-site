@@ -51,6 +51,7 @@
 
   {% if student_import %}
     <h3>Student Import Results</h3>
+    <p>Inactive students: {{ num_deactivated }}</p>
     <h4>Import Errors and Warnings</h4>
     <p>Total errors/warnings: {{ student_errors|length }}</p>
     <p>Errors will appear in red and prevent students from being imported.  Warnings appear in yellow and do not

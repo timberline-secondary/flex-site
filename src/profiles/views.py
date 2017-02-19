@@ -11,6 +11,7 @@ from django.http import Http404
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.generic import DeleteView
 
@@ -49,6 +50,7 @@ def mass_update(request):
     staff_errors = []
     staff_import = False
     student_import = False
+    num_deactivated = 0
     form = UserImportForm(request.POST or None, request.FILES or None)
 
     positions_to_import = ["TEACH", "CL10", "ADM"]  # currently not included: EA, CUST
@@ -59,7 +61,8 @@ def mass_update(request):
             reader = csv.reader(codecs.iterdecode(file, 'utf-8'))
             staff_import = True
             for row in reader:
-                if row and row[3] in positions_to_import:  # check for blank rows and staff position
+                # check for blank rows, proper number of fields, and staff positions
+                if row and len(row) == 5 and row[3] in positions_to_import:
                     try:
                         username = row[0]
                         int(username)  # will throw an error if not an integer
@@ -81,6 +84,8 @@ def mass_update(request):
                         pass
 
         if 'student_csv_file' in request.FILES:
+            update_start_time = timezone.now()
+
             file = request.FILES['student_csv_file']
             semester = form.cleaned_data['semester']
 
@@ -92,13 +97,14 @@ def mass_update(request):
                 sn_regex_string = r"^(9[789])(\d{5})$"
 
                 # skip empty rows and rows without proper number of fields
-                if row and len(row) == 8:
+                if row and len(row) >= 8:
                     # check for student number
                     if not re.match(sn_regex_string, row[0]):
                         student_errors.append({'error': "Student number doesn't match pattern", 'row': row})
                     else:
                         # students should have one entry for each semester, only use semester indicated in form
-                        if row[5] == semester or row[5] == "LINEAR":
+                        # also, ignore students with "grade == NS", these are Non-Students
+                        if (row[5] == semester or row[5] == "LINEAR") and row[4] != "NS":
                             username = row[0]
                             first_name = row[1]
                             last_name = row[2]
@@ -115,6 +121,12 @@ def mass_update(request):
                                 homeroom_teacher = None
                             if not grade:  # needs an int so empty string is bad
                                 grade = None
+                            else:
+                                try:
+                                    int(grade)
+                                except ValueError:  # grade is text, not an integer
+                                    student_errors.append({'warning': "Grade not recognized", 'row': row})
+                                    grade = None
                             if not phone:
                                 phone = None
                             if not email:
@@ -132,6 +144,8 @@ def mass_update(request):
                                 new_student_list.append(user.id)
                             else:
                                 user = User.objects.get(username=username)
+                                user.is_active = True
+                                user.save()
 
                             # A profile is created automatically when a new user is created.  Update it.
                             # But sometimes errors cause a user to be created without a profile.  So just in case:
@@ -146,6 +160,12 @@ def mass_update(request):
 
             new_student_list = User.objects.all().filter(id__in=new_student_list)
 
+            # Activate/Deactive students
+            # If a student's profile wasn't updated, then they were not on the list and are no longer active.
+            students_qs = User.objects.all().filter(is_staff=False)
+            inactive_students = students_qs.filter(profile__updated__lt=update_start_time)
+            num_deactivated = inactive_students.update(is_active=False)
+
     # student_import=True
     # new_student_list = User.objects.all().filter(is_staff=False)
     context = {
@@ -154,6 +174,7 @@ def mass_update(request):
         "new_student_list": new_student_list,
         "student_import": student_import,
         "student_errors": student_errors,
+        "num_deactivated": num_deactivated,
         "form": form,
     }
     return render(request, "profiles/profile_imports.html", context)
