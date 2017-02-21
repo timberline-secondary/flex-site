@@ -86,6 +86,9 @@ class Block(models.Model):
     def synervoice_noreg_string(self):
         return "F" + str(self.id) + "-NOREG"
 
+    def synervoice_noreg_string(self):
+        return "F" + str(self.id) + "-PRESENT_OR_EXCUSED"
+
 
 class EventManager(models.Manager):
     def all_for_date(self, event_date, block=None):
@@ -476,6 +479,19 @@ class RegistrationManager(models.Manager):
         return students_dict
 
     def all_attendance(self, event_date, reg_only=False):
+        '''
+
+        :param event_date:
+        :param reg_only:
+        :return: A list of absent student dictionaries
+        [
+            {...}, # student profile model info
+            {'Block1': attendance},
+            {'Block1': registered_event},
+            {'Block2': attendance},
+            {'Block2': registered_event},
+        ]
+        '''
         students = User.objects.all().filter(
             is_active=True,
             is_staff=False,
@@ -510,14 +526,23 @@ class RegistrationManager(models.Manager):
                     reg = user_regs_qs.get(block=block)
                     if reg.absent and not reg_only:
                         # need to check if excused this block
-                        student_dict[block.constant_string()] = block.synervoice_absent_string()  # absent
+                        student_dict[block.constant_string()] = "ABSENT"
+                    else:
+                        student_dict[block.constant_string()] = "PRESENT OR EXCUSED"
+
+                    student_dict[block.constant_string() + "_EVENT"] = reg.event.title
+
                 except ObjectDoesNotExist:  # not registered
 
                     # If not registered, then check if they were excused
                     student = User.objects.get(id=student_dict['id'])
                     excuses = student.excuse_set.all().date(event_date).in_block(block)
                     if not excuses:
-                        student_dict[block.constant_string()] = block.synervoice_noreg_string()
+                        student_dict[block.constant_string()] = "NOT REGISTERED"
+                    else:
+                        student_dict[block.constant_string()] = "EXCUSED"
+
+                    student_dict[block.constant_string() + "_EVENT"] = "NONE"
 
         return students
 

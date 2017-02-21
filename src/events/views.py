@@ -387,16 +387,39 @@ def generate_synervoice_csv(request, d, no_reg_only=False):
     response['Content-Disposition'] = 'attachment; filename=' + filename
 
     writer = csv.writer(response)
+
+    writer.writerow(["Student Name",
+                     "Student Number",
+                     "Homeroom Teacher",
+                    "Grade",
+                     "Home Phone",
+                     "Home Email",
+                     "Date",
+                     "Flex-1 Status",
+                     "Flex-1 Event",
+                     "Flex-2 Status",
+                     "Flex-2 Event",
+                     ])
+
     for s in absent_data:
-        writer.writerow([s['last_name'] + ", " + s['first_name'],
-                         s['username'],
-                         s['profile__homeroom_teacher'],
-                         s['profile__grade'],
-                         s['profile__phone'],
-                         s['profile__email'],
-                         d_str,
-                         blocks_absent(s),  # Add F regardless of whether absent or didn't register, one or both
-                         ])
+        # hack to remove excused students
+        if "EXCUSED" in s['FLEX1'] and "EXCUSED" in s['FLEX2']:
+            # if present: "PRESENT OR EXCUSED" so also caught
+            pass
+        else:
+            writer.writerow([s['last_name'] + ", " + s['first_name'],
+                             s['username'],
+                             s['profile__homeroom_teacher'],
+                             s['profile__grade'],
+                             s['profile__phone'],
+                             s['profile__email'],
+                             d_str,
+                             s['FLEX1'],
+                             s['FLEX1_EVENT'],
+                             s['FLEX2'],
+                             s['FLEX2_EVENT'],
+                             # blocks_absent(s),  # Add F regardless of whether absent or didn't register, one or both
+                             ])
 
     return response
 
