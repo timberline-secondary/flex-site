@@ -403,7 +403,7 @@ def generate_synervoice_csv(request, d, no_reg_only=False):
 
     for s in absent_data:
         # hack to remove excused students
-        if "EXCUSED" in s['FLEX1'] and "EXCUSED" in s['FLEX2']:
+        if "EX" in s['FLEX1'] and "EX" in s['FLEX2']:
             # if present: "PRESENT OR EXCUSED" so also caught
             pass
         else:

@@ -522,27 +522,29 @@ class RegistrationManager(models.Manager):
                 student_dict['profile__homeroom_teacher'] = hr_teacher.get_full_name()
 
             for block in Block.objects.all():
+                check_if_excused = False
                 try:
                     reg = user_regs_qs.get(block=block)
                     if reg.absent and not reg_only:
-                        # need to check if excused this block
-                        student_dict[block.constant_string()] = "ABSENT"
+                        student_dict[block.constant_string()] = "ABS"
+                        check_if_excused = True
                     else:
-                        student_dict[block.constant_string()] = "PRESENT OR EXCUSED"
+                        student_dict[block.constant_string()] = "PR/EX"
 
-                    student_dict[block.constant_string() + "_EVENT"] = reg.event.title
+                    title = reg.event.title
+                    student_dict[block.constant_string() + "_EVENT"] = title[:22] + "..." if len(title) > 25 else title
 
                 except ObjectDoesNotExist:  # not registered
+                    student_dict[block.constant_string() + "_EVENT"] = "NONE"
+                    student_dict[block.constant_string()] = "NOREG"
+                    check_if_excused = True
 
-                    # If not registered, then check if they were excused
+                # Check if they were excused?
+                if check_if_excused:
                     student = User.objects.get(id=student_dict['id'])
                     excuses = student.excuse_set.all().date(event_date).in_block(block)
-                    if not excuses:
-                        student_dict[block.constant_string()] = "NOT REGISTERED"
-                    else:
-                        student_dict[block.constant_string()] = "EXCUSED"
-
-                    student_dict[block.constant_string() + "_EVENT"] = "NONE"
+                    if excuses:
+                        student_dict[block.constant_string()] = "EX"
 
         return students
 
