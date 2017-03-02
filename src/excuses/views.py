@@ -1,5 +1,7 @@
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.models import User
+from django.db.models import Prefetch
 from django.shortcuts import render, redirect, get_object_or_404
 
 from django.urls import reverse_lazy
@@ -12,8 +14,10 @@ from excuses.models import Excuse
 
 @staff_member_required
 def excuse_list(request, block_id=None):
-    queryset = Excuse.objects.all()
-    queryset.prefetch_related('students', 'blocks')
+    queryset = Excuse.objects.all().prefetch_related(
+        Prefetch('students', queryset=User.objects.order_by('last_name')), 'blocks')
+    # queryset = Excuse.objects.all()
+    # queryset.prefetch_related('students', 'blocks')
     context = {
         "object_list": queryset,
     }
