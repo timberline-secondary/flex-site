@@ -16,6 +16,20 @@
     font-size: 72px;
 }
 
+.panel-top {
+    margin-top: 20px;
+}
+
+.panel-table {
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+}
+
+.panel-table .table-no-bordered {
+    border: 0px;
+}
+
 /*body.wait, body.wait *{*/
  /*cursor: wait !important;*/
 /*}*/

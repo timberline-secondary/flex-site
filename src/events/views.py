@@ -215,6 +215,12 @@ def event_manage(request):
     return render(request, "events/event_management.html", context)
 
 
+###############################################
+#
+#       ATTENDANCE VIEWS
+#
+################################################
+
 @staff_member_required
 def event_attendance_keypad(request, id, block_id=None, absent_value=True):
     event = get_object_or_404(Event, id=id)
@@ -234,10 +240,15 @@ def event_attendance_keypad_disable(request, id, block_id=None):
 @staff_member_required
 def event_attendance(request, id=None, block_id=None):
     event = get_object_or_404(Event, id=id)
+    blocks = event.blocks.all()
+
+    multi_block_save_option = blocks.count() > 1 and \
+                              (event.multi_block_event == Event.F1_AND_F2 or event.multi_block_event == Event.F1_OR_F2)
+
     if block_id:
         active_block = get_object_or_404(Block, id=block_id)
     else:
-        active_block = event.blocks.all()[0]
+        active_block = blocks[0]
 
     queryset1 = Registration.objects.filter(event=event, block=active_block).order_by('student__last_name')
 
@@ -266,6 +277,7 @@ def event_attendance(request, id=None, block_id=None):
         "formset1": formset1,
         "helper": helper,
         "active_block": active_block,
+        "multi_block_save_option": multi_block_save_option,
     }
     return render(request, "events/attendance.html", context)
 
@@ -323,6 +335,11 @@ def event_list(request, block_id=None):
     }
     return render(request, "events/event_list.html", context)
 
+###############################################
+#
+#      STAFF LOCATIONS
+#
+################################################
 
 @login_required
 def staff_locations(request):
