@@ -1,7 +1,8 @@
 /**
  * Created by couture on 01/12/16.
  */
-var $table = $('#table'),
+var $table = $('#table, #table-highlighted'),
+// var $table = $('.event-table'),
 
     // $flex1_selection = $('#event-Flex-1'),
     // $flex2_selection = $('#event-Flex-2'),
