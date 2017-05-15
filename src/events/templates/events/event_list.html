@@ -96,47 +96,47 @@
 
       <!-- Highlighted events -->
 
-      <div class="row">
-        <div class="col-sm-12">
-          <div class="panel panel-warning panel-top">
-            <div class="panel-heading" id="highlighted-events-list">
-              <h3 class="panel-title">Highlighted events for {{ active_block }} this week</h3>
-            </div>
-            <div class="panel-body bg-warning panel-table">
-
-              <table data-toggle="table"
-                 data-classes="table table-no-bordered"
-                 data-mobile-responsive="true"
-                 data-check-on-init="true"
-                 data-min-width="753"
-                 id="table">
-                <thead>
-                <tr>
-                  <th data-field="id" data-visible="false">ID</th>
-                  <th data-field="date" data-visible="false">Date</th>
-                  <th data-field="blocks">Blocks</th>
-                  <th data-field="blockselection" data-visible="false">Block Selection</th>
-                  <th data-field="title">Title</th>
-                  <th data-field="titletext" data-visible="false">Title Plain Text</th>
-                  <th data-field="location">Location</th>
-                  <th data-field="teachers">Teachers</th>
-                  <th data-field="category">Category</th>
-                  <th data-field="description">Description</th>
-                </tr>
-                </thead>
-                <tbody>
-                  {% for event in object_list %}
-                    {% if event.highlight %}
-                      {% include 'events/event_row.html' %}
-                    {% endif %}
-                  {% endfor %}
-                </tbody>
-              </table>
-
-            </div> <!-- panel-body -->
-          </div> <!-- panel -->
-        </div> <!-- col -->
-      </div> <!-- row -->
+{#      <div class="row">#}
+{#        <div class="col-sm-12">#}
+{#          <div class="panel panel-warning panel-top">#}
+{#            <div class="panel-heading" id="highlighted-events-list">#}
+{#              <h3 class="panel-title">Highlighted events for {{ active_block }} this week</h3>#}
+{#            </div>#}
+{#            <div class="panel-body bg-warning panel-table">#}
+{##}
+{#              <table data-toggle="table"#}
+{#                 data-classes="table table-no-bordered"#}
+{#                 data-mobile-responsive="true"#}
+{#                 data-check-on-init="true"#}
+{#                 data-min-width="753"#}
+{#                 id="table">#}
+{#                <thead>#}
+{#                <tr>#}
+{#                  <th data-field="id" data-visible="false">ID</th>#}
+{#                  <th data-field="date" data-visible="false">Date</th>#}
+{#                  <th data-field="blocks">Blocks</th>#}
+{#                  <th data-field="blockselection" data-visible="false">Block Selection</th>#}
+{#                  <th data-field="title">Title</th>#}
+{#                  <th data-field="titletext" data-visible="false">Title Plain Text</th>#}
+{#                  <th data-field="location">Location</th>#}
+{#                  <th data-field="teachers">Teachers</th>#}
+{#                  <th data-field="category">Category</th>#}
+{#                  <th data-field="description">Description</th>#}
+{#                </tr>#}
+{#                </thead>#}
+{#                <tbody>#}
+{#                  {% for event in object_list %}#}
+{#                    {% if event.highlight %}#}
+{#                      {% include 'events/event_row.html' %}#}
+{#                    {% endif %}#}
+{#                  {% endfor %}#}
+{#                </tbody>#}
+{#              </table>#}
+{##}
+{#            </div> <!-- panel-body -->#}
+{#          </div> <!-- panel -->#}
+{#        </div> <!-- col -->#}
+{#      </div> <!-- row -->#}
 
 
 
