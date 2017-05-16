@@ -14,7 +14,7 @@
           You can also log in using the <i class="fa fa-bars visible-xs-inline"></i> menu at the top right</p>
             <form method="POST" action="{% url 'auth_login' %}">{%  csrf_token %}
             <div class="form-group">
-              <input type="text" class="form-control" name="username" placeholder="Username" autofocus />
+              <input type="text" class="form-control autofocus" name="username" placeholder="Username" />
             </div>
             <div class="form-group">
               <input type="password" class="form-control" name="password" placeholder="Password" />

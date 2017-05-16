@@ -101,6 +101,9 @@ $(document).ready(function() {
     if(!sessionStorage.showLoginModal) // if the session cookie exists, don't show.
     $('#login-modal')
       .modal('show') // show the login modal
+      .on('shown.bs.modal', function () {
+        $('.autofocus').focus()
+      })
       .on('hidden.bs.modal', function (e) {
         sessionStorage.showLoginModal = false // don't show again this session.
       });
