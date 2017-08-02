@@ -5,6 +5,9 @@ production_*.py
 # python manage.py collectstatic
 static_cdn/
 
+#Mac
+.DS_Store
+
 # Linux:
 bin/
 include/

@@ -20,7 +20,7 @@ from profiles.models import Profile
 from .models import Event, default_event_date, Registration, Block
 from .forms import EventForm, AttendanceForm, AttendanceFormSetHelper, RegistrationForm, LocationForm
 
-#Nandini was here
+#Hello it's Me (Nandini)
 @staff_member_required
 def location_create(request):
     form = LocationForm(request.POST or None)
