@@ -4,7 +4,7 @@ from django.contrib import admin
 # Register your models here.
 from django.db import transaction
 
-from .models import Event, Block, Location, Category, Registration
+from .models import Event, Block, Location, Category, Registration, CoreCompetency
 
 
 class CategoryAdmin(admin.ModelAdmin):
@@ -12,6 +12,12 @@ class CategoryAdmin(admin.ModelAdmin):
 
     class Meta:
         model = Category
+
+class CoreCompetencyAdmin(admin.ModelAdmin):
+    list_display = ["name", "link"]
+
+    class Meta:
+        model = CoreCompetency
 
 
 class RegistrationAdmin(admin.ModelAdmin):
@@ -85,3 +91,4 @@ admin.site.register(Location)
 admin.site.register(Block, BlockAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Registration, RegistrationAdmin)
+admin.site.register(CoreCompetency, CoreCompetencyAdmin)

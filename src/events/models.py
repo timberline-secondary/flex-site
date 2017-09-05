@@ -24,10 +24,22 @@ from excuses.models import Excuse
 from flex.utils import default_event_date
 
 
+class CoreCompetency(models.Model):
+    name = models.CharField(max_length=120)
+    description = models.TextField()
+    link = models.URLField()
+
+    class Meta:
+        verbose_name_plural = "Core Competencies"
+
+    def __str__(self):
+        return self.name
+
+
 class Category(models.Model):
     name = models.CharField(max_length=120)
     visible_in_event_list = models.BooleanField(default=False)
-    description = models.CharField(max_length=255, blank=True, null=True)
+    description = models.CharField(max_length=512, blank=True, null=True)
 
     class Meta:
         verbose_name_plural = "categories"
@@ -123,6 +135,8 @@ class Event(models.Model):
                   "If the link is to another web page or a file, it will just display the link.")
 
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
+    competencies = models.ManyToManyField(CoreCompetency, null=True, blank=True,
+                                          help_text="The Core Competencies relevant to this event.")
     date = models.DateField(default=default_event_date)
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
     blocks = models.ManyToManyField(Block, help_text="In which block(s) will this event occur?")

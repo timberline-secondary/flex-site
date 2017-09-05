@@ -159,6 +159,7 @@ class EventForm(forms.ModelForm):
             "highlight",
             "facilitators",
             "category",
+            "competencies",
             "location",
             "max_capacity",
             "description",
@@ -172,7 +173,17 @@ class EventForm(forms.ModelForm):
             #                                   }),
             'facilitators': UserCustomTitleWidget,
             'blocks': CheckboxSelectMultiple,
+            'competencies': CheckboxSelectMultiple,
             # 'location': RelatedFieldWidgetCanAdd(Location, reverse_lazy('events:location_create')),
             # 'location': RelatedFieldWidgetCanAdd(Location, 'events:location_create'),
         }
 
+    # def __init__(self, *args, **kwargs):
+    #     super(EventForm, self).__init__(*args, **kwargs)
+    #     field = 'competencies'
+    #     popup_text = self.fields[field].help_text
+    #     self.fields[field].help_text = None
+    #     if popup_text != '':
+    #         self.fields[field].widget.attrs.update(
+    #             {'class': 'has-popover', 'data-content': popup_text, 'data-placement': 'top',
+    #              'data-container': 'body'})

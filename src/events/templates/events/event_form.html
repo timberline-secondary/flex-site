@@ -71,6 +71,25 @@
           }
       }
 
+      function updateCategorySpecificField($category) {
+          var selection = $category.find("option:selected").text();
+          var $fieldsToToggle = $('#div_id_multi_block_event',
+              '#div_id_description',
+              '#div_id_description_link',
+              '#div_id_registration_cut_off',
+              '#div_id_duplicate');
+
+
+
+          if (selection == "Prep" || selection == "Collaboration") {
+              $fieldsToToggle.slideUp();
+          }
+          else {
+              $fieldsToToggle.slideDown();
+          }
+
+      }
+
       $(document).ready(function () {
            /***************************************
            *
@@ -82,6 +101,14 @@
           var $blocks = $('#div_id_blocks>div.controls label');
           // update when page loads in case already more than one block ticked (possible if editing an existing event)
           updateMultiBlockEventField($blocks)
+
+          /***************************************
+          *
+          *  CONDITIONAL DISPLAY FOR PREP OR COLLAB
+          *
+          *************************************/
+          var $category = $('#div_id_category>div.controls select');
+          updateMultiBlockEventField($category)
 
            /***************************************
            *
@@ -127,6 +154,10 @@
             $blocks.click(function () { // when changing number of blocks, display multiEvent field as appropriate
                 updateMultiBlockEventField($blocks);
             });
+            $category.change(function () {
+                updateCategorySpecificField($category);
+            });
+
 
           {% endif %}
 
@@ -179,6 +210,10 @@
               .focusout(function(){
                 $(this).removeClass('focus');
               });
+
+
+          // tooltips
+          $('.has-popover').popover({'trigger':'hover'});
 
       }); // $(document).ready()
   </script>
