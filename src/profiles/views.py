@@ -101,7 +101,9 @@ def mass_update(request):
                     else:
                         # students should have one entry for each semester, only use semester indicated in form
                         # also, ignore students with "grade == NS", these are Non-Students
-                        if (row[5] == semester or row[5] == "LINEAR") and row[4] != "NS":
+                        # SEM 1 or SEM1, so remove spaces before comparison
+                        row_semester = row[5].replace(" ", "")
+                        if (row_semester == semester or row[5] == "LINEAR") and row[4] != "NS":
                             username = row[0]
                             first_name = row[1]
                             last_name = row[2]
