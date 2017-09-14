@@ -89,6 +89,9 @@ def mass_update(request):
             reader = csv.reader(codecs.iterdecode(file, 'utf-8'))
             student_import = True
             count = 0
+
+            users_qs = User.objects.all()
+
             for row in reader:
 
                 sn_regex_string = r"^(9[789])(\d{5})$"
@@ -97,7 +100,8 @@ def mass_update(request):
                 if row and len(row) >= 8:
                     # check for student number
                     if not re.match(sn_regex_string, row[0]):
-                        student_errors.append({'error': "Student number doesn't match pattern", 'row': row})
+                        if row[0] != "Student Number":  #ignore the first header row?
+                            student_errors.append({'error': "Student number doesn't match pattern", 'row': row})
                     else:
                         # students should have one entry for each semester, only use semester indicated in form
                         # also, ignore students with "grade == NS", these are Non-Students
@@ -116,7 +120,8 @@ def mass_update(request):
                             try:  # sometimes homeroom id shows up as 0, which doesn't exist
                                 homeroom_teacher = User.objects.get(username=homeroom_teacher)
                             except User.DoesNotExist:
-                                student_errors.append({'warning': "Homeroom teacher not recognized", 'row': row})
+                                student_errors.append({'warning': "Homeroom teacher with ID '" + homeroom_teacher +
+                                                                  "' not recognized", 'row': row})
                                 homeroom_teacher = None
                             if not grade:  # needs an int so empty string is bad
                                 grade = None
@@ -131,9 +136,8 @@ def mass_update(request):
                             if not email:
                                 email = None
 
-                            qs = User.objects.all()
                             # check if user exists, else create new user
-                            if not qs.filter(username=username).exists():
+                            if not users_qs.filter(username=username).exists():
                                 user = User.objects.create_user(
                                     username=username,
                                     password="wolf",
