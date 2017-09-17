@@ -33,7 +33,19 @@
     {% endif %}
   </td>
   <td class="col-md-1"> {{ event.facilitator_string|safe }} </td>
-  <td class="col-md-1"> {{ event.category }}</td>
+  <td class="col-md-1">
+    <ul class="list-inline hidden-xs">
+      {% for competency in event.competencies.all %}
+          <li>{{ competency.name }}</li>
+      {% empty %}
+          <li>-</li>
+      {% endfor %}
+    </ul>
+    <div class="visible-xs-inline">
+      {{ event.competencies.all|join:", " }}
+    </div>
+
+  </td>
   <td class="col-md-6">
     {% include 'events/event_description.html' %}
   </td>
