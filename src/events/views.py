@@ -294,7 +294,10 @@ def event_list(request, block_id=None):
     blocks = Block.objects.all()
     blocks_json = serializers.serialize('json', blocks, fields=('id', 'name', ))
 
-    queryset = active_block.event_set.filter(date=d, category__visible_in_event_list=True).select_related('location')
+    queryset = active_block.event_set.filter(
+        date=d,
+        category__visible_in_event_list=True
+    ).select_related('location').prefetch_related('competencies')
 
     registrations = {}
     excuses_dict = {}
