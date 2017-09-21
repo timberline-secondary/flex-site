@@ -136,12 +136,14 @@ def event_copy(request, id):
 
     blocks = new_event.blocks.all()
     facilitators = new_event.facilitators.all()
+    competencies = new_event.competencies.all()
 
     new_event.pk = None  # autogen a new primary key (quest_id by default)
     new_event.date = None
 
     d = {'blocks': blocks,
          'facilitators': facilitators,
+         'competencies': competencies,
          }
 
     form = EventForm(request.POST or None, instance=new_event, initial=d)
