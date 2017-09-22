@@ -152,7 +152,19 @@ def event_copy(request, id):
     if form.is_valid():
         event = form.save()
 
-        messages.success(request, "New event created for %s: <b>%s</b>" % (event.date, event.title))
+        msg = "New event created for %s: <b>%s</b>" % (event.date, event.title)
+
+        num_duplicates = form.cleaned_data['duplicate']
+        if num_duplicates:
+            dupe_dates = event.copy(num_duplicates, user=request.user)
+            # http://stackoverflow.com/questions/9052433/overriding-default-format-when-printing-a-list-of-datetime-objects
+            msg += "; duplicates made for %s." % ', '.join(map(str, dupe_dates))
+
+        if not event.cache_remote_image():
+            messages.warning(request, "Failed to properly cache your image.  Don't worry about it for now... unless "
+                                      "you didn't provide an image link, in which case please let Tylere know!")
+
+        messages.success(request, msg)
 
         block_id = event.blocks.all()[0].id
         date_query = event.date

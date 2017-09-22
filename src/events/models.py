@@ -243,6 +243,7 @@ class Event(models.Model):
 
             facilitators = self.facilitators.all()
             blocks = self.blocks.all()
+            competencies = self.competencies.all()
             duplicate_event = self
             # https://docs.djangoproject.com/en/1.10/topics/db/queries/#copying-model-instances
             duplicate_event.pk = None  # autogen a new primary key (will create a new record)
@@ -253,6 +254,7 @@ class Event(models.Model):
             duplicate_event.save()
             duplicate_event.blocks.set(blocks)
             duplicate_event.facilitators.set(facilitators)
+            duplicate_event.competencies.set(competencies)
             dates = duplicate_event.copy(num - 1, dates=dates)  # recursive
         return dates
 
