@@ -229,6 +229,41 @@ def event_manage(request):
     return render(request, "events/event_management.html", context)
 
 
+@staff_member_required
+def stats(request):
+    date_query = request.GET.get("date", str(default_event_date()))
+    d = datetime.strptime(date_query, "%Y-%m-%d").date()
+    blocks = Block.objects.all()
+
+    registration_stats = {"Slots": {}, "Registrations": {}}
+
+    for block in blocks:
+        registration_stats["Slots"][block] = Event.objects.all_for_date(d, block=block).count()
+        registration_stats["Registrations"][block] = Registration.objects.filter(event__date=d, block=block).count()
+
+    registration_stats["Slots"]["Total"] = sum(registration_stats["Slots"].values())
+    registration_stats["Registrations"]["Total"] = sum(registration_stats["Registrations"].values())
+    #registration_stats["Registrations"]["Total"] = sum(registration_stats["Registrations"].values())
+
+    context = {
+        "date_filter": date_query,
+        "date_object": d,
+        "stats": registration_stats,
+        # "num_spots_by_block": num_spots_by_block,
+        # "num_slots_total": num_slots_total,
+        # "num_registrations_by_block": num_registrations_by_block,
+        # "num_registrations_total": num_registrations_total,
+        # "title": "List",
+        # "object_list": queryset,
+        # "registrations": registrations,
+        # "excuses": excuses_dict,
+        # "blocks_json": blocks_json,
+        "blocks": blocks,
+        # "active_block": active_block,
+    }
+
+    return render(request, "events/stats.html", context)
+
 ###############################################
 #
 #       ATTENDANCE VIEWS
