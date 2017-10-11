@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block style %}
+  <link rel="stylesheet" href="{% static 'css/events.css' %}">
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+{% endblock style %}
+
+
+{% block head_title %}Event Stats | {{ block.super }}{% endblock %}
+
+{% block content %}
+
+  <h1>Event Stats</h1>
+
+  {%  include 'events/date_filter.html' %}
+
+    <table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            {% for heading in stats %}
+            <th>{{ heading }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+    <tbody>
+        {% for block in blocks %}
+            <tr>
+                <td>{{ block }}</td>
+                {% for heading, stat_by_block in stats.items %}
+                    {% for block_stat, stat in stat_by_block.items %}
+                        {% if block_stat == block %}
+                        <th>{{ stat }}</th>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+
+        <tr>
+            <td>Total</td>
+            {% for heading, stat in stats.items %}
+                <td>{{ stat.Total }}</td>
+            {% endfor %}
+        </tr>
+    </tbody>
+
+    </table>
+
+
+{% endblock content %}
+
+{% block js %}
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+  {#  Date Filter#}
+  <script src="{% static 'js/events-datepicker.js' %}"></script>
+
+{% endblock js %}
