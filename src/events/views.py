@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.serializers import json
+from django.db.models import Sum
 from django.forms import modelformset_factory, model_to_dict
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404, redirect
@@ -238,26 +239,20 @@ def stats(request):
     registration_stats = {"Slots": {}, "Registrations": {}}
 
     for block in blocks:
-        registration_stats["Slots"][block] = Event.objects.all_for_date(d, block=block).count()
+        registration_stats["Slots"][block] = Event.objects.all_for_date(d, block=block).aggregate(Sum('max_capacity'))
+        registration_stats["Slots"][block] = registration_stats["Slots"][block]["max_capacity__sum"]
+        #print(registration_stats["Slots"][block])
+
         registration_stats["Registrations"][block] = Registration.objects.filter(event__date=d, block=block).count()
 
-    registration_stats["Slots"]["Total"] = sum(registration_stats["Slots"].values())
-    registration_stats["Registrations"]["Total"] = sum(registration_stats["Registrations"].values())
+   # registration_stats["Slots"]["Total"] = sum(registration_stats["Slots"].values())
+   # registration_stats["Registrations"]["Total"] = sum(registration_stats["Registrations"].values())
     #registration_stats["Registrations"]["Total"] = sum(registration_stats["Registrations"].values())
 
     context = {
         "date_filter": date_query,
         "date_object": d,
         "stats": registration_stats,
-        # "num_spots_by_block": num_spots_by_block,
-        # "num_slots_total": num_slots_total,
-        # "num_registrations_by_block": num_registrations_by_block,
-        # "num_registrations_total": num_registrations_total,
-        # "title": "List",
-        # "object_list": queryset,
-        # "registrations": registrations,
-        # "excuses": excuses_dict,
-        # "blocks_json": blocks_json,
         "blocks": blocks,
         # "active_block": active_block,
     }
