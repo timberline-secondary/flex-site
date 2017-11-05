@@ -326,6 +326,24 @@ def event_attendance(request, id=None, block_id=None):
     return render(request, "events/attendance.html", context)
 
 
+def event_list_export(request):
+    date_query = request.GET.get("date", str(default_event_date()))
+    d = datetime.strptime(date_query, "%Y-%m-%d").date()
+
+    queryset = Event.objects.all()
+
+    queryset = Event.objects.all().filter(
+        date=d,
+    ).select_related('location').prefetch_related('competencies')
+
+    context = {
+        "object_list": queryset,
+        "date_filter": date_query,
+        "date_object": d,
+    }
+    return render(request, "events/event_list_export.html", context)
+
+
 def event_list(request, block_id=None):
     date_query = request.GET.get("date", str(default_event_date()))
     d = datetime.strptime(date_query, "%Y-%m-%d").date()

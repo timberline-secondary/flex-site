@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block style %}
+  <link rel="stylesheet" href="{% static 'css/events.css' %}">
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+{% endblock style %}
+
+
+{% block head_title %}Events Export | {{ block.super }}{% endblock %}
+
+
+
+{% block content %}
+
+  <h1>All Event Data <small class="responsive-wrap">{{ date_object }}</small></h1>
+  <div class="hidden-print">{%  include 'events/date_filter.html' %}</div>
+
+      <table data-toggle="table"
+             data-classes="table table-no-bordered table-hover"
+             data-show-columns="true"
+             data-show-export="true"
+             data-export-types="['csv']"
+             data-search="true"
+             data-id-field="id"
+             data-unique-id="id"
+             data-blocks="{{ blocks_json }}"
+             data-mobile-responsive="true"
+             data-check-on-init="true"
+             data-min-width="753"
+             data-sort-name="blocks"
+             data-sort-order="{% if active_block.id == 2 %}asc{% else %}desc{% endif %}"
+             id="table">
+          <thead>
+          <tr>
+            <th data-field="id" data-visible="false">ID</th>
+            <th data-field="date" data-sortable="true">Date</th>
+            <th data-field="blocks" data-sortable="true">Blocks</th>
+            <th data-field="title" data-sortable="true">Title</th>
+            <th data-field="location" data-sortable="true">Location</th>
+            <th data-field="teachers" data-sortable="true" >Teachers</th>
+            <th data-field="competencies" data-visible="false">Competencies</th>
+            <th data-field="description" data-visible="false">Description</th>
+            <th data-field="capacity" data-visible="true" data-sortable="true">Capacity</th>
+
+          </tr>
+          </thead>
+          <tbody>
+          {% for event in object_list %}
+            <tr>
+              <td> {{ event.id }}</td>
+              <td> {{ event.date| date:"Y-m-d" }}</td>
+              <td>{{ event.blocks_str }}</td>
+              <td>{{ event.title }}</td>
+              <td>{{ event.location }}</td>
+              <td> {{ event.facilitator_string|safe }} </td>
+              <td>
+                <ul class="list-inline">
+                  {% for competency in event.competencies.all %}
+                      <li>{{ competency.name }}</li>
+                  {% empty %}
+                      <li>-</li>
+                  {% endfor %}
+                </ul>
+              </td>
+              <td>{{ event.description }}</td>
+              <td>{{ event.max_capacity }}</td>
+            </tr>
+
+          {% endfor %}
+          </tbody>
+      </table>
+
+    </div>  <!-- col -->
+  </div>  <!-- row -->
+
+
+
+
+
+
+
+
+{% endblock content %}
+
+{% block js %}
+  {#  Date Filter#}
+  <script src="{% static 'js/events-datepicker.js' %}"></script>
+
+  <!-- Bootstrap Tables:  http://bootstrap-table.wenzhixin.net.cn/ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
+  <script src="{% static 'js/bootstrap-table-mobile.js' %}"></script>
+  <script src="{% static 'js/tableExport.min.js' %}"></script>
+  <script src="{% static 'js/bootstrap-table-export.js' %}"></script>
+
+{% endblock js %}
