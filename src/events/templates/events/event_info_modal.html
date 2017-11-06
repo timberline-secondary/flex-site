@@ -12,6 +12,7 @@
       <div class="modal-body">
         <b>Teachers:</b> {{ event.facilitator_string|safe }}<br>
         <b>Location:</b> {{ event.location }} {% if event.location.name %}({{ event.location.name }}){% endif %}<br>
+        <b>Competencies:</b> {{ event.competencies.all|join:", " }}<br>
         <b>Description:</b>
         {% include 'events/event_description.html' %}
       </div>

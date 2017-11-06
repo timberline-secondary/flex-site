@@ -17,6 +17,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import DeleteView
+
+from excuses.models import Excuse
 from profiles.models import Profile
 from .models import Event, default_event_date, Registration, Block
 from .forms import EventForm, AttendanceForm, AttendanceFormSetHelper, RegistrationForm, LocationForm
@@ -236,18 +238,13 @@ def stats(request):
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
     blocks = Block.objects.all()
 
-    registration_stats = {"Slots": {}, "Registrations": {}}
+    registration_stats = {"Slots": {}, "Registrations": {}, "Excused": {}}
 
     for block in blocks:
         registration_stats["Slots"][block] = Event.objects.all_for_date(d, block=block).aggregate(Sum('max_capacity'))
         registration_stats["Slots"][block] = registration_stats["Slots"][block]["max_capacity__sum"]
-        #print(registration_stats["Slots"][block])
-
         registration_stats["Registrations"][block] = Registration.objects.filter(event__date=d, block=block).count()
-
-   # registration_stats["Slots"]["Total"] = sum(registration_stats["Slots"].values())
-   # registration_stats["Registrations"]["Total"] = sum(registration_stats["Registrations"].values())
-    #registration_stats["Registrations"]["Total"] = sum(registration_stats["Registrations"].values())
+        registration_stats["Excused"][block] = Excuse.objects.all_on_date(d, block=block).count()
 
     context = {
         "date_filter": date_query,
