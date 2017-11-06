@@ -325,7 +325,7 @@ def event_attendance(request, id=None, block_id=None):
     }
     return render(request, "events/attendance.html", context)
 
-
+@staff_member_required()
 def event_list_export(request):
     date_query = request.GET.get("date", str(default_event_date()))
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
