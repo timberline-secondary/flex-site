@@ -32,10 +32,10 @@ class ExcuseManager(models.Manager):
 
     def all_on_date(self, date, block=None):
         qs = self.get_queryset().date(date)
-        qs.filter(blocks__id=block.id)
-        for excuse in qs:
-            print(block)
-            print(excuse.blocks.all())
+        # qs.filter(blocks__id=block.id)
+        # for excuse in qs:
+        #     print(block)
+        #     print(excuse.blocks.all())
 
         return qs
 

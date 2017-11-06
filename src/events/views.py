@@ -244,7 +244,7 @@ def stats(request):
         registration_stats["Slots"][block] = Event.objects.all_for_date(d, block=block).aggregate(Sum('max_capacity'))
         registration_stats["Slots"][block] = registration_stats["Slots"][block]["max_capacity__sum"]
         registration_stats["Registrations"][block] = Registration.objects.filter(event__date=d, block=block).count()
-        registration_stats["Excused"][block] = Excuse.objects.all_on_date(d, block=block).count()
+        # registration_stats["Excused"][block] = Excuse.objects.all_on_date(d, block=block).count()
 
     context = {
         "date_filter": date_query,
