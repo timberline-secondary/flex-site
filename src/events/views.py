@@ -238,7 +238,7 @@ def stats(request):
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
     blocks = Block.objects.all()
 
-    registration_stats = {"Slots": {}, "Registrations": {}, "Excused": {}}
+    registration_stats = {"Slots": {}, "Registrations": {}} #, "Excused": {}}
 
     for block in blocks:
         registration_stats["Slots"][block] = Event.objects.all_for_date(d, block=block).aggregate(Sum('max_capacity'))

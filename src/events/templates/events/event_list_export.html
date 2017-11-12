@@ -40,8 +40,8 @@
             <th data-field="title" data-sortable="true">Title</th>
             <th data-field="location" data-sortable="true">Location</th>
             <th data-field="teachers" data-sortable="true" >Teachers</th>
-            <th data-field="competencies" data-visible="false">Competencies</th>
-            <th data-field="category" data-visible="false">Category</th>
+            <th data-field="competencies" data-visible="false" >Competencies</th>
+            <th data-field="category" data-visible="false" data-sortable="true">Category</th>
             <th data-field="description" data-visible="false">Description</th>
             <th data-field="capacity" data-visible="true" data-sortable="true">Capacity</th>
 
@@ -53,7 +53,7 @@
               <td> {{ event.id }}</td>
               <td> {{ event.date| date:"Y-m-d" }}</td>
               <td>{{ event.blocks_str }}</td>
-              <td>{{ event.title }}</td>
+              <td><a href="{% url 'events:detail' event.id %}">{{ event.title }}</a></td>
               <td>{{ event.location }}</td>
               <td> {{ event.facilitator_string|safe }} </td>
               <td>
