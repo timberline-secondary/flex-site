@@ -14,7 +14,7 @@ from excuses.models import Excuse
 
 @staff_member_required
 def excuse_list(request, block_id=None):
-    queryset = Excuse.objects.all().prefetch_related(
+    queryset = Excuse.objects.current().prefetch_related(
         Prefetch('students', queryset=User.objects.order_by('last_name')), 'blocks')
     # queryset = Excuse.objects.all()
     # queryset.prefetch_related('students', 'blocks')

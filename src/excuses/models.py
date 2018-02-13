@@ -30,6 +30,11 @@ class ExcuseManager(models.Manager):
     def get_queryset(self):
         return ExcuseQuerySet(self.model, using=self._db)
 
+    def current(self):
+        """ Filters out excuses that have past (has an end date beyond today)
+        """
+        return self.get_queryset().filter(last_date__gte=default_event_date())
+
     def all_on_date(self, date, block=None):
         qs = self.get_queryset().date(date)
         # qs.filter(blocks__id=block.id)
