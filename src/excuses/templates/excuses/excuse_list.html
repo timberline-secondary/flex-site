@@ -8,52 +8,72 @@
 
 {% block content %}
 
-  <h1>Excused Students List</h1>
-  <a role="button" class="btn btn-primary" href="{% url 'excuses:excuse_create' %}">New</a>
-  <table data-toggle="table"
-         data-classes="table table-no-bordered table-hover"
-         data-search="true"
-         data-sort-name="first_date"
-         data-sort-order="desc"
-         id="table">
+    <h1>Excused Students List</h1>
+    <a role="button" class="btn btn-primary" href="{% url 'excuses:excuse_create' %}">New</a>
+    <table data-toggle="table"
+           data-classes="table table-no-bordered table-hover"
+           data-search="true"
+           data-sort-name="last_date"
+           data-sort-order="desc"
+           id="table">
 
-      <thead>
-      <tr>
-        <th>Actions</th>
-        <th data-field="first_date" data-sortable="true">Start</th>
-        <th data-field="last_date" data-sortable="true">End</th>
-        <th data-field="blocks" data-sortable="true">Blocks</th>
-        <th data-field="reason" data-sortable="true">Reason</th>
-        <th data-field="students">Students</th>
-      </tr>
-      </thead>
-      <tbody>
-      {% for excuse in object_list %}
+        <thead>
         <tr>
-          <td>
-            <a href="{% url 'excuses:excuse_edit' excuse.id %}">Edit</a>
-          </td>
-          <td>{{ excuse.first_date }}</td>
-          <td>{{ excuse.last_date }}</td>
-          <td><small>
-            {% for block in excuse.blocks.all %}
-              {{block}};
-            {% endfor %}
-          </small></td>
-          <td>{{ excuse.reason }}</td>
-          <td><small>
-            {% for student in excuse.students.all %}
-              {{student.get_full_name}};
-            {% endfor %}
-          </small></td>
+            <th>Actions</th>
+            <th data-field="first_date" data-sortable="true" data-sorter="dateSorter">Start</th>
+            <th data-field="last_date" data-sortable="true" data-sorter="dateSorter">End</th>
+            <th data-field="blocks" data-sortable="true">Blocks</th>
+            <th data-field="reason" data-sortable="true">Reason</th>
+            <th data-field="students">Students</th>
         </tr>
-      {% endfor %}
-      </tbody>
-  </table>
+        </thead>
+        <tbody>
+        {% for excuse in object_list %}
+            <tr>
+                <td>
+                    <a href="{% url 'excuses:excuse_edit' excuse.id %}">Edit</a>
+                </td>
+                <td>{{ excuse.first_date }}<span style="display:none;">{{ excuse.first_date|date:'Ymd' }}</span></td>
+                <td>{{ excuse.last_date }}<span style="display:none;">{{ excuse.first_date|date:'Ymd' }}</span></td>
+                <td>
+                    <small>
+                        {% for block in excuse.blocks.all %}
+                            {{ block }};
+                        {% endfor %}
+                    </small>
+                </td>
+                <td>{{ excuse.reason }}</td>
+                <td>
+                    <small>
+                        {% for student in excuse.students.all %}
+                            {{ student.get_full_name }};
+                        {% endfor %}
+                    </small>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 
 {% endblock content %}
 
 {% block js %}
-  <!-- Bootstrap Tables:  http://bootstrap-table.wenzhixin.net.cn/ -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
+    <!-- Bootstrap Tables:  http://bootstrap-table.wenzhixin.net.cn/ -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
+
+    <script>
+        function dateSorter(a, b) {
+            // need to pull 8 digit date out of this part of a,b: <div>YYYYMMDD</div>
+            var re = /\d{6}/; // max 6 digits from 0-9
+            var dateA = a.match(re); // first element is the match
+            var dateB = b.match(re); // first element is the match
+
+            dateA = dateA == null ? 0 : dateA[0];
+            dateB = dateB == null ? 0 : dateB[0];
+
+            if (dateA > dateB) return 1;
+            if (dateA < dateB) return -1;
+            return 0;
+        }
+    </script>
 {% endblock %}
