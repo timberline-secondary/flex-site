@@ -34,6 +34,7 @@ class RelatedFieldWidgetCanAdd(widgets.Select):
 
 class StudentsCustomTitleWidget(ModelSelect2MultipleWidget):
     model = User
+    queryset = User.objects.filter(is_active=True)
 
     search_fields = [
         'first_name__istartswith',
