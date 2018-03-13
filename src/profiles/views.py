@@ -51,6 +51,7 @@ def mass_update(request):
     form = UserImportForm(request.POST or None, request.FILES or None)
 
     positions_to_import = ["TEACH", "CL10", "ADM"]  # currently not included: EA, CUST
+    grades_to_ignore = ["AD", "HS", "RG", "NS"]  # ADult grad, Home Schooled, Returning Grad, Non Student
 
     if form.is_valid():
         if 'staff_csv_file' in request.FILES:
@@ -104,10 +105,10 @@ def mass_update(request):
                             student_errors.append({'error': "Student number doesn't match pattern", 'row': row})
                     else:
                         # students should have one entry for each semester, only use semester indicated in form
-                        # also, ignore students with "grade == NS", these are Non-Students
+                        # also, ignore students with off grade entries
                         # SEM 1 or SEM1, so remove spaces before comparison
                         row_semester = row[5].replace(" ", "")
-                        if (row_semester == semester or row[5] == "LINEAR") and row[4] != "NS":
+                        if (row_semester == semester or row[5] == "LINEAR") and row[4] not in grades_to_ignore:
                             username = row[0]
                             first_name = row[1]
                             last_name = row[2]
