@@ -37,6 +37,7 @@ class CoreCompetency(models.Model):
 
 
 class Category(models.Model):
+    DEFAULT_CATEGORY_ID = 1
     name = models.CharField(max_length=120)
     visible_in_event_list = models.BooleanField(default=False)
     description = models.CharField(max_length=512, blank=True, null=True)
@@ -134,7 +135,8 @@ class Event(models.Model):
                   "or an image (png, jpg, or gif), the media will be embedded with the description."
                   "If the link is to another web page or a file, it will just display the link.")
 
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
+    category = models.ForeignKey(Category, default=Category.DEFAULT_CATEGORY_ID, on_delete=models.SET_NULL, null=True,
+                                 help_text="Only the 'Student Event' category will be visible to students.")
     competencies = models.ManyToManyField(CoreCompetency, null=True, blank=True,
                                           help_text="The Core Competencies relevant to this event.")
     date = models.DateField(default=default_event_date)
