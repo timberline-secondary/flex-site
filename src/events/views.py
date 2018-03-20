@@ -437,6 +437,60 @@ def staff_locations(request):
 ################################################
 
 @staff_member_required
+def stats2(request, d):
+    def blocks_absent(s):
+        str = ""
+        sep = ""
+        if 'FLEX1' in s:
+            str += s['FLEX1']
+            sep = " "
+        if 'FLEX2' in s:
+            str += sep + s['FLEX2']
+        return str
+
+    d_str = d.strftime("%y%m%d")
+    attendance_data = Registration.objects.all_attendance(d)
+
+    absent_data = []
+    excused_data = []
+
+    for s in attendance_data:
+        # A 9h column exists if the student was absent or didn't register
+        # maybe check for key instead?
+        if len(s) > 8:
+            absent_data.append(s)
+        else:
+            excused_data.append(s)
+
+
+
+
+
+
+    # for s in absent_data:
+    #     # hack to remove excused students
+    #     if "EX" in s['FLEX1'] and "EX" in s['FLEX2']:
+    #         # if present: "PRESENT OR EXCUSED" so also caught
+    #         pass
+    #     else:
+    #         writer.writerow([s['last_name'] + ", " + s['first_name'],
+    #                          s['username'],
+    #                          s['profile__homeroom_teacher'],
+    #                          s['profile__grade'],
+    #                          s['profile__phone'],
+    #                          s['profile__email'],
+    #                          d_str,
+    #                          s['FLEX1'],
+    #                          s['FLEX1_EVENT'],
+    #                          s['FLEX2'],
+    #                          s['FLEX2_EVENT'],
+    #                          # blocks_absent(s),  # Add F regardless of whether absent or didn't register, one or both
+    #                          ])
+
+    return None
+
+
+@staff_member_required
 def generate_synervoice_csv(request, d, no_reg_only=False):
     def blocks_absent(s):
         str = ""

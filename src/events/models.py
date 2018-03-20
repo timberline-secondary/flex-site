@@ -1,6 +1,7 @@
 import mimetypes
 import urllib
 from datetime import date, timedelta, datetime
+from enum import Enum
 
 import embed_video
 import os
@@ -428,6 +429,19 @@ def event_post_save(sender, instance, **kwargs):
 post_save.connect(event_post_save, sender=Event)
 
 
+class Status:
+    def __init__(self, code, label):
+        self.code = code
+        self.label = label
+
+STATUS = {
+    'NR': Status('NOREG', 'Not Registered'),
+    'EX': Status('EX', 'Excused'),
+    'PR': Status('PR/EX', 'Present or Excused'),
+    'AB': Status('ABS', 'Absent')
+}
+
+
 class RegistrationManager(models.Manager):
     def create_registration(self, event, student, block):
         # need to check if student already has an event on that date in this block, if so, modify.
@@ -442,12 +456,27 @@ class RegistrationManager(models.Manager):
         qs = self.get_queryset()
         return qs.filter(student=student).filter(event__date=event_date).filter(block=block)
 
+    # def all_registered_unexcused(self, event_date, block=None):
+    #     """
+    #     :param event_date:
+    #     :param block: a list of blocks to check. If no block, then check all.
+    #     :return: a queryset of students registered in the block (or all blocks)
+    #     """
+    #     registrations_qs = self.get_queryset().filter(event__date=event_date)
+    #     students = User.objects.all().filter(is_staff=False, is_active=True)
+    #
+    #     # get dictionary of students
+    #     students_list = students.values('id', 'username')
+    #
+    #     return None
+
+
     def registration_check(self, event_date, homeroom_teacher=None):
-        '''
+        """
         :param event_date:
         :param homeroom_teacher: if not provided, will return all students
         :return: a list of student dicts, including their events for each block and excuses, if any
-        '''
+        """
 
         registrations_qs = self.get_queryset().filter(event__date=event_date)
         students = User.objects.all().filter(is_staff=False, is_active=True)
@@ -548,17 +577,17 @@ class RegistrationManager(models.Manager):
                 try:
                     reg = user_regs_qs.get(block=block)
                     if reg.absent and not reg_only:
-                        student_dict[block.constant_string()] = "ABS"
+                        student_dict[block.constant_string()] = STATUS['AB'].code
                         check_if_excused = True
                     else:
-                        student_dict[block.constant_string()] = "PR/EX"
+                        student_dict[block.constant_string()] = STATUS['PR'].code
 
                     title = reg.event.title
                     student_dict[block.constant_string() + "_EVENT"] = title[:22] + "..." if len(title) > 25 else title
 
                 except ObjectDoesNotExist:  # not registered
                     student_dict[block.constant_string() + "_EVENT"] = "NONE"
-                    student_dict[block.constant_string()] = "NOREG"
+                    student_dict[block.constant_string()] = STATUS['NR'].code
                     check_if_excused = True
 
                 # Check if they were excused?
@@ -566,7 +595,7 @@ class RegistrationManager(models.Manager):
                     student = User.objects.get(id=student_dict['id'])
                     excuses = student.excuse_set.all().date(event_date).in_block(block)
                     if excuses:
-                        student_dict[block.constant_string()] = "EX"
+                        student_dict[block.constant_string()] = STATUS['EX'].code
 
         return students
 
