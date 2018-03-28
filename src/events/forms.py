@@ -9,7 +9,6 @@ from django.utils.safestring import mark_safe
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from tinymce.widgets import TinyMCE
 
 from .models import Event, Registration, Location
 
@@ -169,8 +168,6 @@ class EventForm(forms.ModelForm):
             # "allow_facilitators_to_modify",
         ]
         widgets = {
-            # 'description': TinyMCE(mce_attrs={'theme': 'simple',
-            #                                   }),
             'facilitators': UserCustomTitleWidget,
             'blocks': CheckboxSelectMultiple,
             'competencies': CheckboxSelectMultiple,
