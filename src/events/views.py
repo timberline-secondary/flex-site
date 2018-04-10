@@ -1,4 +1,5 @@
 import csv
+from collections import OrderedDict
 from datetime import date, datetime
 
 from django.contrib import messages
@@ -256,6 +257,36 @@ def stats(request):
 
     return render(request, "events/stats.html", context)
 
+
+@staff_member_required
+def stats2(request):
+    date_query = request.GET.get("date", str(default_event_date()))
+    d = datetime.strptime(date_query, "%Y-%m-%d").date()
+    blocks = Block.objects.all()
+
+    students = User.objects.all().filter(is_active=True, is_staff=False)
+    total_students = students.count()
+
+    stats = OrderedDict()  # empty dict
+
+    for block in blocks:
+        stats["# " + str(block)] = block.registration_set.filter(event__date=d).count()
+        stats["% " + str(block)] = int(block.registration_set.filter(event__date=d).count()/total_students * 100)
+
+    stats["# all"] = 3
+    stats["% all"] = int(stats["# all"]/total_students * 100)
+
+    print(stats)
+    context = {
+        "date_filter": date_query,
+        "date_object": d,
+        "stats": stats,
+        "blocks": blocks,
+        "student_count": total_students,
+    }
+
+    return render(request, "events/stats2.html", context)
+
 ###############################################
 #
 #       ATTENDANCE VIEWS
@@ -435,59 +466,6 @@ def staff_locations(request):
 #       SYNERVOICE VIEWS
 #
 ################################################
-
-@staff_member_required
-def stats2(request, d):
-    def blocks_absent(s):
-        str = ""
-        sep = ""
-        if 'FLEX1' in s:
-            str += s['FLEX1']
-            sep = " "
-        if 'FLEX2' in s:
-            str += sep + s['FLEX2']
-        return str
-
-    d_str = d.strftime("%y%m%d")
-    attendance_data = Registration.objects.all_attendance(d)
-
-    absent_data = []
-    excused_data = []
-
-    for s in attendance_data:
-        # A 9h column exists if the student was absent or didn't register
-        # maybe check for key instead?
-        if len(s) > 8:
-            absent_data.append(s)
-        else:
-            excused_data.append(s)
-
-
-
-
-
-
-    # for s in absent_data:
-    #     # hack to remove excused students
-    #     if "EX" in s['FLEX1'] and "EX" in s['FLEX2']:
-    #         # if present: "PRESENT OR EXCUSED" so also caught
-    #         pass
-    #     else:
-    #         writer.writerow([s['last_name'] + ", " + s['first_name'],
-    #                          s['username'],
-    #                          s['profile__homeroom_teacher'],
-    #                          s['profile__grade'],
-    #                          s['profile__phone'],
-    #                          s['profile__email'],
-    #                          d_str,
-    #                          s['FLEX1'],
-    #                          s['FLEX1_EVENT'],
-    #                          s['FLEX2'],
-    #                          s['FLEX2_EVENT'],
-    #                          # blocks_absent(s),  # Add F regardless of whether absent or didn't register, one or both
-    #                          ])
-
-    return None
 
 
 @staff_member_required

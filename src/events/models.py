@@ -242,7 +242,7 @@ class Event(models.Model):
                 new_date = copy_date
             else:
                 new_date = self.date + timedelta(7)
-                print(new_date)
+                #print(new_date)
 
             facilitators = self.facilitators.all()
             blocks = self.blocks.all()
@@ -529,6 +529,7 @@ class RegistrationManager(models.Manager):
 
         return students_dict
 
+
     def all_attendance(self, event_date, reg_only=False):
         '''
 
@@ -547,6 +548,8 @@ class RegistrationManager(models.Manager):
             is_active=True,
             is_staff=False,
         )
+
+
 
         students = students.values('id',
                                    'username',

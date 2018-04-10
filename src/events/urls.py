@@ -20,7 +20,8 @@ urlpatterns = [
     url(r'^(?P<id>\d+)/attendance/block/(?P<block_id>\d+)/$', views.event_attendance, name='attendance_by_block'),
     url(r'^staff/$', views.staff_locations, name='staff_locations'),
     url(r'^synervoice/$', views.synervoice, name='synervoice'),
-    url(r'^stats/$', views.stats, name='stats'),
+    url(r'^stats/$', views.stats2, name='stats'),
+    url(r'^stats2/$', views.stats2, name='stats2'),
 
     # Locations
     url(r'^locations/create/$', views.location_create, name='location_create'),
