@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.serializers import json
+from django.db import models
 from django.db.models import Sum
 from django.forms import modelformset_factory, model_to_dict
 from django.http import HttpResponse, HttpResponseRedirect, Http404
@@ -258,31 +259,55 @@ def stats(request):
     return render(request, "events/stats.html", context)
 
 
+def get_stats(date, grade=None):
+    blocks = Block.objects.all()
+
+    students = User.objects.filter(is_active=True, is_staff=False)
+    if grade:
+        students = students.filter(profile__grade=grade)
+
+    total_students = students.count()
+
+    reg_stats = OrderedDict()  # empty dict
+
+    reg_stats["count"] = total_students
+
+    for block in blocks:
+        count = total_students - block.registration_set.filter(event__date=date).count()
+        reg_stats["# " + str(block)] = count
+        reg_stats["% " + str(block)] = int(count/total_students * 100)
+
+    # count the number of students who have registered for NO events
+    both_count = students.annotate(
+        num_of_articles=models.Count(
+                    models.Case(models.When(registration__event__date=date, then=1), output_field=models.IntegerField())
+        )
+    ).filter(num_of_articles=0).count()
+
+    reg_stats["# all"] = both_count
+    reg_stats["% all"] = int(both_count/total_students * 100)
+
+    return reg_stats
+
+
 @staff_member_required
 def stats2(request):
     date_query = request.GET.get("date", str(default_event_date()))
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
     blocks = Block.objects.all()
 
-    students = User.objects.all().filter(is_active=True, is_staff=False)
-    total_students = students.count()
-
     stats = OrderedDict()  # empty dict
 
-    for block in blocks:
-        stats["# " + str(block)] = block.registration_set.filter(event__date=d).count()
-        stats["% " + str(block)] = int(block.registration_set.filter(event__date=d).count()/total_students * 100)
+    for grade in range(9,13):
+        stats[str(grade)] = get_stats(d, grade=grade)
 
-    stats["# all"] = 3
-    stats["% all"] = int(stats["# all"]/total_students * 100)
+    stats["All"] = get_stats(d)
 
-    print(stats)
     context = {
         "date_filter": date_query,
         "date_object": d,
         "stats": stats,
         "blocks": blocks,
-        "student_count": total_students,
     }
 
     return render(request, "events/stats2.html", context)

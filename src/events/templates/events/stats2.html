@@ -30,10 +30,10 @@
         </tr>
         </thead>
     <tbody>
+        {% for grade, grade_stats in stats.items %}
         <tr>
-            <td>All</td>
-            <td>{{ student_count }}</td>
-            {% for label, value in stats.items %}
+            <td>{{ grade }}</td>
+            {% for label, value in grade_stats.items %}
                 <td>{{ value }}{% if "%" in label %}%{% endif %}</td>
             {% endfor %}
 {##}
@@ -44,6 +44,7 @@
 {#            {% endfor %}#}
 {#        </tr>#}
         </tr>
+    {% endfor %}
     </tbody>
 
     </table>
