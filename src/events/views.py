@@ -266,6 +266,8 @@ def get_stats(date, grade=None):
     if grade:
         students = students.filter(profile__grade=grade)
 
+    # remove excused students
+
     total_students = students.count()
 
     reg_stats = OrderedDict()  # empty dict
@@ -295,6 +297,9 @@ def stats2(request):
     date_query = request.GET.get("date", str(default_event_date()))
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
     blocks = Block.objects.all()
+
+    excused = Excuse.objects.students_excused_on_date(d)
+    print(excused.count())
 
     stats = OrderedDict()  # empty dict
 

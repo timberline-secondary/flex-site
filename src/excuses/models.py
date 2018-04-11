@@ -44,6 +44,14 @@ class ExcuseManager(models.Manager):
 
         return qs
 
+    def students_excused_on_date(self, date, block=None):
+        #https://stackoverflow.com/questions/45062238/django-getting-a-list-of-foreign-key-objects
+        return User.objects.filter(
+            is_active=True,
+            is_staff=False,
+            excuse__in=Excuse.objects.all_on_date(date, block=block)
+        )
+
 
 class Excuse(models.Model):
     students = models.ManyToManyField(User, limit_choices_to={'is_staff': False})
