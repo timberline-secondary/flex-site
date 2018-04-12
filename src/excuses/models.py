@@ -67,7 +67,7 @@ class ExcuseManager(models.Manager):
 
         return qs
 
-    def students_excused_on_date(self, date, blocks, students=None):
+    def students_excused_on_date(self, date, block, students=None):
         """
         :param date: excuses covering this date
         :param students: a queryset of students to check
@@ -79,7 +79,7 @@ class ExcuseManager(models.Manager):
         if not students:
             students = User.objects.filter(is_active=True, is_staff=False)
 
-        return students.filter(excuse__in=self.get_queryset().date(date).in_blocks_exact(blocks))
+        return students.filter(excuse__in=self.get_queryset().date(date).in_block(block))
 
 
 class Excuse(models.Model):

@@ -280,19 +280,21 @@ def get_stats(date, grade=None):
 
     for block in blocks:
         # remove excused students
-        # excused = Excuse.objects.students_excused_on_date(date, Block.objects.filter(id=block.id), students=students)
+        num_excused = Excuse.objects.students_excused_on_date(date, block, students=students).count()
         # print("Excused for grade and block: " + str(grade) + " " + str(block))
-        # print(excused)
+        # print(excused.count())
 
         registered_qs = block.registration_set.filter(event__date=date)
         if grade:
             registered_qs = registered_qs.filter(student__profile__grade=grade)
         num_registered = registered_qs.count()
 
-        count = total_students - num_registered
-        # reg_stats["Ex " + str(block)] = excused.count()
+        total = total_students - num_excused
+
+        count = total - num_registered
+        # reg_stats["Ex " + str(block)] = num_excused
         reg_stats["# " + str(block)] = count
-        reg_stats["% " + str(block)] = int(count/total_students * 100)
+        reg_stats["% " + str(block)] = int(count/total * 100)
 
     # count the number of students who have registered for NO events
     # reg_both_count = students.annotate(
