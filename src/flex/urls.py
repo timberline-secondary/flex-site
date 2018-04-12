@@ -30,7 +30,6 @@ urlpatterns = [
     # url(r'^accounts/', include('userena.urls')),
     url(r'^accounts/', include('registration.backends.default.urls')),
     url(r'^select2/', include('django_select2.urls')),
-    url(r'^tinymce/', include('tinymce.urls')),
     # custom apps
     url(r'^events/', include('events.urls', namespace='events')),
     url(r'^profiles/', include('profiles.urls', namespace='profiles')),

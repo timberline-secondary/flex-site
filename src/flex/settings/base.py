@@ -45,7 +45,6 @@ INSTALLED_APPS = (
 
     'crispy_forms',
     'django_select2',  # http://django-select2.readthedocs.io/en/latest/get_started.html
-    'tinymce',  # https://github.com/aljosa/django-tinymce
     'embed_video',  # https://github.com/jazzband/django-embed-video
     'imagekit', #https://github.com/matthewwithanm/django-imagekit
 
@@ -131,10 +130,3 @@ CACHES = {
     }
 }
 
-# TINYMCE_EXTRA_MEDIA = {
-#     'css': {
-#         'all': [
-#             'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css',
-#         ],
-#     },
-# }

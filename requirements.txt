@@ -6,7 +6,6 @@ django-embed-video==1.1.0
 django-imagekit==3.3
 django-registration-redux==1.4
 Django-Select2==5.8.10
-django-tinymce==2.4.0
 html2text==2014.12.29
 html5lib==0.9999999
 pilkit==1.1.13
