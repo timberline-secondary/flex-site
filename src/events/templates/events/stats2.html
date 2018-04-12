@@ -8,46 +8,49 @@
 {% endblock style %}
 
 
-{% block head_title %}Event Stats | {{ block.super }}{% endblock %}
+{% block head_title %}Stats | {{ block.super }}{% endblock %}
 
 {% block content %}
 
-  <h1>Event Stats</h1>
+    <h1>Stats</h1>
 
-  {%  include 'events/date_filter.html' %}
+    {%  include 'events/date_filter.html' %}
 
-    <table class="table">
-    <thead>
-        <tr>
-            <th>Grade</th>
-            <th>Count</th>
-            {% for block in blocks %}
-                <th>{{ block }} NR #</th>
-                <th>{{ block }} NR %</th>
-            {% endfor %}
-            <th>Both NR #</th>
-            <th>Both NR %</th>
-        </tr>
+    <h3>Registration Stats</h3>
+
+        <table class="table table-bordered table-hover" style="width:50%;">
+        <thead>
+            <tr>
+                <th rowspan="2">Grade</th>
+                <th rowspan="2">Count</th>
+                {% for block in blocks %}
+                    <th colspan="2">{{ block }}</th>
+                {% endfor %}
+            </tr>
+            <tr>
+                {% for block in blocks %}
+{#                    <th>{{ block }} Exc</th>#}
+                    <th>No reg #</th>
+                    <th>No reg %</th>
+                {% endfor %}
+{#                <th>Both Exc</th>#}
+{#                <th>Both NR #</th>#}
+{#                <th>Both NR %</th>#}
+            </tr>
         </thead>
-    <tbody>
-        {% for grade, grade_stats in stats.items %}
-        <tr>
-            <td>{{ grade }}</td>
-            {% for label, value in grade_stats.items %}
-                <td>{{ value }}{% if "%" in label %}%{% endif %}</td>
-            {% endfor %}
-{##}
-{#        <tr>#}
-{#            <td>Total</td>#}
-{#            {% for heading, stat in stats.items %}#}
-{#                <td>{{ stat.Total }}</td>#}
-{#            {% endfor %}#}
-{#        </tr>#}
-        </tr>
-    {% endfor %}
-    </tbody>
-
+        <tbody>
+            {% for grade, grade_stats in stats.items %}
+            <tr>
+                <th scope="row">{{ grade }}</th>
+                {% for label, value in grade_stats.items %}
+                    <td>{{ value }}{% if "%" in label %}%{% endif %}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
     </table>
+
+{#    <h3>Excuse Stats</h3>#}
 
 
 {% endblock content %}

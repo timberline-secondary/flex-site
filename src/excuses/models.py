@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from django.db import models
 
 # Create your models here.
+from django.db.models import Count
+
 from flex.utils import default_event_date
 
 
@@ -21,6 +23,27 @@ class ExcuseQuerySet(models.QuerySet):
 
     def in_block(self, block):
         return self.filter(blocks=block)
+
+    def in_blocks_exact(self, blocks):
+        # https://stackoverflow.com/questions/16324362/django-queryset-get-exact-manytomany-lookup
+
+        # print(len(blocks))
+        # print(self)
+
+
+        excuse_qs = self.annotate(count=Count('blocks')).filter(count=len(blocks))
+
+        # print(excuse_qs)
+        # for exc in excuse_qs:
+        #     print(exc)
+        #     print(exc.blocks)
+        #     print("*********")
+
+        for block in blocks:
+            # print (block)
+            excuse_qs = excuse_qs.filter(blocks=block)
+            # print(excuse_qs)
+        return excuse_qs
 
     def for_student(self, user):
         return self.filter(students=user)
@@ -44,13 +67,19 @@ class ExcuseManager(models.Manager):
 
         return qs
 
-    def students_excused_on_date(self, date, block=None):
-        #https://stackoverflow.com/questions/45062238/django-getting-a-list-of-foreign-key-objects
-        return User.objects.filter(
-            is_active=True,
-            is_staff=False,
-            excuse__in=Excuse.objects.all_on_date(date, block=block)
-        )
+    def students_excused_on_date(self, date, blocks, students=None):
+        """
+        :param date: excuses covering this date
+        :param students: a queryset of students to check
+        :param blocks: a queryset of Block objects
+        :return: a queryset of students who are excused on this date, for the given blocks
+        """
+
+        # https://stackoverflow.com/questions/45062238/django-getting-a-list-of-foreign-key-objects
+        if not students:
+            students = User.objects.filter(is_active=True, is_staff=False)
+
+        return students.filter(excuse__in=self.get_queryset().date(date).in_blocks_exact(blocks))
 
 
 class Excuse(models.Model):

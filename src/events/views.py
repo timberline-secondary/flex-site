@@ -260,13 +260,17 @@ def stats(request):
 
 
 def get_stats(date, grade=None):
+    """
+    :param date:
+    :param grade:
+    :return: An OrderedDict like this:
+    {["Count" : 123, "# Flex-1": 32, "% Flex-1": 26, ... "# Flex-n": 132, "% Flex-n": 26, "# all": 132, "% all": 26 ]}
+    """
     blocks = Block.objects.all()
 
     students = User.objects.filter(is_active=True, is_staff=False)
     if grade:
         students = students.filter(profile__grade=grade)
-
-    # remove excused students
 
     total_students = students.count()
 
@@ -275,19 +279,33 @@ def get_stats(date, grade=None):
     reg_stats["count"] = total_students
 
     for block in blocks:
-        count = total_students - block.registration_set.filter(event__date=date).count()
+        # remove excused students
+        # excused = Excuse.objects.students_excused_on_date(date, Block.objects.filter(id=block.id), students=students)
+        # print("Excused for grade and block: " + str(grade) + " " + str(block))
+        # print(excused)
+
+        registered_qs = block.registration_set.filter(event__date=date)
+        if grade:
+            registered_qs = registered_qs.filter(student__profile__grade=grade)
+        num_registered = registered_qs.count()
+
+        count = total_students - num_registered
+        # reg_stats["Ex " + str(block)] = excused.count()
         reg_stats["# " + str(block)] = count
         reg_stats["% " + str(block)] = int(count/total_students * 100)
 
     # count the number of students who have registered for NO events
-    both_count = students.annotate(
-        num_of_articles=models.Count(
-                    models.Case(models.When(registration__event__date=date, then=1), output_field=models.IntegerField())
-        )
-    ).filter(num_of_articles=0).count()
+    # reg_both_count = students.annotate(
+    #     num_of_articles=models.Count(
+    #                 models.Case(models.When(registration__event__date=date, then=1), output_field=models.IntegerField())
+    #     )
+    # ).filter(num_of_articles=2).count()
 
-    reg_stats["# all"] = both_count
-    reg_stats["% all"] = int(both_count/total_students * 100)
+    # excused = Excuse.objects.students_excused_on_date(date, blocks, students=students)
+    # reg_stats["Ex all"] = excused.count()
+    # count = total_students - reg_both_count
+    # reg_stats["# all"] = count
+    # reg_stats["% all"] = int(count/total_students * 100)
 
     return reg_stats
 
@@ -298,12 +316,9 @@ def stats2(request):
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
     blocks = Block.objects.all()
 
-    excused = Excuse.objects.students_excused_on_date(d)
-    print(excused.count())
-
     stats = OrderedDict()  # empty dict
 
-    for grade in range(9,13):
+    for grade in range(9, 13):
         stats[str(grade)] = get_stats(d, grade=grade)
 
     stats["All"] = get_stats(d)
