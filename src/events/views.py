@@ -284,7 +284,7 @@ def get_stats(date, grade=None):
         excused_students = Excuse.objects.students_excused_on_date(date, block, students=students)
         # print("Grade: " + str(grade) + ", Block: " + str(block))
 
-        not_registered_students = students.exclude(registration__event__date=date).exclude(registration__block=block)
+        not_registered_students = students.exclude(registration__event__date=date, registration__block=block)
         registered_students = students.filter(registration__event__date=date, registration__block=block)
 
         # remove registered students from the excused students, if there are any, so they aren't counted twice
