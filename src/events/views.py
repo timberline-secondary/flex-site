@@ -278,23 +278,24 @@ def get_stats(date, grade=None):
 
     reg_stats["count"] = total_students
 
+    # for each block, find the number of excused students and registered students, subtract from the total to get
+    # number of non-registered students
     for block in blocks:
-        # remove excused students
-        num_excused = Excuse.objects.students_excused_on_date(date, block, students=students).count()
-        # print("Excused for grade and block: " + str(grade) + " " + str(block))
-        # print(excused.count())
+        excused_students = Excuse.objects.students_excused_on_date(date, block, students=students)
+        num_excused = excused_students.count()
 
-        registered_qs = block.registration_set.filter(event__date=date)
-        if grade:
-            registered_qs = registered_qs.filter(student__profile__grade=grade)
-        num_registered = registered_qs.count()
+        registered_students = students.filter(registration__event__date=date, registration__block=block)
+        # remove excused students from the registered students, if there are any, so they aren't counted twice
+        # This is needed because excused student can still register for events if they want
+        registered_students = registered_students.difference(excused_students)
+        num_registered = registered_students.count()
 
         total = total_students - num_excused
-
         count = total - num_registered
-        # reg_stats["Ex " + str(block)] = num_excused
+
+        reg_stats["Ex " + str(block)] = num_excused
         reg_stats["# " + str(block)] = count
-        reg_stats["% " + str(block)] = int(count/total * 100)
+        reg_stats["% " + str(block)] = int(count/total_students * 100)
 
     # count the number of students who have registered for NO events
     # reg_both_count = students.annotate(

@@ -24,12 +24,12 @@
                 <th rowspan="2">Grade</th>
                 <th rowspan="2">Count</th>
                 {% for block in blocks %}
-                    <th colspan="2">{{ block }}</th>
+                    <th colspan="3">{{ block }}</th>
                 {% endfor %}
             </tr>
             <tr>
                 {% for block in blocks %}
-{#                    <th>Exc</th>#}
+                    <th>Exc</th>
                     <th>No reg #</th>
                     <th>No reg %</th>
                 {% endfor %}
