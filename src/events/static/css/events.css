@@ -91,6 +91,15 @@ tr[data-event-available="true"]:hover {
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
 }
 
+table.stats-table {
+    max-width: 700px;
+}
+
+table.stats-table td, table.stats-table th {
+    text-align: center;
+}
+
+
 /* JQUERY ARE YOU SURE PLUG IN */
 
 /* match crispy-forms styling */
