@@ -32,6 +32,7 @@ urlpatterns = [
     url(r'^registrations/(?P<id>\d+)/delete$', views.registrations_delete, name='registrations_delete'),
     url(r'^registrations/all/$', views.registrations_all, name='registrations_all'),
     url(r'^registrations/homeroom/$', views.registrations_homeroom, name='registrations_homeroom'),
+    url(r'^registrations/homeroom/(?P<employee_number>\d+)/$', views.registrations_homeroom, name='registrations_homeroom'),
     url(r'^registrations/manage/$', views.registrations_manage, name='registrations_manage'),
     # url(r'^registrations/homeroom/$', views.homeroom, name='homeroom'),
 

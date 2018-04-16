@@ -730,12 +730,12 @@ def registrations_manage(request):
 
 
 @staff_member_required
-def registrations_homeroom(request, user_id=None):
+def registrations_homeroom(request, employee_number=None):
     date_query = request.GET.get("date", str(default_event_date()))
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
 
-    if user_id:
-        homeroom_teacher = get_object_or_404(User, id=user_id)
+    if employee_number:
+        homeroom_teacher = get_object_or_404(User, username=employee_number)
     else:
         homeroom_teacher = request.user
 
