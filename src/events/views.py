@@ -10,6 +10,7 @@ from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.serializers import json
 from django.db import models
+from django.db.models import Q
 from django.db.models import Sum, Count
 from django.forms import modelformset_factory, model_to_dict
 from django.http import HttpResponse, HttpResponseRedirect, Http404
@@ -787,11 +788,17 @@ def stats_staff(request):
     staff = User.objects.filter(is_staff=True, is_active=True)
     #staff = User.objects.filter(is_staff=True, is_active=True).prefetch_related('')
 
-    # we only need stats on staff with homeroom students
-    staff = staff.annotate(Count('students')).filter(students__count__gt=0)
+    # Remove stafff with no active homeroom students
+    # https://stackoverflow.com/questions/30752268/how-to-filter-objects-for-count-annotation-in-django
+    staff = staff.annotate(active_students_count=models.Sum(
+        models.Case(
+            models.When(students__user__is_active=True, then=1),
+            default=0,
+            output_field=models.IntegerField()
+        )))
+    staff = staff.filter(active_students_count__gt=0)
 
     staff_stats = OrderedDict()  # empty dict
-
     for teacher in staff:
         staff_stats[teacher] = get_registration_stats(d, students=User.objects.filter(profile__in=teacher.students.all(),
                                                                                       is_active=True))
