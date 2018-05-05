@@ -746,6 +746,7 @@ def registrations_homeroom(request, employee_number=None):
         "students": students,
         "date_filter": date_query,
         "date_object": d,
+        "title": "Homeroom",
     }
     return render(request, "events/homeroom_list.html", context)
 
@@ -763,5 +764,6 @@ def registrations_all(request):
         "date_filter": date_query,
         "date_object": d,
         "include_homeroom_teacher": 'true',
+        "title": "All Students",
     }
     return render(request, "events/homeroom_list.html", context)
