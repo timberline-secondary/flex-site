@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block head_title %}Delete Excuse | {{ block.super }}{% endblock %}
+
+{% block content %}
+  <h1>Confirm Deletion of Excuse # {{ object.id }}</h1>
+
+  <p>Are you sure you want to delete this excuse?</p>
+    <ul>
+        <li>Start: {{ object.first_date}}</li>
+        <li>End: {{ object.last_date}}</li>
+        <li>Blocks:
+            <ul>{{ excuse.blocks.all|unordered_list}}</ul>
+        </li>
+        <li>{{ object.reason }}</li>
+        <li>Students:
+            <ul>
+                {% for student in object.students.all %}
+                    <li>{{ student.get_full_name }};</li>
+                {% endfor %}
+            </ul>
+        </li>
+    </ul>
+
+
+  <form method="post">{% csrf_token %}
+    <a href="{% url 'excuses:excuse_list' %}" class="btn btn-default">Cancel</a>
+    <input type="submit" class="btn btn-danger" value="Delete" />
+  </form>
+
+
+{% endblock content %}
