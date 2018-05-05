@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import User
@@ -10,15 +12,21 @@ from django.views.generic import DeleteView
 
 from excuses.forms import ExcuseForm
 from excuses.models import Excuse
+from flex.utils import default_event_date
 
 
 @staff_member_required
 def excuse_list(request, block_id=None):
-    queryset = Excuse.objects.current().prefetch_related(
+    date_query = request.GET.get("date", str(default_event_date()))
+    d = datetime.strptime(date_query, "%Y-%m-%d").date()
+
+    queryset = Excuse.objects.current(d).prefetch_related(
         Prefetch('students', queryset=User.objects.order_by('last_name')), 'blocks')
     # queryset = Excuse.objects.all()
     # queryset.prefetch_related('students', 'blocks')
     context = {
+        "date_filter": date_query,
+        "date_object": d,
         "object_list": queryset,
     }
     return render(request, "excuses/excuse_list.html", context)
@@ -40,6 +48,7 @@ def excuse_create(request):
         return redirect('excuses:excuse_list')
 
     context = {
+
         "title": "Excuse Students",
         "form": form,
         "btn_value": "Save"
