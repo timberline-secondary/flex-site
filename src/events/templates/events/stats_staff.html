@@ -27,47 +27,25 @@
             <th data-field="id" data-sortable="true">Number</th>
             <th data-field="first" data-sortable="true">First Name</th>
             <th data-field="last" data-sortable="true">Last Name</th>
-            <th data-field="count" data-sortable="true">Homeroom Count</th>
-            {#      <th data-field="grade" data-sortable="true">Grade</th>#}
-            {#      <th data-field="homeroom"#}
-            {#          data-sortable="true"#}
-            {#          data-visible="{{ include_homeroom_teacher }}"#}
-            {#      >#}
-            {#          Homeroom</th>#}
-            {#      <th data-field="absent" data-sortable="true">Flex 1</th>#}
-            {#      <th data-field="late" data-sortable="true">Flex 2</th>#}
-            {#      <th {% if include_homeroom_teacher %}data-visible="false"{% endif %}>Reset PW</th>#}
+            <th data-field="count" data-sortable="true">Students</th>
+            {% for block in blocks %}
+                <th data-field="noreg-num-{{ block }}" data-sortable="true">No reg #</th>
+                <th data-field="noreg-percent-{{ block }}" data-sortable="true">No reg %</th>
+            {% endfor %}
+
         </tr>
         </thead>
         <tbody>
-        {% for user in staff %}
+            {% for teacher, stats in staff_stats.items %}
             <tr>
-                <td>{{ user.username }}</td>
-                <td>{{ user.first_name }}</td>
-                <td>{{ user.last_name }}</td>
-                <td>{{ user.students.count }}</td>
-
-                {#        <td>{{ student.profile__grade }}</td>#}
-                {#        <td>{{ student.profile__homeroom_teacher}}</td>#}
-                {#        <td>#}
-                {#          {% if student.FLEX1 %}<a href="{{ student.FLEX1_url }}attendance/">{{ student.FLEX1 }}</a>#}
-                {#          {% elif student.FLEX1_excuse %}Excused ({{ student.FLEX1_excuse }})#}
-                {#          {% else %}-{% endif %}#}
-                {#        </td>#}
-                {#        <td>#}
-                {#          {% if student.FLEX2 %}<a href="{{ student.FLEX2_url }}attendance/">{{ student.FLEX2 }}</a>#}
-                {#          {% elif student.FLEX2_excuse %}Excused ({{ student.FLEX2_excuse }})#}
-                {#          {% else %}-{% endif %}#}
-                {#        </td>#}
-                {#        <td>#}
-                {#          <a class="reset-password"#}
-                {#             data-user="{{ student.username }}"#}
-                {#             href="{% url 'profiles:reset_password' student.id %}"#}
-                {#             title='Reset password to "wolf"'>#}
-                {#            <i class="fa fa-key"></i>#}
-                {#          </a></td>#}
+                <td>{{ teacher.username }}</td>
+                <td>{{ teacher.first_name }}</td>
+                <td>{{ teacher.last_name }}</td>
+                {% for label, value in stats.items %}
+                    <td>{{ value }}{% if "%" in label %}%{% endif %}</td>
+                {% endfor %}
             </tr>
-        {% endfor %}
+            {% endfor %}
         </tbody>
     </table>
 

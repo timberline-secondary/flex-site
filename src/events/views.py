@@ -10,7 +10,7 @@ from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.serializers import json
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from django.forms import modelformset_factory, model_to_dict
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404, redirect
@@ -259,16 +259,19 @@ def stats(request):
     return render(request, "events/stats.html", context)
 
 
-def get_registration_stats(date, grade=None):
+def get_registration_stats(date, grade=None, students=None):
     """
     :param date:
     :param grade:
+    :param students:
     :return: An OrderedDict like this:
     {["Count" : 123, "# Flex-1": 32, "% Flex-1": 26, ... "# Flex-n": 132, "% Flex-n": 26, "# all": 132, "% all": 26 ]}
     """
     blocks = Block.objects.all()
 
-    students = User.objects.filter(is_active=True, is_staff=False)
+    if students is None:
+        students = User.objects.filter(is_active=True, is_staff=False)
+
     if grade:
         students = students.filter(profile__grade=grade)
 
@@ -296,7 +299,8 @@ def get_registration_stats(date, grade=None):
 
         # reg_stats["Ex " + str(block)] = num_excused
         reg_stats["# " + str(block)] = num_not_registered
-        reg_stats["% " + str(block)] = int(num_not_registered/total_students * 100)
+        reg_stats["% " + str(block)] = int(num_not_registered/total_students * 100) if total_students else "NA"
+
 
     # count the number of students who have registered for NO events
     # reg_both_count = students.annotate(
@@ -778,17 +782,24 @@ def registrations_all(request):
 def stats_staff(request):
     date_query = request.GET.get("date", str(default_event_date()))
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
+    blocks = Block.objects.all()
 
     staff = User.objects.filter(is_staff=True, is_active=True)
+    #staff = User.objects.filter(is_staff=True, is_active=True).prefetch_related('')
+    staff = staff.annotate(Count('students'))  # default = `students_count`
 
-        #Registration.objects.registration_check(d)
+    staff_stats = OrderedDict()  # empty dict
+
+    for teacher in staff:
+        staff_stats[teacher] = get_registration_stats(d, students=User.objects.filter(profile__in=teacher.students.all()))
 
     context = {
         "heading": "Staff Stats",
         "staff": staff,
         "date_filter": date_query,
         "date_object": d,
-        #"include_homeroom_teacher": 'true',
         "title": "Staff Stats",
+        "blocks": blocks,
+        "staff_stats": staff_stats,
     }
     return render(request, "events/stats_staff.html", context)
