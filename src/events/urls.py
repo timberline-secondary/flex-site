@@ -22,6 +22,8 @@ urlpatterns = [
     url(r'^synervoice/$', views.synervoice, name='synervoice'),
     url(r'^stats/$', views.stats2, name='stats'),
     url(r'^stats2/$', views.stats2, name='stats2'),
+    url(r'^stats/staff/$', views.stats_staff, name='stats_staff'),
+
 
     # Locations
     url(r'^locations/create/$', views.location_create, name='location_create'),

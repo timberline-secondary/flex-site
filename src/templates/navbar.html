@@ -74,6 +74,8 @@
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
             <ul class="dropdown-menu">
+                <li><a href="{% url 'events:stats_staff' %}">Staff Stats</a></li>
+                <li role="separator" class="divider"></li>
               <li><a href="{% url 'excuses:excuse_list' %}">Excused Students</a></li>
               <li><a href="{% url 'profiles:mass_update' %}">Bulk User Import</a></li>
               <li><a href="{% url 'events:synervoice' %}">Synervoice</a></li>

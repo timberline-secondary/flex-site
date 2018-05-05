@@ -40,7 +40,7 @@ class Profile(models.Model):
     homeroom_teacher = models.ForeignKey(settings.AUTH_USER_MODEL,
                                          on_delete=models.SET_NULL,
                                          limit_choices_to={'is_staff': True},
-                                         related_name='profiles',
+                                         related_name='students',
                                          null=True, blank=True
                                          )
     grade = models.IntegerField(null=True, blank=True)

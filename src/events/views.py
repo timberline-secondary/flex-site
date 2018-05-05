@@ -729,6 +729,12 @@ def registrations_manage(request):
     return render(request, "events/registration_list.html", context)
 
 
+################################
+#
+#  Homeroom Views
+#
+###############################
+
 @staff_member_required
 def registrations_homeroom(request, employee_number=None):
     date_query = request.GET.get("date", str(default_event_date()))
@@ -767,3 +773,22 @@ def registrations_all(request):
         "title": "All Students",
     }
     return render(request, "events/homeroom_list.html", context)
+
+@staff_member_required
+def stats_staff(request):
+    date_query = request.GET.get("date", str(default_event_date()))
+    d = datetime.strptime(date_query, "%Y-%m-%d").date()
+
+    staff = User.objects.filter(is_staff=True, is_active=True)
+
+        #Registration.objects.registration_check(d)
+
+    context = {
+        "heading": "Staff Stats",
+        "staff": staff,
+        "date_filter": date_query,
+        "date_object": d,
+        #"include_homeroom_teacher": 'true',
+        "title": "Staff Stats",
+    }
+    return render(request, "events/stats_staff.html", context)

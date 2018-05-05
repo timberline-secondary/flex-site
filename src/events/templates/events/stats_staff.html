@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/events.css' %}">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+{% endblock style %}
+
+{% block head_title %}{{ title }} | {{ block.super }}{% endblock %}
+
+{% block content %}
+
+    <h1>{{ heading }} <small class="responsive-wrap">{{ date_object }}</small></h1>
+
+    {%  include 'events/date_filter.html' %}
+
+    <table data-toggle="table"
+           data-classes="table table-no-bordered table-condensed"
+           data-search="true"
+           data-id-field="id"
+           data-sort-name="last"
+           data-sort-order="asc"
+           id="table">
+        <thead>
+        <tr>
+            <th data-field="id" data-sortable="true">Number</th>
+            <th data-field="first" data-sortable="true">First Name</th>
+            <th data-field="last" data-sortable="true">Last Name</th>
+            <th data-field="count" data-sortable="true">Homeroom Count</th>
+            {#      <th data-field="grade" data-sortable="true">Grade</th>#}
+            {#      <th data-field="homeroom"#}
+            {#          data-sortable="true"#}
+            {#          data-visible="{{ include_homeroom_teacher }}"#}
+            {#      >#}
+            {#          Homeroom</th>#}
+            {#      <th data-field="absent" data-sortable="true">Flex 1</th>#}
+            {#      <th data-field="late" data-sortable="true">Flex 2</th>#}
+            {#      <th {% if include_homeroom_teacher %}data-visible="false"{% endif %}>Reset PW</th>#}
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in staff %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.first_name }}</td>
+                <td>{{ user.last_name }}</td>
+                <td>{{ user.students.count }}</td>
+
+                {#        <td>{{ student.profile__grade }}</td>#}
+                {#        <td>{{ student.profile__homeroom_teacher}}</td>#}
+                {#        <td>#}
+                {#          {% if student.FLEX1 %}<a href="{{ student.FLEX1_url }}attendance/">{{ student.FLEX1 }}</a>#}
+                {#          {% elif student.FLEX1_excuse %}Excused ({{ student.FLEX1_excuse }})#}
+                {#          {% else %}-{% endif %}#}
+                {#        </td>#}
+                {#        <td>#}
+                {#          {% if student.FLEX2 %}<a href="{{ student.FLEX2_url }}attendance/">{{ student.FLEX2 }}</a>#}
+                {#          {% elif student.FLEX2_excuse %}Excused ({{ student.FLEX2_excuse }})#}
+                {#          {% else %}-{% endif %}#}
+                {#        </td>#}
+                {#        <td>#}
+                {#          <a class="reset-password"#}
+                {#             data-user="{{ student.username }}"#}
+                {#             href="{% url 'profiles:reset_password' student.id %}"#}
+                {#             title='Reset password to "wolf"'>#}
+                {#            <i class="fa fa-key"></i>#}
+                {#          </a></td>#}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock content %}
+
+{% block js %}
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    {#  Date Filter#}
+    <script src="{% static 'js/events-datepicker.js' %}"></script>
+
+    <!-- Bootstrap Tables:  http://bootstrap-table.wenzhixin.net.cn/ -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
+
+    {#  Confirm password reset#}
+    <script>
+        $(document).ready(function() {
+            $('.reset-password').click(function() {
+                console.log(this);
+                if (confirm('Reset password to "wolf" for user ' + $(this).data('user') + "?")) {
+                    var url = $(this).attr('href');
+                    $('#content').load(url);
+                }
+                else
+                    return false
+            });
+        });
+    </script>
+{% endblock js %}
