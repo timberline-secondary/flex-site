@@ -12,10 +12,10 @@
 {% block content %}
 
     <h1>{{ heading }} <small class="responsive-wrap">{{ date_object }}</small></h1>
-
     {%  include 'events/date_filter.html' %}
 
-    <table data-toggle="table"
+    <table class="table-hover"
+           data-toggle="table"
            data-classes="table table-no-bordered table-condensed"
            data-search="true"
            data-id-field="id"
@@ -24,9 +24,14 @@
            id="table">
         <thead>
         <tr>
-            <th data-field="first" data-sortable="true">First Name</th>
-            <th data-field="last" data-sortable="true">Last Name</th>
-            <th data-field="count" data-sortable="true">Students</th>
+            <th rowspan="2" data-field="first" data-sortable="true">First Name</th>
+            <th rowspan="2" data-field="last" data-sortable="true">Last Name</th>
+            <th rowspan="2" data-field="count" data-sortable="true">Students</th>
+            {% for block in blocks %}
+                <th colspan="2">{{ block }}</th>
+            {% endfor %}
+        </tr>
+        <tr>
             {% for block in blocks %}
                 <th data-field="noreg-num-{{ block }}" data-sortable="true">No reg #</th>
                 <th data-field="noreg-percent-{{ block }}"
@@ -35,6 +40,7 @@
             {% endfor %}
 
         </tr>
+
         </thead>
         <tbody>
             {% for teacher, stats in staff_stats.items %}
