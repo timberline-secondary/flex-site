@@ -20,7 +20,7 @@ def excuse_list(request, block_id=None):
     date_query = request.GET.get("date", str(default_event_date()))
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
 
-    queryset = Excuse.objects.current(d).prefetch_related(
+    queryset = Excuse.objects.current().prefetch_related(
         Prefetch('students', queryset=User.objects.order_by('last_name')), 'blocks')
     # queryset = Excuse.objects.all()
     # queryset.prefetch_related('students', 'blocks')
