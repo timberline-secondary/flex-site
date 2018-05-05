@@ -24,13 +24,14 @@
            id="table">
         <thead>
         <tr>
-            <th data-field="id" data-sortable="true">Number</th>
             <th data-field="first" data-sortable="true">First Name</th>
             <th data-field="last" data-sortable="true">Last Name</th>
             <th data-field="count" data-sortable="true">Students</th>
             {% for block in blocks %}
                 <th data-field="noreg-num-{{ block }}" data-sortable="true">No reg #</th>
-                <th data-field="noreg-percent-{{ block }}" data-sortable="true">No reg %</th>
+                <th data-field="noreg-percent-{{ block }}"
+                    data-sortable="true"
+                    data-formatter="percentFormatter">No reg %</th>
             {% endfor %}
 
         </tr>
@@ -38,11 +39,13 @@
         <tbody>
             {% for teacher, stats in staff_stats.items %}
             <tr>
-                <td>{{ teacher.username }}</td>
+
                 <td>{{ teacher.first_name }}</td>
-                <td>{{ teacher.last_name }}</td>
+                <td><span style="display:none">{{ teacher.last_name }}</span><a href="{% url 'events:registrations_homeroom' teacher.username %}?date={{ date_filter }}">
+                    {{ teacher.last_name }}</a>
+                </td>
                 {% for label, value in stats.items %}
-                    <td>{{ value }}{% if "%" in label %}%{% endif %}</td>
+                    <td>{{ value }}</td>
                 {% endfor %}
             </tr>
             {% endfor %}
@@ -62,16 +65,9 @@
 
     {#  Confirm password reset#}
     <script>
-        $(document).ready(function() {
-            $('.reset-password').click(function() {
-                console.log(this);
-                if (confirm('Reset password to "wolf" for user ' + $(this).data('user') + "?")) {
-                    var url = $(this).attr('href');
-                    $('#content').load(url);
-                }
-                else
-                    return false
-            });
-        });
+        function percentFormatter(value, row) {
+            return value + ' %';
+        }
+
     </script>
 {% endblock js %}

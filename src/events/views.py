@@ -786,7 +786,9 @@ def stats_staff(request):
 
     staff = User.objects.filter(is_staff=True, is_active=True)
     #staff = User.objects.filter(is_staff=True, is_active=True).prefetch_related('')
-    staff = staff.annotate(Count('students'))  # default = `students_count`
+
+    # we only need stats on staff with homeroom students
+    staff = staff.annotate(Count('students')).filter(students__count__gt=0)
 
     staff_stats = OrderedDict()  # empty dict
 
