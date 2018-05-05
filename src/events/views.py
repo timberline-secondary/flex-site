@@ -793,7 +793,8 @@ def stats_staff(request):
     staff_stats = OrderedDict()  # empty dict
 
     for teacher in staff:
-        staff_stats[teacher] = get_registration_stats(d, students=User.objects.filter(profile__in=teacher.students.all()))
+        staff_stats[teacher] = get_registration_stats(d, students=User.objects.filter(profile__in=teacher.students.all(),
+                                                                                      is_active=True))
 
     context = {
         "heading": "Staff Stats",
