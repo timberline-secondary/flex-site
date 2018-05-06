@@ -14,10 +14,12 @@
 
   <h1>All Registrations</h1>
 
-  {%  include 'events/date_filter.html' %}
-
-  <table data-toggle="table"
-         data-classes="table table-no-bordered"
+    <div id="toolbar">
+        {%  include 'events/date_filter.html' %}
+    </div>
+    <table data-toolbar="#toolbar"
+           data-toggle="table"
+         data-classes="table table-hover table-no-bordered table-condensed"
          data-search="true"
          data-id-field="id"
          id="table">

@@ -12,11 +12,13 @@
 {% block content %}
 
     <h1>{{ heading }} <small class="responsive-wrap">{{ date_object }}</small></h1>
-    {%  include 'events/date_filter.html' %}
 
-    <table class="table-hover"
+    <div id="toolbar">
+        {%  include 'events/date_filter.html' %}
+    </div>
+    <table data-toolbar="#toolbar"
            data-toggle="table"
-           data-classes="table table-no-bordered table-condensed"
+           data-classes="table table-hover table-no-bordered table-condensed"
            data-search="true"
            data-id-field="id"
            data-sort-name="last"
@@ -45,7 +47,6 @@
         <tbody>
             {% for teacher, stats in staff_stats.items %}
             <tr>
-
                 <td>{{ teacher.first_name }}</td>
                 <td><span style="display:none">{{ teacher.last_name }}</span><a href="{% url 'events:registrations_homeroom' teacher.username %}?date={{ date_filter }}">
                     {{ teacher.last_name }}</a>

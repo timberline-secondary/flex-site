@@ -14,10 +14,12 @@
 
   <h1>Staff Locations</h1>
 
-  {%  include 'events/date_filter.html' %}
-
-  <table data-toggle="table"
-         data-classes="table table-no-bordered"
+    <div id="toolbar">
+        {%  include 'events/date_filter.html' %}
+    </div>
+    <table data-toolbar="#toolbar"
+           data-toggle="table"
+         data-classes="table table-no-bordered table-hover table-condensed"
          data-search="true"
          data-sort-name="last"
          data-sort-order="asc"

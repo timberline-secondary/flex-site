@@ -17,10 +17,12 @@
 
   <h1>{{ heading }}</h1>
 
-  {%  include 'events/date_filter.html' %}
-
-  <table data-toggle="table"
-         data-classes="table table-no-bordered table-condensed"
+    <div id="toolbar">
+        {%  include 'events/date_filter.html' %}
+    </div>
+    <table data-toolbar="#toolbar"
+           data-toggle="table"
+           data-classes="table table-hover table-no-bordered table-condensed"
          data-search="true"
          data-id-field="id"
          data-sort-name="last"
