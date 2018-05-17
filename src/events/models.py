@@ -88,6 +88,9 @@ class Block(models.Model):
 
     objects = BlockManager()
 
+    class Meta:
+        ordering = ['start_time']
+
     def __str__(self):
         return self.name
 
