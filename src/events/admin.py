@@ -71,6 +71,14 @@ def bleach_html(eventadmin, request, queryset):
         event.save()
 bleach_html.short_description = "Remove undesired HTML tags from event descriptions."
 
+@transaction.atomic
+def remove_links(eventadmin, request, queryset):
+    for event in queryset:
+        link = event.description_link
+        if link and link.endswith(('jpg','jpeg','png','gif')):
+            event.description_link = None
+            event.save()
+remove_links.short_description = "Remove description links that are images."
 
 class EventAdmin(admin.ModelAdmin):
 
@@ -78,7 +86,7 @@ class EventAdmin(admin.ModelAdmin):
     list_filter = ["date", "blocks", ]
     # list_editable = ["title", ]
     # list_display_links = ["created_timestamp", ]
-    actions = [resave, bleach_html]
+    actions = [resave, bleach_html, remove_links]
 
     search_fields = ["title", "description"]
 
