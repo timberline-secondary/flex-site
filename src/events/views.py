@@ -46,7 +46,7 @@ def location_create(request):
 
 @staff_member_required
 def event_create(request):
-    form = EventForm(request.POST or None)
+    form = EventForm(request.POST or None, request.FILES or None)
 
     if form.is_valid():
         event = form.save(commit=False)
@@ -64,9 +64,9 @@ def event_create(request):
 
         messages.success(request, msg)
 
-        if not event.cache_remote_image():
-            messages.warning(request, "Failed to properly cache your image.  Don't worry about it for now... unless "
-                                      "you didn't provide an image link, in which case please let Tylere know!")
+        # if not event.cache_remote_image():
+        #     messages.warning(request, "Failed to properly cache your image.  Don't worry about it for now... unless "
+        #                               "you didn't provide an image link, in which case please let Tylere know!")
 
         block_id = event.blocks.all()[0].id
         date_query = event.date
@@ -90,7 +90,9 @@ def event_update(request, id=None):
         for block in Block.objects.all():
             regs_dict_by_block[block.id] = block.registration_set.filter(event=event).count()
 
-    form = EventForm(request.POST or None, instance=event)
+    form = EventForm(request.POST or None, request.FILES or None, instance=event)
+
+    print(form.files)
 
     # not valid?
     if form.is_valid():
@@ -116,9 +118,9 @@ def event_update(request, id=None):
 
             messages.success(request, msg)
 
-            if not event.cache_remote_image():
-                messages.warning(request, "Failed to properly cache your image.  Don't worry about it for now... unless "
-                                          "you didn't provide an image link, in which case please let Tylere know!")
+            # if not event.cache_remote_image():
+            #     messages.warning(request, "Failed to properly cache your image.  Don't worry about it for now... unless "
+            #                               "you didn't provide an image link, in which case please let Tylere know!")
 
             block_id = event.blocks.all()[0].id
             date_query = event.date

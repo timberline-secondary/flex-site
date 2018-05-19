@@ -1,14 +1,14 @@
 <div class="clearfix">
-  {% if event.image %}
-    <img src="{{ event.get_image_url }}"
+  {% if event.description_image_file %}
+    <img src="{{ event.description_image_file.url }}"
          class="img-rounded img-responsive-50 pull-right hidden-sm"
          style="margin: 0 0 8px 8px;"
     >
   {% endif %}
   {{ event.description|safe|linebreaks }}
 
-  {% if event.image %}
-    <img src="{{ event.get_image_url }}"
+  {% if event.description_image_file %}
+    <img src="{{ event.description_image_file.url }}"
             class="img-rounded img-responsive hidden-xs hidden-md hidden-lg">
   {% endif %}
   {% if event.video %}

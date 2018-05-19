@@ -162,6 +162,7 @@ class EventForm(forms.ModelForm):
             "location",
             "max_capacity",
             "description",
+            "description_image_file",
             "description_link",
             "registration_cut_off",
             "allow_registration_after_event_has_started"

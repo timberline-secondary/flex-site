@@ -132,11 +132,21 @@ class Event(models.Model):
 
     title = models.CharField(max_length=120)
     description = models.TextField(null=True, blank=True)  # MCE widget validation fails if required
+    # description_image_file = models.ImageField(upload_to='images/', null=True, blank=True)
+    description_image_file = ProcessedImageField(upload_to='images/', null=True, blank=True,
+                                                 processors=[ResizeToFit(400, 400, upscale=False)],
+                                                 format='JPEG',
+                                                 options={'quality': 80},
+                                                 help_text="Upload an image directly from your computer.  You can also "
+                                                           "get an image from the web by pasting a direct link to the "
+                                                           "image in the Description link field below.",
+                                                 verbose_name="Image",
+                                                 )
     description_link = models.URLField(
         "Description link (image, video, file, or webpage)",
         null=True, blank=True,
-        help_text="An optional link to provide with the text description. If the link is to a video (YouTube or Vimeo) "
-                  "or an image (png, jpg, or gif), the media will be embedded with the description."
+        help_text="An optional link to provide with the text description. Links to videos (YouTube or Vimeo) "
+                  "or an image (must end in .png, .jpg, or .gif) will be embedded within the description."
                   "If the link is to another web page or a file, it will just display the link.")
 
     category = models.ForeignKey(Category, default=Category.DEFAULT_CATEGORY_ID, on_delete=models.SET_NULL, null=True,
@@ -181,10 +191,7 @@ class Event(models.Model):
                   "students will no longer be able to register for this event.")
 
     # generally non-editable fields
-    description_image_file = ProcessedImageField(upload_to='images/', null=True, blank=True,
-                                                        processors=[ResizeToFit(400, 400, upscale=False)],
-                                                        format='JPEG',
-                                                        options={'quality': 80})
+
     creator = models.ForeignKey(User)
     updated_timestamp = models.DateTimeField(auto_now=True, auto_now_add=False)
     created_timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
@@ -205,16 +212,17 @@ class Event(models.Model):
 
     def cache_remote_image(self):
         """
+        Check if an image link was provided, if so, overwrite current description_image_file:
         Take an image from the description field, download it to a temp file, and save it to the database in
         description_image_file.
         """
-        if self.image():  # and not self.image_file:
-            img_url = self.description_link
+        external_image_url = self.get_external_image_link()
+        if external_image_url:
             img_temp = NamedTemporaryFile(delete=True)
             # http://stackoverflow.com/questions/24226781/changing-user-agent-in-python-3-for-urrlib-request-urlopen
             try:
                 request = urllib.request.Request(
-                    img_url,
+                    external_image_url,
                     data=None,
                     headers={
                         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'
@@ -228,13 +236,11 @@ class Event(models.Model):
                 return False
 
             img_temp.flush()
-            self.description_image_file.save(os.path.basename(img_url), File(img_temp))
+            self.description_image_file.save(os.path.basename(external_image_url), File(img_temp))
+            self.description_link = None  # After image is cached, remove link.
             self.save()
-            return True
-        else:
-            self.description_image_file = None
-            self.save()
-            return True
+
+        return True
 
     def copy(self, num, copy_date=None, user=None, dates=[]):
         """
@@ -272,11 +278,11 @@ class Event(models.Model):
         else:
             return None
 
-    def get_image_url(self): #assumes its an image already.
-        if self.description_image_file:
-            return self.description_image_file.url
-        else:
-            return self.description_link
+    # def get_image_url(self): #assumes its an image already.
+    #     if self.description_image_file:
+    #         return self.description_image_file.url
+    #     else:
+    #         return self.description_link
 
     def video(self):
         if not self.description_link:
@@ -288,7 +294,8 @@ class Event(models.Model):
         except UnknownBackendException:
             return None
 
-    def image(self):
+    def get_external_image_link(self):
+        """ Returns the description link if it is an image, otherwise returns None"""
         if not self.description_link:
             return None
         # http://stackoverflow.com/questions/10543940/check-if-a-url-to-an-image-is-up-and-exists-in-python
