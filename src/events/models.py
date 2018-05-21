@@ -125,6 +125,9 @@ class EventManager(models.Manager):
             qs = self.get_queryset()
         return qs.filter(date=event_date)
 
+    def all_visible_on_date(self, date):
+        return self.get_queryset().filter(date=date, category__visible_in_event_list=True)
+
     def all_for_facilitator(self, user):
         return user.event_set.all()
 

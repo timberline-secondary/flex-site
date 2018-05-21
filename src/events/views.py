@@ -523,55 +523,57 @@ def event_list2(request, block_id=None):
     date_query = request.GET.get("date", str(default_event_date()))
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
 
-    if block_id:
-        active_block = get_object_or_404(Block, id=block_id)
-    else:
-        active_block = Block.objects.all()[0]
+    # if block_id:
+    #     active_block = get_object_or_404(Block, id=block_id)
+    # else:
+    #     active_block = Block.objects.all()[0]
 
     blocks = Block.objects.all()
     blocks_json = serializers.serialize('json', blocks, fields=('id', 'name', ))
 
-    queryset = active_block.event_set.filter(
-        date=d,
-        category__visible_in_event_list=True
-    ).select_related('location').prefetch_related('competencies')
+    queryset = Event.objects.all_visible_on_date(d).select_related('category').prefetch_related('competencies')
 
-    registrations = {}
-    excuses_dict = {}
-    if request.user.is_authenticated() and not request.user.is_staff:
-        # Build a dictionary of user's registrations for this day:
-        # {block_name: event,}
-        for block in blocks:
-            registrations[block] = {}
-            try:
-                reg = Registration.objects.get(student=request.user, block=block, event__date=d)
-            except Registration.DoesNotExist:
-                reg = None
+    # queryset = active_block.event_set.filter(
+    #     date=d,
+    #     category__visible_in_event_list=True
+    # ).select_related('location').prefetch_related('competencies')
 
-                # Are they excused?
-                excuses = request.user.excuse_set.all().date(d).in_block(block)
-                if excuses:
-                    registrations[block]["excuse"] = excuses[0]
+    # registrations = {}
+    # excuses_dict = {}
+    # if request.user.is_authenticated() and not request.user.is_staff:
+    #     # Build a dictionary of user's registrations for this day:
+    #     # {block_name: event,}
+    #     for block in blocks:
+    #         registrations[block] = {}
+    #         try:
+    #             reg = Registration.objects.get(student=request.user, block=block, event__date=d)
+    #         except Registration.DoesNotExist:
+    #             reg = None
+    #
+    #             # Are they excused?
+    #             excuses = request.user.excuse_set.all().date(d).in_block(block)
+    #             if excuses:
+    #                 registrations[block]["excuse"] = excuses[0]
+    #
+    #         registrations[block]["reg"] = reg
 
-            registrations[block]["reg"] = reg
-
-    for event in queryset:
-        event.attendance = event.registration_set.filter(block=active_block).count()
-        if request.user.is_authenticated():
-            event.available, event.already, event.explanation = event.is_available(request.user, active_block)
-        else:
-            event.available = True
+    # for event in queryset:
+    #     event.attendance = event.registration_set.filter(block=active_block).count()
+    #     if request.user.is_authenticated():
+    #         event.available, event.already, event.explanation = event.is_available(request.user, active_block)
+    #     else:
+    #         event.available = True
 
     context = {
         "date_filter": date_query,
         "date_object": d,
         "title": "List",
         "object_list": queryset,
-        "registrations": registrations,
-        "excuses": excuses_dict,
+        # "registrations": registrations,
+        # "excuses": excuses_dict,
         "blocks_json": blocks_json,
         "blocks": blocks,
-        "active_block": active_block,
+        # "active_block": active_block,
     }
     return render(request, "events/event_list2.html", context)
 
