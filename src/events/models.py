@@ -38,13 +38,23 @@ class CoreCompetency(models.Model):
 
 
 class Category(models.Model):
+    COLOR_CHOICES = (  # From bootstrap classes/highlighting
+        (None, 'None'),
+        ('warning', 'Yellow'),
+        ('success', 'Green'),
+        ('info', 'Blue'),
+        ('danger', 'Red'),
+    )
     DEFAULT_CATEGORY_ID = 1
     name = models.CharField(max_length=120)
     visible_in_event_list = models.BooleanField(default=False)
+    sort_priority = models.IntegerField(default=0)
+    color = models.CharField(max_length=10, choices=COLOR_CHOICES, default=None, blank=True, null=True, )
     description = models.CharField(max_length=512, blank=True, null=True)
 
     class Meta:
         verbose_name_plural = "categories"
+        ordering = ['-sort_priority']
 
     def __str__(self):
         return self.name
