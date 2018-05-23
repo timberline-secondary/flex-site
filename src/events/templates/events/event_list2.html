@@ -80,9 +80,17 @@
 <!-- Event lists -->
 <div id="toolbar">
     <div class="form-inline" role="form">
-        {% for block in blocks %}
-        <button data-block="{{block}}" class="btn btn-primary block-toggle" >{{ block }}</button>
-        {% endfor %}
+        View events in:
+        <div class="btn-group" id="block-filter" data-toggle="buttons">
+            <label class="btn btn-default active">
+                <input type="radio" name="options" id="all-blocks" autocomplete="off" checked>Both Blocks
+            </label>
+            {% for block in blocks %}
+            <label class="btn btn-default">
+                <input type="radio" name="options" id="{{ block}}" autocomplete="off">{{block}} Only
+            </label>
+            {% endfor %}
+        </div>
     </div>
 </div>
 
@@ -198,21 +206,23 @@
         $('[data-toggle="tooltip"]').tooltip();
 
         // Flex block toggles/filters
-        $('.block-toggle').click(function(){
-           // use btn-primary class to indicate ON and btn-default to indicate OFF
-            let $this = $(this);
+        $('#block-filter .btn').on('click', function(){
             let $table = $('#table');
-            $this.toggleClass('btn-primary');
-            $this.toggleClass('btn-default');
-            row = 0;
-            if ($this.hasClass('btn-primary')) {
-                console.log("hide row " + row);
-                $table.bootstrapTable('hideAllColumns');
+            let blockSelection = $(this).find("input").attr('id');
+            console.log(blockSelection);
+
+            let $all_rows = $table.find("tr:has(td)"); // not including header row <th>
+            if (blockSelection == 'all-blocks'){
+                $all_rows.show();
             }
             else {
-                console.log("hide row 3");
-                $table.bootstrapTable('showAllColumns');
+                // if the blocks column (indicated by the blocks css class) contains the block selection text, then show.
+                let $selected_rows = $table.find("tr:has(td.blocks:contains(" + blockSelection + "))");
+                $all_rows.hide();
+                $selected_rows.show();
             }
+
+            //$table.bootstrapTable('filterBy', {blocks: selection});
     //         $btnConfirmFlex1.data("event-id", row.id);
     // $btnConfirmFlex1.attr("href", $tr.data("flex1-register-url"))
         });
