@@ -163,7 +163,7 @@ class Event(models.Model):
                   "If the link is to another web page or a file, it will just display the link.")
 
     category = models.ForeignKey(Category, default=Category.DEFAULT_CATEGORY_ID, on_delete=models.SET_NULL, null=True,
-                                 help_text="Only the 'Student Event' category will be visible to students.")
+                                 help_text="By default, events are sorted by category in the events list.")
     competencies = models.ManyToManyField(CoreCompetency, null=True, blank=True,
                                           help_text="The Core Competencies relevant to this event.")
     date = models.DateField(default=default_event_date)

@@ -10,7 +10,7 @@ from django.utils.safestring import mark_safe
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
-from .models import Event, Registration, Location
+from .models import Event, Registration, Location, Category
 
 
 class LocationForm(forms.ModelForm):
@@ -130,11 +130,20 @@ class LocationModelChoiceField(forms.ModelChoiceField):
         return obj.get_detailed_name()
 
 
+class CategoryModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return "%s (%s)" % (obj.name, obj.description)
+
+
 class EventForm(forms.ModelForm):
     location = LocationModelChoiceField(
         queryset=Location.objects.all(),
         widget=RelatedFieldWidgetCanAdd(Location, 'events:location_create'),
     )
+    category = CategoryModelChoiceField(
+        queryset=Category.objects.all(),
+    )
+
     duplicate = forms.IntegerField(
         label='Duplicate to future weeks',
         required=False,
