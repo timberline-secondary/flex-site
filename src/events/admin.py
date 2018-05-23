@@ -8,7 +8,7 @@ from .models import Event, Block, Location, Category, Registration, CoreCompeten
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ["name", "visible_in_event_list", "description"]
+    list_display = ["name", "sort_priority", "color", "visible_in_event_list", "description"]
 
     class Meta:
         model = Category
