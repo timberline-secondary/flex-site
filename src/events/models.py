@@ -387,13 +387,33 @@ class Event(models.Model):
                     editors += [fac]
         return editors
 
+    def is_available_by_block(self, user):
+        """
+        Check when this event is available for the user
+        :param user:
+        :return: A dictionary of tuples, with a key for each block, e.g:
+        return {"Flex-1": (is_available, already_registered, reason_not_available),
+                "Flex-2": (is_available, already_registered, reason_not_available)
+                }
+        """
+        d = {}  # dictionary of data
+        available = False # if available in at least one block
+        for block in Block.objects.all():
+            d[block] = {}
+            d[block]["available"], d[block]["already"], d[block]["explanation"] = self.is_available(user, block)
+            if d[block]["available"]:
+                available = True
+
+        return d, available
+
     def is_available(self, user, block):
         """
         Check if this event is available based on user's current registrations, attendance, and cutoff times
         :param user:
         :param block:
-        :return: A tuple (boolean, string) where string is a reason for False
+        :return: A tuple (boolean, boolean, string) -> (is_available, already_registered, reason_not_available)
         """
+
         result = True, False, None
         if self.is_full(block):
             result = False, False, "This event is full."
