@@ -524,10 +524,20 @@ def event_list2(request, block_id=None):
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
 
     blocks = Block.objects.all()
-    blocks_json = serializers.serialize('json', blocks, fields=('id', 'name', ))
+    blocks_json = serializers.serialize('json', blocks, fields=('id', 'name',))
 
-    queryset = Event.objects.all_visible_on_date(d).select_related('category').prefetch_related('competencies')
+    # if a block is provided, we only need to worry about events for that block.
+    if block_id:
+        active_block = get_object_or_404(Block, id=block_id)
+        queryset = active_block.event_set
+    else:
+        queryset = Event.objects.all()
+        active_block = None
 
+    queryset = queryset.filter(date=d, category__visible_in_event_list=True) \
+        .select_related('location').prefetch_related('competencies')
+
+    # this is info to display student current registrations for the day
     registrations = {}
     excuses_dict = {}
     if request.user.is_authenticated() and not request.user.is_staff:
@@ -547,10 +557,18 @@ def event_list2(request, block_id=None):
 
             registrations[block]["reg"] = reg
 
+    # Get current availability of each event for this specific user.
     for event in queryset:
         # event.attendance = event.registration_set.filter(block=active_block).count()
         if request.user.is_authenticated():
             event.availability, event.available = event.is_available_by_block(request.user)
+
+    # for event in queryset:
+    #     event.attendance = event.registration_set.filter(block=active_block).count()
+    #     if request.user.is_authenticated():
+    #         event.available, event.already, event.explanation = event.is_available(request.user, active_block)
+    #     else:
+    #         event.available = True
 
     context = {
         "date_filter": date_query,
@@ -561,6 +579,7 @@ def event_list2(request, block_id=None):
         "excuses": excuses_dict,
         "blocks_json": blocks_json,
         "blocks": blocks,
+        "active_block": active_block,
     }
     return render(request, "events/event_list2.html", context)
 
