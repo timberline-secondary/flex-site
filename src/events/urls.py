@@ -5,7 +5,9 @@ from . import views
 urlpatterns = [
     url(r'^$', views.event_list, name='home'),
     url(r'^$', views.event_list, name='list'),
-    url(r'^list2/$', views.event_list2, name='list2'),
+    url(r'^list/$', views.event_list2, name='list2'),
+    url(r'^block/all/$', views.event_list2, name='list2'),
+    url(r'^block/(?P<block_id>\d+)/$', views.event_list2, name='list_by_block2'),
     url(r'^export/$', views.event_list_export, name='export'),
     url(r'^block/(?P<block_id>\d+)/$', views.event_list, name='list_by_block'),
     url(r'^manage/$', views.event_manage, name='manage'),

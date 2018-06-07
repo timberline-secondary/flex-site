@@ -39,9 +39,17 @@ class AttendanceForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(AttendanceForm, self).__init__(*args, **kwargs)  # call base class
-        self.first_name = self.instance.student.first_name
-        self.last_name = self.instance.student.last_name
-        self.student_number = self.instance.student.username
+        # could be None if a student has dropped between the form loading and saving attendance.
+        # not sure why the cascade delete hasn't deleted this registration though....
+        # print (self.instance.student)
+        try:
+            self.first_name = self.instance.student.first_name
+            self.last_name = self.instance.student.last_name
+            self.student_number = self.instance.student.username
+        except User.DoesNotExist:
+            print("Student dropped")
+            pass
+
 
 
 class AttendanceFormSetHelper(FormHelper):

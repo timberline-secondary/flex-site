@@ -79,19 +79,16 @@
 
 <!-- Event lists -->
 <div id="toolbar">
-    <div class="form-inline" role="form">
-        View events in:
-        <div class="btn-group" id="block-filter" data-toggle="buttons">
-            <label class="btn btn-default active">
-                <input type="radio" name="options" id="all-blocks" autocomplete="off" checked>Both Blocks
-            </label>
-            {% for block in blocks %}
-            <label class="btn btn-default">
-                <input type="radio" name="options" id="{{ block}}" autocomplete="off">{{block}} Only
-            </label>
-            {% endfor %}
-        </div>
-    </div>
+    <ul class="nav nav-tabs">
+        <li role="presentation" {% if not active_block %}class="active"{% endif %}>
+            <a href="{% url 'events:list2' %}?date={{ date_filter }}">All Blocks</a>
+        </li>
+        {% for block in blocks %}
+        <li role="presentation" {% if block == active_block %}class="active"{% endif %}>
+            <a href="{% url 'events:list_by_block2' block.id %}?date={{ date_filter }}">{{block}} Only</a>
+        </li>
+        {% endfor %}
+    </ul>
 </div>
 
 <table data-toggle="table"
@@ -205,27 +202,27 @@
     $( document ).ready(function() {
         $('[data-toggle="tooltip"]').tooltip();
 
-        // Flex block toggles/filters
-        $('#block-filter .btn').on('click', function(){
-            let $table = $('#table');
-            let blockSelection = $(this).find("input").attr('id');
-            console.log(blockSelection);
-
-            let $all_rows = $table.find("tr:has(td)"); // not including header row <th>
-            if (blockSelection == 'all-blocks'){
-                $all_rows.show();
-            }
-            else {
-                // if the blocks column (indicated by the blocks css class) contains the block selection text, then show.
-                let $selected_rows = $table.find("tr:has(td.blocks:contains(" + blockSelection + "))");
-                $all_rows.hide();
-                $selected_rows.show();
-            }
-
-            //$table.bootstrapTable('filterBy', {blocks: selection});
-    //         $btnConfirmFlex1.data("event-id", row.id);
-    // $btnConfirmFlex1.attr("href", $tr.data("flex1-register-url"))
-        });
+{#        // Flex block toggles/filters#}
+{#        $('#block-filter .btn').on('click', function(){#}
+{#            let $table = $('#table');#}
+{#            let blockSelection = $(this).find("input").attr('id');#}
+{#            console.log(blockSelection);#}
+{##}
+{#            let $all_rows = $table.find("tr:has(td)"); // not including header row <th>#}
+{#            if (blockSelection == 'all-blocks'){#}
+{#                $all_rows.show();#}
+{#            }#}
+{#            else {#}
+{#                // if the blocks column (indicated by the blocks css class) contains the block selection text, then show.#}
+{#                let $selected_rows = $table.find("tr:has(td.blocks:contains(" + blockSelection + "))");#}
+{#                $all_rows.hide();#}
+{#                $selected_rows.show();#}
+{#            }#}
+{##}
+{#            //$table.bootstrapTable('filterBy', {blocks: selection});#}
+{#    //         $btnConfirmFlex1.data("event-id", row.id);#}
+{#    // $btnConfirmFlex1.attr("href", $tr.data("flex1-register-url"))#}
+{#        });#}
 
 
     });
