@@ -47,9 +47,8 @@ class AttendanceForm(forms.ModelForm):
             self.last_name = self.instance.student.last_name
             self.student_number = self.instance.student.username
         except User.DoesNotExist:
-            print("Student dropped")
+            # print("Student dropped")
             pass
-
 
 
 class AttendanceFormSetHelper(FormHelper):

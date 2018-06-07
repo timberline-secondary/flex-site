@@ -426,12 +426,25 @@ def event_attendance(request, id=None, block_id=None):
             queryset=queryset1,
             prefix='flex1'
         )
-        if formset1.is_valid():
-            formset1.save()
-            messages.success(request, "Attendance saved for <b>%s</b> during <b>%s</b>" % (event, active_block))
+        for form in formset1.forms:
+            if form.is_valid():
+                form.save()
+            else:
+                pass
+                # There isn't really anything that can get screwed up in this form, any error will (hopefully!) be
+                # the result of a student dropping the event (registration deleted)
+                #print("form errors: " + str(form.errors))
 
-    else:
-        formset1 = AttendanceFormSet1(queryset=queryset1, prefix='flex1')
+            # #reset/refresh the form on success
+            # formset1 = AttendanceFormSet1(queryset=queryset1, prefix='flex1')
+
+        messages.success(request, "Attendance saved for <b>%s</b> during <b>%s</b>" % (event, active_block))
+
+    # else:
+    #     formset1 = AttendanceFormSet1(queryset=queryset1, prefix='flex1')
+
+    # Always refresh with an up to date form:
+    formset1 = AttendanceFormSet1(queryset=queryset1, prefix='flex1')
 
     context = {
         "object_list_1": queryset1,
@@ -442,6 +455,7 @@ def event_attendance(request, id=None, block_id=None):
         "multi_block_save_option": multi_block_save_option,
     }
     return render(request, "events/attendance.html", context)
+
 
 @staff_member_required()
 def event_list_export(request):
