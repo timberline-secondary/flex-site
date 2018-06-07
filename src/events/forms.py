@@ -145,7 +145,6 @@ class CategoryModelChoiceField(forms.ModelChoiceField):
         return "%s (%s)" % (obj.name, obj.description)
 
 
-
 class EventForm(forms.ModelForm):
     location = LocationModelChoiceField(
         queryset=Location.objects.all(),
@@ -154,6 +153,7 @@ class EventForm(forms.ModelForm):
     category = CategoryModelChoiceField(
         queryset=Category.objects.all(),
         help_text=Event._meta.get_field('category').help_text,
+        #empty_label=None,
     )
 
     duplicate = forms.IntegerField(
