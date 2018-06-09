@@ -408,7 +408,8 @@ class Event(models.Model):
 
     def is_available(self, user, block):
         """
-        Check if this event is available based on user's current registrations, attendance, and cutoff times
+        Check if this event is available in this block
+         based on user's current registrations, attendance, and cutoff times
         :param user:
         :param block:
         :return: A tuple (boolean, boolean, string) -> (is_available, already_registered, reason_not_available)
@@ -424,7 +425,7 @@ class Event(models.Model):
             is_avail = False
             reason = "The deadline to register for this event has passed."
         else:  # check if the user is already registered for for something in the block
-            regs = user.registration_set.filter(event__date=self.date)
+            regs = user.registration_set.filter(event__date=self.date, block=block)
             for reg in regs:
                 # is_same is rechecked in the is_conflict call, but need to set already_reg.  Clean this up?
                 # if reg.is_same(self, block):
