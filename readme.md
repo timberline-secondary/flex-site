@@ -38,6 +38,7 @@ This guide assumes you are running Linux.  If not, then you can use the [Windows
 `./src/manage.py migrate`  This will create your database and create tables for all the thrid-party apps/requirements
 2. Now prepare tables for all of the flex-site models: `./src/manage.py makemigrations profiles events excuses` (you might get an error later on if I forget to keep this list of apps updated =)
 2. Create the tables in your database: `./src/manage.py migrate`
+2. Create a cache table: `./src/manage.py createcachetable`
 2. Populate the database with some default data: `./src/manage.py loaddata src/initial_data`
 3. Create a superuser in the database (i.e.teacher/administrator account): `./src/manage.py createsuperuser`
 
@@ -67,8 +68,8 @@ This guide assumes you are running Linux.  If not, then you can use the [Windows
 
 #### Committing changes
 
-1. Move into your cloned directory. `cd ~/Developer/hackerspace`
-2. Add the upstream remote: `git remote add upstream git@github.com:timberline-secondary/hackerspace.git`
+1. Move into your cloned directory. `cd ~/Developer/flex-site`
+2. Add the upstream remote: `git remote add upstream git@github.com:timberline-secondary/flex-site.git`
 3. Pull in changes from the upstream master: `git fetch upstream`
 4. Merge the changes: `git merge upstream/master`
 5. Create a new branch: `git checkout -b yourbranchname`
@@ -77,9 +78,6 @@ This guide assumes you are running Linux.  If not, then you can use the [Windows
 8. Go to your fork of the repository. 
 9. Select your recently pushed branch and create a pull request.
 10. Complete pull request.
-
-
-
 
 
 ## Server set up. Ubuntu 16.04
