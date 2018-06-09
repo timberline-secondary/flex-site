@@ -408,8 +408,8 @@ class Event(models.Model):
 
     def is_available(self, user, block):
         """
-        Check if this event is available in this block
-         based on user's current registrations, attendance, and cutoff times
+        Check if this event is available in this block or if it conflicts
+         with a user's current registrations, attendance max, and cutoff times
         :param user:
         :param block:
         :return: A tuple (boolean, boolean, string) -> (is_available, already_registered, reason_not_available)
@@ -425,7 +425,7 @@ class Event(models.Model):
             is_avail = False
             reason = "The deadline to register for this event has passed."
         else:  # check if the user is already registered for for something in the block
-            regs = user.registration_set.filter(event__date=self.date, block=block)
+            regs = user.registration_set.filter(event__date=self.date)
             for reg in regs:
                 # is_same is rechecked in the is_conflict call, but need to set already_reg.  Clean this up?
                 # if reg.is_same(self, block):
@@ -434,10 +434,10 @@ class Event(models.Model):
                 #     reason = "You are already registered for this event."
                 #     break
                 # else:
-                conflict_response = reg.is_conflict(self, block)
-                if conflict_response is not None:
+                already_reg, reason = reg.is_conflict(self, block)
+                if reason is not None:
                     is_avail = False
-                    already_reg, reason = conflict_response
+                    break  # no need to check other block if we already have a conflict.
 
         return is_avail, already_reg, reason
 
@@ -687,7 +687,8 @@ class Registration(models.Model):
         return str(self.student) + ": " + str(self.event)
 
     def is_same(self, event, block=None):
-        if block:
+        # if the event is F1_AND_F2 then block is irrelevant
+        if block and event.multi_block_event != Event.F1_AND_F2:
             return True if self.event == event and self.block == block else False
         else:  # check for match in all blocks.
             return True if self.event == event else False
@@ -700,40 +701,40 @@ class Registration(models.Model):
         :param event_date: if None assume the same date
         :return: True if the event & block conflicts with this registration
         """
-        result = None
+        reason = None
         already_reg = False
         if (user and self.student is not user) or (event_date and event_date != self.event.date):
-            result = None  # not same student or not same date
+            reason = None  # not same student or not same date
         else:
             if block and self.is_same(event, block):
-                result = "You are already registered for this event."
+                reason = "You are already registered for this event."
                 already_reg = True
             elif self.event == event and self.event.multi_block_event == Event.F1_XOR_F2:
-                result = "You are already registered for this event in another block.  " \
+                reason = "You are already registered for this event in another block.  " \
                          "This event only allows registration in one block."
-                already_reg = True
+                already_reg = False
             elif self.event.both_required() or event.both_required():
-                result = "This event conflicts with another event you are already registered for. " \
+                reason = "This event conflicts with another event you are already registered for. " \
                     "You will need to remove the conflicting event before you can register for this one."
                 # this event occurs in the same block (or multi block AND)
             elif self.block == block:
                 if self.event.multi_block_event == Event.F1_OR_F2 or self.event.multi_block_event == Event.F1_XOR_F2:
-                    result = "You are already registered for a different event in %s.  " \
+                    reason = "You are already registered for a different event in %s.  " \
                              "If you want to register for this event in another block, select the other block's tab " \
                              "at the top of this list." % str(block)
                 else:
-                    result = "You are already registered for a different event in %s." % str(block)
+                    reason = "You are already registered for a different event in %s." % str(block)
             elif block is None:  # check all blocks
                 print("cehcking all blocks for event: " + str(event) + " in block: " + str(block))
                 # need to check if this registration conflicts with single block events.
                 # Do it recursively by checking both blocks
                 for block in Block.objects.all():
-                    result = self.is_conflict(event, block, user, event_date)
-                    if result is not None:
+                    reason = self.is_conflict(event, block, user, event_date)
+                    if reason is not None:
                         break
                     # else keep going and check more blocks for conflicts.
 
-        return already_reg, result
+        return already_reg, reason
 
     def past_cut_off(self):
         return self.event.is_registration_closed(self.block)
