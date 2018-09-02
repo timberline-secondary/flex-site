@@ -24,7 +24,7 @@ admin.site.site_header = settings.ADMIN_SITE_HEADER
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^$', event_views.event_list, name='home'),
+    url(r'^$', event_views.event_list2, name='home'),
     # installed apps
     # url(r'^summernote/', include('django_summernote.urls')),
     # url(r'^accounts/', include('userena.urls')),
