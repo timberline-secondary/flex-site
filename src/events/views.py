@@ -299,10 +299,23 @@ def get_registration_stats(date, grade=None, students=None):
 
         num_excused = excused_students.count()
         num_not_registered = not_registered_students.count() - num_excused
+        num_registered = total_students - num_not_registered
 
-        # reg_stats["Ex " + str(block)] = num_excused
-        reg_stats["# " + str(block)] = num_not_registered
-        reg_stats["% " + str(block)] = int(num_not_registered/total_students * 100) if total_students else "NA"
+        # ABSENT DATA
+        absent_students = students.filter(registration__event__date=date,
+                                          registration__block=block,
+                                          registration__absent=True
+                                          )
+        # remove excused students
+        absent_students = absent_students.difference(excused_students)
+
+        num_absent = absent_students.count()
+
+        reg_stats["Ex " + str(block)] = num_excused
+        reg_stats["Reg# " + str(block)] = num_registered
+        reg_stats["Reg% " + str(block)] = int(num_registered/total_students * 100) if total_students else "NA"
+        reg_stats["Abs# " + str(block)] = num_absent
+        reg_stats["Abs% " + str(block)] = int(num_absent/num_registered * 100) if num_registered else "NA"
 
 
     # count the number of students who have registered for NO events
@@ -321,36 +334,6 @@ def get_registration_stats(date, grade=None, students=None):
     return reg_stats
 
 
-def get_attendance_stats(date, grade=None):
-    blocks = Block.objects.all()
-    students = User.objects.filter(is_active=True, is_staff=False)
-    if grade:
-        students = students.filter(profile__grade=grade)
-    total_students = students.count()
-
-    att_stats = OrderedDict()  # empty dict
-
-    att_stats["count"] = total_students
-
-    # for each block, find the number of absent students who are not excused
-    for block in blocks:
-        absent_students = students.filter(registration__event__date=date,
-                                          registration__block=block,
-                                          registration__absent=True
-                                          )
-        excused_students = Excuse.objects.students_excused_on_date(date, block, students=students)
-        # remove excused students
-        absent_students = absent_students.difference(excused_students)
-
-        num_absent = absent_students.count()
-
-        att_stats["Ex " + str(block)] = excused_students.count()
-        att_stats["# " + str(block)] = num_absent
-        att_stats["% " + str(block)] = int(num_absent / total_students * 100) if total_students else "NA"
-
-    return att_stats
-
-
 @staff_member_required
 def stats2(request):
     date_query = request.GET.get("date", str(default_event_date()))
@@ -358,20 +341,16 @@ def stats2(request):
     blocks = Block.objects.all()
 
     registration_stats = OrderedDict()  # empty dicts
-    attendance_stats = OrderedDict()
 
     for grade in range(9, 13):
         registration_stats[str(grade)] = get_registration_stats(d, grade=grade)
-        attendance_stats[str(grade)] = get_attendance_stats(d, grade=grade)
 
     registration_stats["All"] = get_registration_stats(d)
-    attendance_stats["All"] = get_attendance_stats(d)
 
     context = {
         "date_filter": date_query,
         "date_object": d,
         "registration_stats": registration_stats,
-        "attendance_stats": attendance_stats,
         "blocks": blocks,
     }
 
