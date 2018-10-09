@@ -346,7 +346,7 @@ def get_attendance_stats(date, grade=None):
 
         att_stats["Ex " + str(block)] = excused_students.count()
         att_stats["# " + str(block)] = num_absent
-        att_stats["% " + str(block)] = int(num_absent / total_students * 100)
+        att_stats["% " + str(block)] = int(num_absent / total_students * 100) if total_students else "NA"
 
     return att_stats
 
