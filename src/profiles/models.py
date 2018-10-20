@@ -46,6 +46,7 @@ class Profile(models.Model):
     grade = models.IntegerField(null=True, blank=True)
     phone = models.CharField(max_length=13, null=True, blank=True, help_text="Format: (000)000-0000")
     email = models.EmailField(null=True, blank=True)
+    permission_form_completed = models.BooleanField(default=False)
     password_change_required = models.BooleanField(default=True)
     updated = models.DateTimeField(auto_now=True)  # Used to determine if student is still active after an import.
 
