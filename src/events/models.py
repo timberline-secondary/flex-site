@@ -547,6 +547,7 @@ class RegistrationManager(models.Manager):
                                         'last_name',
                                         'profile__grade',
                                         'profile__homeroom_teacher',
+                                        'profile__permission',
                                         )
 
         for student_dict in students_dict:
@@ -614,6 +615,7 @@ class RegistrationManager(models.Manager):
                                    'profile__phone',
                                    'profile__email',
                                    'profile__homeroom_teacher',
+                                   'profile__permission',
                                    )
         students_list = list(students)
 

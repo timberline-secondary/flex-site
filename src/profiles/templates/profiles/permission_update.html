@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block style %}
+    <!-- form.media -->
+    {{ form.media.css }}
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+{% endblock style %}
+
+{% block head_title %}Permissions | {{ block.super }}{% endblock %}
+
+{% block content %}
+
+    <h1>Student Permanent Permission Updates</h1>
+
+    <form method="POST" action=""> {% csrf_token %}
+        {{ form|crispy }}
+{#        <div class="btn-group pull-right" role="group">#}
+
+            {#          <a class="btn btn-default" href="{% url 'prof:excuse_list' %}">Cancel</a>#}
+            <input class="btn btn-primary" type="submit" value="Save"/>
+{#        </div>#}
+    </form>
+
+
+    <hr>
+    <h3 class="pull-left">Current Permissions Status</h3>
+
+    <table data-toolbar="#toolbar"
+           data-toggle="table"
+           data-classes="table table-hover table-no-bordered table-condensed"
+           data-search="true"
+           data-id-field="id"
+           data-sort-name="last"
+           data-sort-order="asc"
+           id="table">
+        <thead>
+        <tr>
+            <th data-field="id" data-sortable="true">Number</th>
+            <th data-field="first" data-sortable="true">First Name</th>
+            <th data-field="last" data-sortable="true">Last Name</th>
+            <th data-field="grade" data-sortable="true">Grade</th>
+{#            <th data-field="homeroom" data-sortable="true">Homeroom</th>#}
+            <th data-field="permission" data-sortable="true">Permission</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for student in student_list %}
+            <tr class="{% if student.permission is None %}
+                    warning
+                    {% elif student.permission is True %}
+                    success
+                    {% else %}
+                    danger
+                    {% endif %}
+                ">
+                <td>{{ student.user.username }}</td>
+                <td>{{ student.user.first_name }}</td>
+                <td>{{ student.user.last_name }}</td>
+                <td>{{ student.grade }}</td>
+{#                <td>{{ student.homeroom_teacher}}</td>#}
+                <td>{{ student.permission|yesno:"Yes,No,Incomplete" }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+{% endblock content %}
+
+{% block js %}
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <!-- Bootstrap Tables:  http://bootstrap-table.wenzhixin.net.cn/ -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
+
+    {{ form.media.js }}
+{%  endblock %}

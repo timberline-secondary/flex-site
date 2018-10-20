@@ -35,6 +35,12 @@ class PasswordResetRequiredMiddleware(object):
         return result
 
 
+class ProfileManager(models.Manager):
+    def all_active_students(self):
+        qs = self.get_queryset().select_related('user')
+        return qs.filter(user__is_active=True, user__is_staff=False)
+
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
     homeroom_teacher = models.ForeignKey(settings.AUTH_USER_MODEL,
@@ -46,9 +52,11 @@ class Profile(models.Model):
     grade = models.IntegerField(null=True, blank=True)
     phone = models.CharField(max_length=13, null=True, blank=True, help_text="Format: (000)000-0000")
     email = models.EmailField(null=True, blank=True)
-    permission_form_completed = models.BooleanField(default=False)
+    permission = models.NullBooleanField(null=True)
     password_change_required = models.BooleanField(default=True)
     updated = models.DateTimeField(auto_now=True)  # Used to determine if student is still active after an import.
+
+    objects = ProfileManager()
 
     def __str__(self):
         return str(self.user.username) + " (" + str(self.user.first_name) + " " + str(self.user.last_name) + ")"

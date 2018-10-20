@@ -13,7 +13,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 
 from .models import Profile
-from .forms import UserImportForm
+from .forms import UserImportForm, PermissionForm
 
 
 ######################################
@@ -180,3 +180,30 @@ def mass_update(request):
         "form": form,
     }
     return render(request, "profiles/profile_imports.html", context)
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def permissions_update(request):
+
+    students = Profile.objects.all_active_students()
+    form = PermissionForm(request.POST or None)
+
+    if form.is_valid():
+        granted = form.cleaned_data['students_permission_granted']
+        rejected = form.cleaned_data['students_permission_rejected']
+
+        granted.update(permission=True)
+        rejected.update(permission=False)
+
+        msg = "Student permission records updated."
+        messages.success(request, msg)
+
+        return redirect('profiles:permissions_update')
+
+
+    context = {
+        "student_list": students,
+        "form": form,
+    }
+    return render(request, "profiles/permission_update.html", context)
+

@@ -42,7 +42,7 @@
       <th data-field="absent" data-sortable="true">Flex 1</th>
       <th data-field="late" data-sortable="true">Flex 2</th>
       <th {% if include_homeroom_teacher %}data-visible="false"{% endif %}>Reset PW</th>
-      <th data-field="permission" data-sortable="true">Permission Form</th>
+      <th data-field="permission" data-sortable="true">Permission</th>
     </tr>
     </thead>
     <tbody>
@@ -70,7 +70,7 @@
              title='Reset password to "wolf"'>
             <i class="fa fa-key"></i>
           </a></td>
-        <td>{{ student.profile__permission_form_completed|yesno }}</td>
+        <td>{{ student.profile__permission|yesno:"Yes,No,Incomplete" }}</td>
       </tr>
     {% endfor %}
     </tbody>

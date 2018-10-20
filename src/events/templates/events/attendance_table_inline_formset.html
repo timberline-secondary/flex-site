@@ -58,6 +58,7 @@
                     <th>First Name</th>
                     <th>Last Name</th>
                     <th>Student Number</th>
+                    <th>Permission</th>
                 </tr>
             {% else %}
               <tr><th>No students have registered for this event during this block.</th></tr>
@@ -77,6 +78,7 @@
                     <td class="attendance-first-name">{{ form.first_name }}</td>
                     <td class="attendance-last-name">{{ form.last_name }}</td>
                     <td class="attendance-student-number">{{ form.student_number }}</td>
+                    <td class="attendance-permission">{{ form.permission|yesno:"Yes,No,Incomplete" }}</td>
                 </tr>
             {% endfor %}
         </tbody>

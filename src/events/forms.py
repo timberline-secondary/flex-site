@@ -46,6 +46,7 @@ class AttendanceForm(forms.ModelForm):
             self.first_name = self.instance.student.first_name
             self.last_name = self.instance.student.last_name
             self.student_number = self.instance.student.username
+            self.permission = self.instance.student.profile.permission
         except User.DoesNotExist:
             # print("Student dropped")
             pass
