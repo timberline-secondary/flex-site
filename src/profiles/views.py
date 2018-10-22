@@ -50,7 +50,7 @@ def mass_update(request):
     num_deactivated = 0
     form = UserImportForm(request.POST or None, request.FILES or None)
 
-    positions_to_import = ["TEACH", "CL10", "ADM"]  # currently not included: EA, CUST
+    positions_to_import = ["TEACH", "CL10", "ADM", "EA"]  # currently not included: EA, CUST
     grades_to_ignore = ["AD", "HS", "RG", "NS"]  # ADult grad, Home Schooled, Returning Grad, Non Student
 
     if form.is_valid():
@@ -72,8 +72,8 @@ def mass_update(request):
                             user = User.objects.create_user(
                                 username=username,
                                 password="wolf",
-                                first_name=row[1],
-                                last_name=row[2],
+                                last_name=row[1],
+                                first_name=row[2],
                                 email=row[4],
                                 is_staff=True,
                             )
