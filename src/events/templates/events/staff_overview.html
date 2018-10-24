@@ -43,14 +43,20 @@
         {% for date, events in user.dates.items %}
         <td>
             {% for event in events.FLEX1 %}
-          <a href="{% url 'events:detail' event.id %}">{{ event.category.abbreviation }}</a>{% if not forloop.last %}; {% endif %}
+               {% if forloop.first %}
+                   <a href="{% url 'events:detail' event.id %}" title="{{ event.title }}">
+                   {{ event.category.abbreviation }}</a>
+               {% endif %}
             {% empty %}-
             {% endfor %}
         <br>
 {#        </td>#}
 {#        <td>#}
             {% for event in events.FLEX2 %}
-          <a href="{% url 'events:detail' event.id %}">{{ event.category.abbreviation }}</a>{% if not forloop.last %}; {% endif %}
+                {% if forloop.first %}
+                    <a href="{% url 'events:detail' event.id %}" title="{{ event.title }}">
+                    {{ event.category.abbreviation }}</a>
+                {% endif %}
             {% empty %}-
             {% endfor %}
         </td>
