@@ -47,6 +47,7 @@ class Category(models.Model):
     )
     DEFAULT_CATEGORY_ID = 1
     name = models.CharField(max_length=120)
+    abbreviation = models.CharField(max_length=4)
     visible_in_event_list = models.BooleanField(default=False)
     sort_priority = models.IntegerField(default=0)
     color = models.CharField(max_length=10, choices=COLOR_CHOICES, default=None, blank=True, null=True, )

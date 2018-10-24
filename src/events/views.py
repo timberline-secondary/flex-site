@@ -1,6 +1,6 @@
 import csv
 from collections import OrderedDict
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
@@ -630,6 +630,42 @@ def staff_locations(request):
         "users": users,
     }
     return render(request, "events/staff.html", context)
+
+
+@login_required
+def staff_overview(request):
+    date_query = request.GET.get("date", str(default_event_date()))
+    d = datetime.strptime(date_query, "%Y-%m-%d").date()
+
+    flex_dates = [d+timedelta(days=i*7) for i in range(8)] # list of next 8 flex days
+    d2 = flex_dates[-1]
+
+    users = User.objects.filter(is_staff=True, is_active=True).values('id', 'first_name', 'last_name')
+    users = list(users)
+
+    events = Event.objects.filter(date__range=(d, d2))
+
+    for user in users:
+        user_events = events.filter(facilitators__id=user['id'])
+
+        user["dates"] = OrderedDict()
+        for date in flex_dates:
+            user["dates"][date] = {}
+            for block in Block.objects.all():
+                try:
+                    block_events = user_events.filter(blocks=block, date=date)
+                    user["dates"][date][block.constant_string()] = block_events
+                except ObjectDoesNotExist:
+                    user["dates"][date][block.constant_string()] = None
+
+    context = {
+        "date_filter": date_query,
+        "date_object": d,
+        "flex_dates": flex_dates,
+        "users": users,
+    }
+    return render(request, "events/staff_overview.html", context)
+
 
 ###############################################
 #

@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^(?P<id>\d+)/attendance/keypad/disable$', views.event_attendance_keypad_disable, name='attendance_keypad_disable'),
     url(r'^(?P<id>\d+)/attendance/block/(?P<block_id>\d+)/$', views.event_attendance, name='attendance_by_block'),
     url(r'^staff/$', views.staff_locations, name='staff_locations'),
+    url(r'^staff/overview/$', views.staff_overview, name='staff_overview'),
     url(r'^synervoice/$', views.synervoice, name='synervoice'),
     url(r'^stats/$', views.stats2, name='stats'),
     url(r'^stats2/$', views.stats2, name='stats2'),

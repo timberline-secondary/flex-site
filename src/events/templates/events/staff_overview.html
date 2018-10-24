@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block style %}
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="{% static 'css/events.css' %}">
+{% endblock style %}
+
+
+{% block head_title %}Staff | {{ block.super }}{% endblock %}
+
+{% block content %}
+
+  <h1>Staff Overview</h1>
+
+    <div id="toolbar">
+        {%  include 'events/date_filter.html' %}
+    </div>
+    <table data-toolbar="#toolbar"
+           data-toggle="table"
+         data-classes="table table-no-bordered table-hover table-condensed"
+         data-search="true"
+         data-sort-name="last"
+         data-sort-order="asc"
+         id="table">
+    <thead>
+    <tr>
+      <th data-field="first" data-sortable="true">First Name</th>
+      <th data-field="last" data-sortable="true">Last Name</th>
+      {% for date in flex_dates %}
+          <th data-field="{{ date }}" data-sortable="true">{{ date|date:"j M" }}</th>
+      {% endfor %}
+{#      <th data-field="flex1-event" data-sortable="true">Flex 1 Event</th>#}
+{#      <th data-field="flex2-event" data-sortable="true">Flex 2 Event</th>#}
+    </tr>
+    </thead>
+    <tbody>
+    {% for user in users %}
+      <tr>
+        <td>{{ user.first_name }}</td>
+        <td>{{ user.last_name }}</td>
+        {% for date, events in user.dates.items %}
+        <td>
+            {% for event in events.FLEX1 %}
+          <a href="{% url 'events:detail' event.id %}">{{ event.category.abbreviation }}</a>{% if not forloop.last %}; {% endif %}
+            {% empty %}-
+            {% endfor %}
+        <br>
+{#        </td>#}
+{#        <td>#}
+            {% for event in events.FLEX2 %}
+          <a href="{% url 'events:detail' event.id %}">{{ event.category.abbreviation }}</a>{% if not forloop.last %}; {% endif %}
+            {% empty %}-
+            {% endfor %}
+        </td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+
+{% endblock content %}
+
+{% block js %}
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+  {#  Date Filter#}
+  <script src="{% static 'js/events-datepicker.js' %}"></script>
+
+  <!-- Bootstrap Tables:  http://bootstrap-table.wenzhixin.net.cn/ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
+
+{% endblock js %}
