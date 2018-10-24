@@ -46,6 +46,7 @@
                {% if forloop.first %}
                    <a href="{% url 'events:detail' event.id %}" title="{{ event.title }}">
                    {{ event.category.abbreviation }}</a>
+                {% elif not forloop.first %}+
                {% endif %}
             {% empty %}-
             {% endfor %}
@@ -56,6 +57,7 @@
                 {% if forloop.first %}
                     <a href="{% url 'events:detail' event.id %}" title="{{ event.title }}">
                     {{ event.category.abbreviation }}</a>
+                {% elif not forloop.first %}+
                 {% endif %}
             {% empty %}-
             {% endfor %}

@@ -50,7 +50,8 @@ class Category(models.Model):
     abbreviation = models.CharField(max_length=4)
     visible_in_event_list = models.BooleanField(default=False)
     sort_priority = models.IntegerField(default=0)
-    color = models.CharField(max_length=10, choices=COLOR_CHOICES, default=None, blank=True, null=True, )
+    color = models.CharField(max_length=10, choices=COLOR_CHOICES, default=None, blank=True, null=True,
+                             help_text="Events will be highlighted with this color in the events list",)
     description = models.CharField(max_length=512, blank=True, null=True)
 
     class Meta:
