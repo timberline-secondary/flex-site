@@ -31,6 +31,8 @@ urlpatterns = [
 
     # Locations
     url(r'^locations/create/$', views.location_create, name='location_create'),
+    url(r'^ajax/validate_location/$', views.validate_location, name='validate_location'),
+
 
     # Registrations
     url(r'^register/(?P<id>\d+)/block/(?P<block_id>\d+)/$', views.register, name='register'),
