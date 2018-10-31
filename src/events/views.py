@@ -1,4 +1,5 @@
 import csv
+import json
 from collections import OrderedDict
 from datetime import date, datetime, timedelta
 
@@ -8,12 +9,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.serializers import json
 from django.db import models
 from django.db.models import Q
 from django.db.models import Sum, Count
 from django.forms import modelformset_factory, model_to_dict
 from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 
 # Create your views here.
@@ -23,7 +24,7 @@ from django.views.generic import DeleteView
 
 from excuses.models import Excuse
 from profiles.models import Profile
-from .models import Event, default_event_date, Registration, Block
+from .models import Event, default_event_date, Registration, Block, Location
 from .forms import EventForm, AttendanceForm, AttendanceFormSetHelper, RegistrationForm, LocationForm
 
 #Hello it's Me (Nandini)
@@ -185,6 +186,37 @@ def event_copy(request, id):
         "btn_value": "Save"
     }
     return render(request, "events/event_form.html", context)
+
+
+def validate_location(request):
+    location_id = request.GET.get('location_id', None)
+    date_selected = request.GET.get('date', None)
+    event_id = request.GET.get('event_id', None)
+    block_ids = json.loads(request.GET.get('blocks[]', None))
+    date_selected = datetime.strptime(date_selected, "%Y-%m-%d").date()
+
+    location = get_object_or_404(Location, id=location_id)
+    conflicts = location.event_set.filter(date=date_selected, blocks__id__in=block_ids)
+
+    if event_id:
+        event = get_object_or_404(Event, id=event_id)
+        conflicts = conflicts.exclude(id=event.id)
+
+    is_conflict = True if conflicts else False
+
+    msg = 'WARNING! Potential location conflict on {}: \n\n {} is already in use for the event' \
+        .format(date_selected, location.get_detailed_name())
+
+    for conflict in conflicts:
+        msg += "\n\t {} in {}.".format(conflict.title, " & ".join([b.name for b in conflict.blocks.all()]))
+
+    msg += "\n\nThis is just a warning to prevent unintentionally double booking a room."
+
+    data = {
+        'conflict': is_conflict,
+        'msg': msg,
+    }
+    return JsonResponse(data)
 
 
 def event_detail(request, id=None):

@@ -81,6 +81,10 @@ class Location(models.Model):
             name_str += " (" + self.name + ")"
         return name_str
 
+    def get_name_with_conflicts(self, date):
+        events = self.event_set.filter(date=date)
+        return self.get_detailed_name() + "" + str(events)
+
     class Meta:
         ordering = ['room_number']
 
