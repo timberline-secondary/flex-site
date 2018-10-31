@@ -57,20 +57,20 @@
     <script src="{% static 'js/duration-picker.js' %}"></script>
     {{ form.media.js }}
 
-    <script id="event-datepicker" data-date-input-id="id_date" src="{% static 'js/events-datepicker.js' %}"></script>
-
     <script>
 
+        var $date =  $("#id_date");
+        let $location = $("#id_location");
+        // container for tick boxes and labels for flex-1 and flex-2
+        var $blocks = $('#div_id_blocks>div.controls label');
+
         function validateLocation() {
-
-            var location_id = $("#id_location").val();
-            var date = $("#id_date").val();
-
             $.ajax({
                 url: '{% url "events:validate_location" %}',
                 data: {
-                    'location_id': location_id,
-                    'date': date,
+                    'location_id': $location.val(),
+                    'date': $date.val(),
+                    'blocks': getSelectedBlocks(),
                     'event_id': {{ event.id|default:"null" }}
                 },
                 dataType: 'json',
@@ -82,19 +82,26 @@
             });
         }
 
-        // check for location conflicts
-        $("#id_location").change(validateLocation);
-
         // display the multi block event field if more than one block is ticked.
         function updateMultiBlockEventField($blocks) {
             var $multiblock = $('#div_id_multi_block_event');
-            var numBlocksTicked = $blocks.find('input:checked').length;
-            if (numBlocksTicked > 1) {
+            var $blocksTicked = $blocks.find('input:checked');
+            if ($blocksTicked.length > 1) {
                 $multiblock.slideDown();
             }
             else {
                 $multiblock.slideUp();
             }
+
+            validateLocation();
+        }
+
+        function getSelectedBlocks() {
+            var blocks_selected = [];
+            $blocks.find('input:checked').each(function() {
+                blocks_selected.push($(this).attr('value'));
+            });
+            return blocks_selected;
         }
 
         function updateCategorySpecificField($category) {
@@ -116,14 +123,18 @@
         }
 
         $(document).ready(function () {
+
+            // Add listeners to check for location conflicts
+            $location.change(validateLocation);
+            // $date.change(validateLocation); // needs to be done in events-datepicker.js
+            // $blocks.change(...); this is done in updateMultiBlockEventField()
+
             /***************************************
              *
              * CONDITIONAL DISPLAY OF MULTI-BLOCK EVENTS FIELD
              *
              * *************************************/
 
-                // container for tick boxes and labels for flex-1 and flex-2
-            var $blocks = $('#div_id_blocks>div.controls label');
             // update when page loads in case already more than one block ticked (possible if editing an existing event)
             updateMultiBlockEventField($blocks)
 
@@ -133,7 +144,7 @@
              *
              *************************************/
             var $category = $('#div_id_category>div.controls select');
-            updateMultiBlockEventField($category)
+            updateCategorySpecificField($category);
 
             /***************************************
              *
@@ -144,15 +155,14 @@
                 {% if has_registrants %}
                     var disabled_elms = [];
 
-                    var $date = $('#id_date');
                     disabled_elms.push($date)
                     $date.after("<p class='help-block'>You can't change the date of an event that already has students " +
                         "registered for it.  If there is a problem with this event, you can delete it; " +
                         "This will boot out any registered students.  If you want to make a copy of this event for a " +
                         "future date, go back and hit the copy button.</p>");
 
-                    var $blocks = $("input[name='blocks']");
-                    disabled_elms.push($blocks)
+                    var $blocks_input = $("input[name='blocks']");
+                    disabled_elms.push($blocks_input);
                     $("#hint_id_blocks")
                         .html("<p class='help-block'>You can't change available blocks of an event that already has " +
                             "students registered for it.  If there is a problem with this event, you can delete it; " +
@@ -249,4 +259,7 @@
 
         }); // $(document).ready()
     </script>
+
+    <script id="event-datepicker" data-date-input-id="id_date" src="{% static 'js/events-datepicker.js' %}"></script>
+
 {% endblock js %}
