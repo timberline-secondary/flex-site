@@ -65,12 +65,14 @@
         var $blocks = $('#div_id_blocks>div.controls label');
 
         function validateLocation() {
+            var blocks = getSelectedBlocks();
+            console.log(blocks);
             $.ajax({
                 url: '{% url "events:validate_location" %}',
                 data: {
                     'location_id': $location.val(),
                     'date': $date.val(),
-                    'blocks': getSelectedBlocks(),
+                    'blocks[]': JSON.stringify(blocks),
                     'event_id': {{ event.id|default:"null" }}
                 },
                 dataType: 'json',

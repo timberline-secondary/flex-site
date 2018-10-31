@@ -1,4 +1,5 @@
 import csv
+import json
 from collections import OrderedDict
 from datetime import date, datetime
 
@@ -8,7 +9,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.serializers import json
 from django.db import models
 from django.db.models import Q
 from django.db.models import Sum, Count
@@ -192,10 +192,11 @@ def validate_location(request):
     location_id = request.GET.get('location_id', None)
     date_selected = request.GET.get('date', None)
     event_id = request.GET.get('event_id', None)
-    date = datetime.strptime(date_selected, "%Y-%m-%d").date()
+    block_ids = json.loads(request.GET.get('blocks[]', None))
+    date_selected = datetime.strptime(date_selected, "%Y-%m-%d").date()
 
     location = get_object_or_404(Location, id=location_id)
-    conflicts = location.event_set.filter(date=date)
+    conflicts = location.event_set.filter(date=date_selected, blocks__id__in=block_ids)
 
     if event_id:
         event = get_object_or_404(Event, id=event_id)
@@ -203,8 +204,13 @@ def validate_location(request):
 
     is_conflict = True if conflicts else False
 
-    msg = 'WARNING! Potential location conflict on {}: \n\n {} is already in use for {} \n\n' \
-        .format(date_selected, location.get_detailed_name(), str(list(conflicts)))
+    msg = 'WARNING! Potential location conflict on {}: \n\n {} is already in use for the event' \
+        .format(date_selected, location.get_detailed_name())
+
+    for conflict in conflicts:
+        msg += "\n\t {} in {}.".format(conflict.title, " & ".join([b.name for b in conflict.blocks.all()]))
+
+    msg += "\n\nThis is just a warning to prevent unintentionally double booking a room."
 
     data = {
         'conflict': is_conflict,
