@@ -36,7 +36,16 @@
     {% endif %}
   </td>
   <td class="col-md-1"> {{ event.facilitator_string|safe }} </td>
-  <td class="col-md-1"><span style="display:none">{{ event.category.sort_priority }}</span> {{ event.category }} </td>
+  <td class="col-md-1"><span style="display:none">{{ event.category.sort_priority }}</span> {{ event.category }}
+      <br>
+      {% for competency in event.competencies.all %}
+          <a href="{{ competency.link}}" target="_blank"
+          ><img title="Competency: {{ competency.name }}. &#013;&#013;{{ competency.description }}"
+                src="{{ competency.icon.url }}"
+                class="competency-icon"
+          ></a>
+      {% endfor %}
+  </td>
   <td class="col-md-6">
     {% include 'events/event_description.html' %}
   </td>

@@ -78,3 +78,8 @@ http://stackoverflow.com/questions/20541306/how-to-write-a-css-hack-for-ie-11
         content: none !important;
     }
 }
+
+.competency-icon {
+    width: 45px;
+    height: auto;
+}

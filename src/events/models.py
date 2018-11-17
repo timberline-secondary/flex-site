@@ -29,6 +29,7 @@ class CoreCompetency(models.Model):
     name = models.CharField(max_length=120)
     description = models.TextField()
     link = models.URLField()
+    icon = models.ImageField(null=True, blank=True, upload_to="icons/")
 
     class Meta:
         verbose_name_plural = "Core Competencies"
