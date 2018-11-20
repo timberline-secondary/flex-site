@@ -11,7 +11,7 @@ class MenuItem(models.Model):
                                help_text=mark_safe("The Font Awesome icon to display beside the text. E.g. 'star-o'. "
                                                    "Options from <a target='_blank'"
                                                    "href='http://fontawesome.com/v4.7.0/icons/'>Font Awesome</a>."))
-    url = models.URLField("The link.")
+    url = models.URLField(help_text="The link.")
     open_link_in_new_tab = models.BooleanField(default=True)
     sort_order = models.IntegerField(default=0, help_text="Lowest will be at the top.")
     visible = models.BooleanField(default=True)
