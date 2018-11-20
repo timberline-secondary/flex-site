@@ -1,4 +1,6 @@
 {% load staticfiles %}
+{% load utility_tags %}
+
 <nav class="navbar navbar-default">
   <div class="container">
     <!-- Brand and toggle get grouped for better mobile display -->
@@ -27,24 +29,26 @@
             <li>
               <a href="{% url 'events:manage' %}">Your Events<span class="sr-only"></span></a>
             </li>
+
             <li>
               <a href="{% url 'events:registrations_homeroom' %}">Homeroom<span class="sr-only"></span></a>
             </li>
+
             <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-               aria-haspopup="true" aria-expanded="false">More <span class="caret"></span></a>
-            <ul class="dropdown-menu">
-                <li>
-                    <a href="{% url 'events:staff_locations' %}">All Staff<span class="sr-only"></span></a>
-                </li>
-                <li>
-                    <a href="{% url 'events:registrations_all' %}">All Students<span class="sr-only"></span></a>
-                </li>
-                <li>
-                    <a href="{% url 'events:stats' %}">Event Stats<span class="sr-only"></span></a>
-                </li>
-            </ul>
-          </li>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                   aria-haspopup="true" aria-expanded="false">More <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="{% url 'events:staff_locations' %}">All Staff<span class="sr-only"></span></a>
+                    </li>
+                    <li>
+                        <a href="{% url 'events:registrations_all' %}">All Students<span class="sr-only"></span></a>
+                    </li>
+                    <li>
+                        <a href="{% url 'events:stats' %}">Event Stats<span class="sr-only"></span></a>
+                    </li>
+                </ul>
+            </li>
 
           {% else %}
             <li>
@@ -55,7 +59,17 @@
             </li>
           {% endif %}
 
-
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                   aria-haspopup="true" aria-expanded="false">Links <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+                {% menu_list %}
+                {% if request.user.is_superuser %}
+                    <li role="separator" class="divider"></li>
+                    <li><a href="/admin/utilities/menuitem/"><i class="fa fa-fw fa-pencil"></i>&nbsp;&nbsp;Edit this list</a></li>
+                {% endif %}
+            </ul>
+          </li>
 
       </ul>
       {% endif %}
