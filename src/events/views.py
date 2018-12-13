@@ -644,7 +644,7 @@ def staff_overview(request):
 
 ###############################################
 #
-#       SYNERVOICE VIEWS
+#       ATTENDANCE EXPORT VIEWS (Synervoice, etc)
 #
 ################################################
 
@@ -680,17 +680,17 @@ def generate_synervoice_csv(request, d, no_reg_only=False):
 
     writer = csv.writer(response)
 
-    writer.writerow(["Student Name",
-                     "Student Number",
-                     "Homeroom Teacher",
-                    "Grade",
-                     "Home Phone",
-                     "Home Email",
-                     "Date",
-                     "Flex-1 Status",
-                     "Flex-1 Event",
-                     "Flex-2 Status",
-                     "Flex-2 Event",
+    writer.writerow(["STUDENT NAME",
+                     "STU.NO.",
+                     "HR TEACHER",
+                    "GR",
+                     "H PHONE",
+                     "H EMAIL",
+                     "DATE",
+                     "F1 STATUS",
+                     "F1 EVENT",
+                     "F2 STATUS",
+                     "F2 EVENT",
                      ])
 
     for s in absent_data:
