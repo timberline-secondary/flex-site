@@ -8,13 +8,16 @@
       data-event-available="false"
       data-tooltip-title="{{ event.explanation }}"
       data-placement="bottom"
-    {% elif not user.is_staff %}
-      data-event-available="true"
+    {% else %}
+        class = "{{ event.category.color }}"
+        {% if not user.is_staff %}
+            data-event-available="true"
+        {% endif %}
     {% endif %}
 >
-  <td> {{ event.id }}</td>
-  <td> {{ event.date| date:"Y-m-d" }}</td>
-  <td class="col-md-1"
+  <td>{{ event.id }}</td>
+  <td>{{ event.date| date:"Y-m-d" }}</td>
+  <td class="col-md-1 blocks"
       title="{{ event.blocks_str_explanation|default_if_none:'' }}"
       data-toggle="tooltip"
       data-placement="top"
@@ -33,18 +36,15 @@
     {% endif %}
   </td>
   <td class="col-md-1"> {{ event.facilitator_string|safe }} </td>
-  <td class="col-md-1">
-    <ul class="list-inline hidden-xs">
+  <td class="col-md-1"><span style="display:none">{{ event.category.sort_priority }}</span> {{ event.category }}
+      <br>
       {% for competency in event.competencies.all %}
-          <li>{{ competency.name }}</li>
-      {% empty %}
-          <li>-</li>
+          <a href="{{ competency.link}}" target="_blank"
+          ><img title="Competency: {{ competency.name }}. &#013;&#013;{{ competency.description }}"
+                src="{{ competency.icon.url }}"
+                class="competency-icon"
+          ></a>
       {% endfor %}
-    </ul>
-    <div class="visible-xs-inline">
-      {{ event.competencies.all|join:", " }}
-    </div>
-
   </td>
   <td class="col-md-6">
     {% include 'events/event_description.html' %}

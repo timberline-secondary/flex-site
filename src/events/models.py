@@ -181,10 +181,6 @@ class Event(models.Model):
         choices=MULTI_BLOCK_CHOICES,
         help_text="If the event is running in more than one block, what restrictions are there for students?  "
                   "This field is ignored if the event only occurs during one block.")
-    highlight = models.BooleanField(
-        default=False,
-        help_text="Highlighted events will appear in a prominent section at the top of the events list.  "
-                  "This should only be used for new events, one-time/unique events, events with a guest speaker, etc.")
     facilitators = models.ManyToManyField(User, related_name='events',
                                           limit_choices_to={'is_staff': True})
     allow_facilitators_to_modify = models.BooleanField(

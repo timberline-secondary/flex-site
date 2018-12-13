@@ -176,7 +176,6 @@ class EventForm(forms.ModelForm):
             "title",
             "blocks",
             "multi_block_event",
-            "highlight",
             "facilitators",
             "category",
             "competencies",
