@@ -23,6 +23,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import DeleteView
 
 from excuses.models import Excuse
+from flex.utils import school_year_start_date
 from profiles.models import Profile
 from .models import Event, default_event_date, Registration, Block, Location
 from .forms import EventForm, AttendanceForm, AttendanceFormSetHelper, RegistrationForm, LocationForm
@@ -277,6 +278,8 @@ def stats(request):
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
     blocks = Block.objects.all()
 
+
+
     registration_stats = {"Slots": {}, "Registrations": {}} #, "Excused": {}}
 
     for block in blocks:
@@ -410,6 +413,46 @@ def stats2(request):
     }
 
     return render(request, "events/stats2.html", context)
+
+
+@staff_member_required
+def stats_to_date(request):
+    date_query = request.GET.get("date", str(school_year_start_date()))
+    d = datetime.strptime(date_query, "%Y-%m-%d").date()
+    blocks = Block.objects.all()
+
+
+
+    # registration_stats = OrderedDict()  # empty dicts
+    # attendance_stats = OrderedDict()
+    #
+    # for grade in range(9, 13):
+    #     registration_stats[str(grade)] = get_registration_stats(d, grade=grade)
+    #     attendance_stats[str(grade)] = get_attendance_stats(d, grade=grade)
+    #
+    # registration_stats["All"] = get_registration_stats(d)
+    # attendance_stats["All"] = get_attendance_stats(d)
+    #
+    # context = {
+    #     "date_filter": date_query,
+    #     "date_object": d,
+    #     "registration_stats": registration_stats,
+    #     "attendance_stats": attendance_stats,
+    #     "blocks": blocks,
+    # }
+
+    students = Registration.objects.registration_check(d)
+
+    context = {
+        "heading": "All Student Registrations",
+        "students": students,
+        "date_filter": date_query,
+        "date_object": d,
+        "include_homeroom_teacher": 'true',
+        "title": "All Students",
+    }
+
+    return render(request, "events/stats_to_date.html", context)
 
 ###############################################
 #
@@ -685,7 +728,7 @@ def generate_synervoice_csv(request, d, no_reg_only=False):
     writer.writerow(["STUDENT NAME",
                      "STU.NO.",
                      "HR TEACHER",
-                    "GR",
+                     "GR",
                      "H PHONE",
                      "H EMAIL",
                      "DATE",
@@ -873,6 +916,7 @@ def registrations_all(request):
         "title": "All Students",
     }
     return render(request, "events/homeroom_list.html", context)
+
 
 @staff_member_required
 def stats_staff(request):

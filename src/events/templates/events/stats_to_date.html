@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block style %}
+  <link rel="stylesheet" href="{% static 'css/events.css' %}">
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+{% endblock style %}
+
+
+{% block head_title %}Attendance Year to Date | {{ block.super }}{% endblock %}
+
+{% block content %}
+
+  <h1>Year to Date Student Attendance</h1>
+
+    <div id="toolbar">
+        {%  include 'events/date_filter.html' %}
+    </div>
+    <table data-toolbar="#toolbar"
+           data-toggle="table"
+         data-classes="table table-hover table-no-bordered table-condensed"
+         data-search="true"
+         data-id-field="id"
+         id="table">
+    <thead>
+    <tr>
+      <th data-field="id" data-visible="false">ID</th>
+      <th data-field="date">Date</th>
+      <th data-field="block">Block</th>
+      <th data-field="student">Student</th>
+      <th data-field="event">Event</th>
+      <th data-field="location">Location</th>
+      <th data-field="absent">Absent</th>
+      <th data-field="late">Late</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for obj in object_list %}
+      <tr >
+        <td>{{ obj.id }}</td>
+        <td>{{ obj.event.date }}</td>
+        <td>{{ obj.block }}</td>
+        <td>{{ obj.student }} - {{ obj.student.get_full_name }}</td>
+        <td><a href="{{ obj.event.get_absolute_url }}">{{ obj.event.title }}</a></td>
+        <td>{{ obj.event.location }}</td>
+        <td>{{ obj.absent }} </td>
+        <td>{{ obj.late }}</td>
+
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+
+{% endblock content %}
+
+{% block js %}
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <!-- Bootstrap Tables:  http://bootstrap-table.wenzhixin.net.cn/ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
+
+  {#  Date Filter#}
+  <script src="{% static 'js/events-datepicker.js' %}"></script>
+
+{% endblock js %}

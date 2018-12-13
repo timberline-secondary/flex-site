@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^synervoice/$', views.synervoice, name='synervoice'),
     url(r'^stats/$', views.stats2, name='stats'),
     url(r'^stats2/$', views.stats2, name='stats2'),
+    url(r'^stats_to_date/$', views.stats_to_date, name='stats_to_date'),
     url(r'^stats/staff/$', views.stats_staff, name='stats_staff'),
 
 
