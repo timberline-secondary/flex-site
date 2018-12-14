@@ -11,7 +11,7 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 from django.db import models
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models.signals import post_save
 from django.utils import timezone
 
@@ -171,7 +171,7 @@ class Event(models.Model):
 
     category = models.ForeignKey(Category, default=Category.DEFAULT_CATEGORY_ID, on_delete=models.SET_NULL, null=True,
                                  help_text="By default, events are sorted by category in the events list.")
-    competencies = models.ManyToManyField(CoreCompetency, null=True, blank=True,
+    competencies = models.ManyToManyField(CoreCompetency, blank=True,
                                           help_text="The Core Competencies relevant to this event.")
     date = models.DateField(default=default_event_date)
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
@@ -208,7 +208,7 @@ class Event(models.Model):
 
     # generally non-editable fields
 
-    creator = models.ForeignKey(User)
+    creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     updated_timestamp = models.DateTimeField(auto_now=True, auto_now_add=False)
     created_timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
     is_keypad_initialized = models.BooleanField(
@@ -672,7 +672,7 @@ class RegistrationManager(models.Manager):
 
 class Registration(models.Model):
 
-    event = models.ForeignKey(Event)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     block = models.ForeignKey(Block, on_delete=models.CASCADE)
     updated_timestamp = models.DateTimeField(auto_now=True, auto_now_add=False)
