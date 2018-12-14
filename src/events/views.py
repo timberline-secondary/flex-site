@@ -422,34 +422,15 @@ def stats_to_date(request):
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
     blocks = Block.objects.all()
 
-
-
-    # registration_stats = OrderedDict()  # empty dicts
-    # attendance_stats = OrderedDict()
-    #
-    # for grade in range(9, 13):
-    #     registration_stats[str(grade)] = get_registration_stats(d, grade=grade)
-    #     attendance_stats[str(grade)] = get_attendance_stats(d, grade=grade)
-    #
-    # registration_stats["All"] = get_registration_stats(d)
-    # attendance_stats["All"] = get_attendance_stats(d)
-    #
-    # context = {
-    #     "date_filter": date_query,
-    #     "date_object": d,
-    #     "registration_stats": registration_stats,
-    #     "attendance_stats": attendance_stats,
-    #     "blocks": blocks,
-    # }
-
+    # Registrations
     students = User.objects.filter(is_active=True, is_staff=False).select_related('profile__homeroom_teacher')
-
     students = students.annotate(Count('registration'))
-
     baseline_reg_number = students.aggregate(Max('registration__count'))['registration__count__max']
-
     students = students.annotate(num_non_registrations=baseline_reg_number - Count('registration'))
     # print(students[0].registration__count)
+
+    # Attendance
+    # students = students.annotate(absences=Count('registration', filter=Q(registration__absent=True)))
 
     context = {
         "heading": "All Student Registrations",

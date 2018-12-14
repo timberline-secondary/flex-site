@@ -15,7 +15,7 @@
   <h1>Year to Date Student Attendance</h1>
 
     <div id="toolbar">
-        From this date up to today:
+        From the date below up to today:
         {%  include 'events/date_filter.html' %}
     </div>
     <table data-toolbar="#toolbar"
@@ -26,12 +26,13 @@
          id="table">
     <thead>
     <tr>
-      <th data-field="id" data-sortable="true">Number</th>
+      <th data-field="id" data-sortable="true">Student<br>Number</th>
       <th data-field="first" data-sortable="true">First Name</th>
       <th data-field="last" data-sortable="true">Last Name</th>
       <th data-field="grade" data-sortable="true">Grade</th>
       <th data-field="homeroom" data-sortable="true">Homeroom</th>
-        <th data-field="num_registrations" data-sortable="true">Non Registrations</th>
+        <th data-field="num_registrations" data-sortable="true">Blocks Not <br>Registered</th>
+        <th data-field="absences" data-sortable="true">Absences</th>
     </tr>
     </thead>
     <tbody>
@@ -43,6 +44,7 @@
         <td>{{ student.profile.grade }}</td>
         <td>{{ student.profile.homeroom_teacher.get_full_name }}</td>
       <td>{{ student.num_non_registrations }}</td>
+      <td>{{ student.absences }}</td>
 
       </tr>
     {% endfor %}
