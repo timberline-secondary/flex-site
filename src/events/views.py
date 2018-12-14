@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+from django.db.models import Max
 from django.db.models import Q
 from django.db.models import Sum, Count
 from django.forms import modelformset_factory, model_to_dict
@@ -441,7 +442,14 @@ def stats_to_date(request):
     #     "blocks": blocks,
     # }
 
-    students = Registration.objects.registration_check(d)
+    students = User.objects.filter(is_active=True, is_staff=False).select_related('profile__homeroom_teacher')
+
+    students = students.annotate(Count('registration'))
+
+    baseline_reg_number = students.aggregate(Max('registration__count'))['registration__count__max']
+
+    students = students.annotate(num_non_registrations=baseline_reg_number - Count('registration'))
+    # print(students[0].registration__count)
 
     context = {
         "heading": "All Student Registrations",

@@ -15,6 +15,7 @@
   <h1>Year to Date Student Attendance</h1>
 
     <div id="toolbar">
+        From this date up to today:
         {%  include 'events/date_filter.html' %}
     </div>
     <table data-toolbar="#toolbar"
@@ -25,27 +26,23 @@
          id="table">
     <thead>
     <tr>
-      <th data-field="id" data-visible="false">ID</th>
-      <th data-field="date">Date</th>
-      <th data-field="block">Block</th>
-      <th data-field="student">Student</th>
-      <th data-field="event">Event</th>
-      <th data-field="location">Location</th>
-      <th data-field="absent">Absent</th>
-      <th data-field="late">Late</th>
+      <th data-field="id" data-sortable="true">Number</th>
+      <th data-field="first" data-sortable="true">First Name</th>
+      <th data-field="last" data-sortable="true">Last Name</th>
+      <th data-field="grade" data-sortable="true">Grade</th>
+      <th data-field="homeroom" data-sortable="true">Homeroom</th>
+        <th data-field="num_registrations" data-sortable="true">Non Registrations</th>
     </tr>
     </thead>
     <tbody>
-    {% for obj in object_list %}
+    {% for student in students %}
       <tr >
-        <td>{{ obj.id }}</td>
-        <td>{{ obj.event.date }}</td>
-        <td>{{ obj.block }}</td>
-        <td>{{ obj.student }} - {{ obj.student.get_full_name }}</td>
-        <td><a href="{{ obj.event.get_absolute_url }}">{{ obj.event.title }}</a></td>
-        <td>{{ obj.event.location }}</td>
-        <td>{{ obj.absent }} </td>
-        <td>{{ obj.late }}</td>
+         <td>{{ student.username }}</td>
+        <td>{{ student.first_name }}</td>
+        <td>{{ student.last_name }}</td>
+        <td>{{ student.profile.grade }}</td>
+        <td>{{ student.profile.homeroom_teacher.get_full_name }}</td>
+      <td>{{ student.num_non_registrations }}</td>
 
       </tr>
     {% endfor %}
