@@ -93,7 +93,7 @@ def event_update(request, id=None):
 
     form = EventForm(request.POST or None, request.FILES or None, instance=event)
 
-    print(form.files)
+    # print(form.files)
 
     # not valid?
     if form.is_valid():
@@ -195,10 +195,12 @@ def validate_location(request):
     block_ids = json.loads(request.GET.get('blocks[]', None))
     date_selected = datetime.strptime(date_selected, "%Y-%m-%d").date()
 
-    location = get_object_or_404(Location, id=location_id)
-    conflicts = location.event_set.filter(date=date_selected, blocks__id__in=block_ids)
+    conflicts = None
+    if location_id:  # only need to check for conflicts if a location has been set
+        location = get_object_or_404(Location, id=location_id)
+        conflicts = location.event_set.filter(date=date_selected, blocks__id__in=block_ids)
 
-    if event_id:
+    if event_id:  # remove self as conflict.
         event = get_object_or_404(Event, id=event_id)
         conflicts = conflicts.exclude(id=event.id)
 
