@@ -2,6 +2,8 @@ from django.conf.urls import url
 
 from excuses import views
 
+app_name = "excuses"
+
 urlpatterns = [
     url(r'^all/$', views.excuse_list, name='excuse_list'),
     url(r'^create/$', views.excuse_create, name='excuse_create'),

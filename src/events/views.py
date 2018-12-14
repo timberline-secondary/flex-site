@@ -531,7 +531,7 @@ def event_list(request, block_id=None):
     # this is info to display student current registrations for the day
     registrations = {}
     excuses_dict = {}
-    if request.user.is_authenticated() and not request.user.is_staff:
+    if request.user.is_authenticated and not request.user.is_staff:
         # Build a dictionary of user's registrations for this day:
         # {block_name: event,}
         for block in blocks:
@@ -551,12 +551,12 @@ def event_list(request, block_id=None):
     # Get current availability of each event for this specific user.
     # for event in queryset:
     #     # event.attendance = event.registration_set.filter(block=active_block).count()
-    #     if request.user.is_authenticated():
+    #     if request.user.is_authenticated:
     #         event.availability, event.available = event.is_available_by_block(request.user)
 
     for event in queryset:
         event.attendance = event.registration_set.filter(block=active_block).count()
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             event.available, event.already, event.explanation = event.is_available(request.user, active_block)
         else:
             event.available = True

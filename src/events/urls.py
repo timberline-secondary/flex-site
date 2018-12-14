@@ -2,6 +2,8 @@ from django.conf.urls import url
 
 from . import views
 
+app_name = "events"
+
 urlpatterns = [
     url(r'^$', views.event_list, name='home'),
     url(r'^$', views.event_list, name='list'),

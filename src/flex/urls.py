@@ -22,6 +22,8 @@ from events import views as event_views
 
 admin.site.site_header = settings.ADMIN_SITE_HEADER
 
+app_name = "flex"
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', event_views.event_list, name='home'),

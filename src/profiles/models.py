@@ -11,28 +11,34 @@ from django.urls import reverse
 from excuses.models import Excuse
 
 
-class PasswordResetRequiredMiddleware(object):
+class PasswordResetRequiredMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+        # One-time configuration and initialization.
 
-    def process_request(self, request):
-        result = None
+    def __call__(self, request):
+        # Code to be executed for each request before
+        # the view (and later middleware) are called.
+
+        response = self.get_response(request)
+
+        # Code to be executed for each request/response after
+        # the view is called.
         try:
-            if not request.user.is_authenticated:
-                result = None
-            elif request.path == reverse('auth_password_change_done'):
-                request.user.profile.password_change_required = False
-                request.user.profile.save()
-                messages.success(request, "Password successfully changed.")
-                result = redirect('home')
-            elif request.user.profile.password_change_required:
-                if request.path != reverse('auth_password_change') and \
-                   request.path != reverse('auth_logout'):
-                    result = HttpResponseRedirect(reverse('auth_password_change'))
-            else:
-                result = None
+            if request.user.is_authenticated:
+                if request.path == reverse('auth_password_change_done'):
+                    request.user.profile.password_change_required = False
+                    request.user.profile.save()
+                    messages.success(request, "Password successfully changed.")
+                    response = redirect('home')
+                elif request.user.profile.password_change_required:
+                    if request.path != reverse('auth_password_change') and \
+                       request.path != reverse('auth_logout'):
+                        response = HttpResponseRedirect(reverse('auth_password_change'))
         except Profile.DoesNotExist:
             messages.error(request, "You don't seem to have a profile?")
 
-        return result
+        return response
 
 
 class ProfileManager(models.Manager):
