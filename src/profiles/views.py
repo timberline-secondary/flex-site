@@ -101,7 +101,7 @@ def mass_update(request):
                 if row and len(row) >= 8:
                     # check for student number
                     if not re.match(sn_regex_string, row[0]):
-                        if row[0] != "Student Number":  #ignore the first header row?
+                        if row[0] != "Student Number":  # ignore the first header row?
                             student_errors.append({'error': "Student number doesn't match pattern", 'row': row})
                     else:
                         # students should have one entry for each semester, only use semester indicated in form
@@ -146,9 +146,11 @@ def mass_update(request):
                                     last_name=last_name,
                                 )
                                 new_student_list.append(user.id)
-                            else:
+                            else:  # update
                                 user = User.objects.get(username=username)
                                 user.is_active = True
+                                user.first_name = first_name
+                                user.last_name = last_name
                                 user.save()
 
                             # A profile is created automatically when a new user is created.  Update it.
