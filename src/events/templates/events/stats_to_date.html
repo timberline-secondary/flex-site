@@ -14,10 +14,12 @@
 
   <h1>Year to Date Student Attendance</h1>
 
+    <p>Estimated total blocks of Flex since {{ date_object }}: <b>{{ total_blocks }}</b></p>
+
     <div id="toolbar">
-        From the date below up to today:
         {%  include 'events/date_filter.html' %}
     </div>
+
     <table data-toolbar="#toolbar"
            data-toggle="table"
          data-classes="table table-hover table-no-bordered table-condensed"
@@ -32,7 +34,7 @@
       <th data-field="grade" data-sortable="true">Grade</th>
       <th data-field="homeroom" data-sortable="true">Homeroom</th>
         <th data-field="num_registrations" data-sortable="true">Blocks Not <br>Registered</th>
-        <th data-field="absences" data-sortable="true">Absences</th>
+        <th data-field="absences" data-sortable="true">Blocks<br>Absent</th>
     </tr>
     </thead>
     <tbody>

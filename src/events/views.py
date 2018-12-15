@@ -420,17 +420,18 @@ def stats2(request):
 def stats_to_date(request):
     date_query = request.GET.get("date", str(school_year_start_date()))
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
-    blocks = Block.objects.all()
 
     # Registrations
     students = User.objects.filter(is_active=True, is_staff=False).select_related('profile__homeroom_teacher')
-    students = students.annotate(Count('registration'))
+    registration_count = Count('registration', filter=Q(registration__event__date__gte=d))
+    students = students.annotate(registration__count=registration_count)
     baseline_reg_number = students.aggregate(Max('registration__count'))['registration__count__max']
-    students = students.annotate(num_non_registrations=baseline_reg_number - Count('registration'))
+    students = students.annotate(num_non_registrations=baseline_reg_number - registration_count)
     # print(students[0].registration__count)
 
     # Attendance
-    # students = students.annotate(absences=Count('registration', filter=Q(registration__absent=True)))
+    absences = Count('registration', filter=Q(registration__absent=True, registration__event__date__gte=d))
+    students = students.annotate(absences=absences)
 
     context = {
         "heading": "All Student Registrations",
@@ -439,6 +440,7 @@ def stats_to_date(request):
         "date_object": d,
         "include_homeroom_teacher": 'true',
         "title": "All Students",
+        "total_blocks": baseline_reg_number,
     }
 
     return render(request, "events/stats_to_date.html", context)
