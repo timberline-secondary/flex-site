@@ -420,17 +420,23 @@ def stats2(request):
 def stats_to_date(request):
     date_query = request.GET.get("date", str(school_year_start_date()))
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
+    today = datetime.today().date()
 
     # Registrations
     students = User.objects.filter(is_active=True, is_staff=False).select_related('profile__homeroom_teacher')
-    registration_count = Count('registration', filter=Q(registration__event__date__gte=d))
-    students = students.annotate(registration__count=registration_count)
-    baseline_reg_number = students.aggregate(Max('registration__count'))['registration__count__max']
-    students = students.annotate(num_non_registrations=baseline_reg_number - registration_count)
+    num_registrations = Count('registration',
+                               filter=Q(registration__event__date__gte=d, registration__event__date__lte=today))
+    students = students.annotate(num_registrations=num_registrations)
+    baseline_reg_number = students.aggregate(Max('num_registrations'))['num_registrations__max']
+    students = students.annotate(num_non_registrations=baseline_reg_number - num_registrations)
     # print(students[0].registration__count)
 
     # Attendance
-    absences = Count('registration', filter=Q(registration__absent=True, registration__event__date__gte=d))
+    absences = Count('registration', filter=Q(registration__absent=True,
+                                               registration__event__date__gte=d,
+                                               registration__event__date__lte=today
+                                            )
+                     )
     students = students.annotate(absences=absences)
 
     context = {
