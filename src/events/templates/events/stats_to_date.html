@@ -25,6 +25,8 @@
          data-classes="table table-hover table-no-bordered table-condensed"
          data-search="true"
          data-id-field="id"
+           data-show-export="true"
+           data-export-types="['csv', 'excel']"
          id="table">
     <thead>
     <tr>
@@ -60,6 +62,8 @@
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <!-- Bootstrap Tables:  http://bootstrap-table.wenzhixin.net.cn/ -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
+    <script src="{% static 'js/tableExport.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap-table-export.js' %}"></script>
 
   {#  Date Filter#}
   <script src="{% static 'js/events-datepicker.js' %}"></script>
