@@ -9,6 +9,8 @@ from flex.utils import default_event_date
 
 class ExcuseReason(models.Model):
     reason = models.CharField(max_length=50)
+    flex_activity = models.BooleanField(default=False, help_text="Check this if the student is still conducting"
+                                                                 " an activity compliant with the Flex course.")
 
     def __str__(self):
         return self.reason
