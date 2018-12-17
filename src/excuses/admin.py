@@ -13,5 +13,13 @@ class ExcuseAdmin(admin.ModelAdmin):
         model = Excuse
 
 
+class ExcuseReasonAdmin(admin.ModelAdmin):
+    list_display = ["reason", "flex_activity"]
+    list_filter = ["flex_activity"]
+
+    class Meta:
+        model = Excuse
+
+
 admin.site.register(Excuse, ExcuseAdmin)
-admin.site.register(ExcuseReason)
+admin.site.register(ExcuseReason, ExcuseReasonAdmin)

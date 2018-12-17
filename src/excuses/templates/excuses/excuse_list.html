@@ -41,6 +41,7 @@
             <th data-field="last_date" data-sortable="true" data-sorter="dateSorter">End</th>
             <th data-field="blocks" data-sortable="true">Blocks</th>
             <th data-field="reason" data-sortable="true">Reason</th>
+            <th data-field="flex_activity" data-sortable="true">Flex Activity</th>
             <th data-field="students">Students</th>
         </tr>
         </thead>
@@ -60,6 +61,7 @@
                     </small>
                 </td>
                 <td>{{ excuse.reason }}</td>
+                <td>{{ excuse.reason.flex_activity|yesno }}</td>
                 <td>
                     <small>
                         {% for student in excuse.students.all %}
