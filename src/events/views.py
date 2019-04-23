@@ -208,8 +208,11 @@ def validate_location(request):
 
     is_conflict = True if conflicts else False
 
-    msg = 'WARNING! Potential location conflict on {}: \n\n {} is already in use for the event' \
-        .format(date_selected, location.get_detailed_name())
+    if location_id:
+        msg = 'WARNING! Potential location conflict on {}: \n\n {} is already in use for the event' \
+            .format(date_selected, location.get_detailed_name())
+    else:
+        msg = ''
 
     for conflict in conflicts:
         msg += "\n\t {} in {}.".format(conflict.title, " & ".join([b.name for b in conflict.blocks.all()]))
