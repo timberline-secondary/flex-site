@@ -481,8 +481,7 @@ def event_attendance(request, id=None, block_id=None):
     event = get_object_or_404(Event, id=id)
     blocks = event.blocks.all()
 
-    multi_block_save_option = blocks.count() > 1 and \
-                              (event.multi_block_event == Event.F1_AND_F2 or event.multi_block_event == Event.F1_OR_F2)
+    multi_block_save_option = blocks.count() > 1 and event.multi_block_event == Event.F1_AND_F2
 
     if block_id:
         active_block = get_object_or_404(Block, id=block_id)
@@ -492,13 +491,13 @@ def event_attendance(request, id=None, block_id=None):
     queryset1 = Registration.objects.filter(event=event, block=active_block).order_by('student__last_name')
 
     # https://docs.djangoproject.com/en/1.9/topics/forms/modelforms/#model-formsets
-    AttendanceFormSet1 = modelformset_factory(Registration,
+    AttendanceFormSet = modelformset_factory(Registration,
                                               form=AttendanceForm,
                                               extra=0)
     helper = AttendanceFormSetHelper()
 
     if request.method =="POST":
-        formset1 = AttendanceFormSet1(
+        formset1 = AttendanceFormSet(
             request.POST, request.FILES,
             queryset=queryset1,
             prefix='flex1'
@@ -515,13 +514,23 @@ def event_attendance(request, id=None, block_id=None):
             # #reset/refresh the form on success
             # formset1 = AttendanceFormSet1(queryset=queryset1, prefix='flex1')
 
-        messages.success(request, "Attendance saved for <b>%s</b> during <b>%s</b>" % (event, active_block))
+        if multi_block_save_option: # then we need to save for both blocks at once.
+            # get registration queryset for the other block, which will be Flex 2
+            other_block = blocks[1]
+            queryset2 = Registration.objects.filter(event=event, block=other_block).order_by('student__last_name')
 
-    # else:
-    #     formset1 = AttendanceFormSet1(queryset=queryset1, prefix='flex1')
+            # now copy over attendance from queryset1, should be a matching record for each registration!
+            for reg1 in queryset1:
+                reg2 = queryset2.get(student=reg1.student)
+                reg2.absent = reg1.absent
+                reg2.save()
+
+        blocks_saved = active_block if not multi_block_save_option else "Flex 1 AND Flex 2"
+
+        messages.success(request, "Attendance saved for <b>%s</b> during <b>%s</b>" % (event, blocks_saved))
 
     # Always refresh with an up to date form:
-    formset1 = AttendanceFormSet1(queryset=queryset1, prefix='flex1')
+    formset1 = AttendanceFormSet(queryset=queryset1, prefix='flex1')
 
     context = {
         "object_list_1": queryset1,
