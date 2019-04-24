@@ -54,13 +54,20 @@ class AttendanceForm(forms.ModelForm):
 
 class AttendanceFormSetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
+        save_both = kwargs.pop('save_both', False)
         super(AttendanceFormSetHelper, self).__init__(*args, **kwargs)
         self.form_class = 'form-inline'
         self.form_id = 'attendance-form'
         # self.field_template = 'bootstrap3/layout/inline_field.html'
         self.template = 'events/attendance_table_inline_formset.html'
 
-        self.add_input(Submit('submit', 'Save Attendance (this block only)'))
+        btn_text = 'Save Attendance'
+        if save_both:
+            btn_text += ' (for both blocks)'
+        else:
+            btn_text += ' (for this block only)'
+
+        self.add_input(Submit('submit', btn_text))
 
 
 class RegistrationForm(forms.ModelForm):

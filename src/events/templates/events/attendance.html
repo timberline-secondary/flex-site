@@ -3,8 +3,8 @@
 {% load crispy_forms_tags %}
 
 {% block style %}
-  <link rel="stylesheet" href="{% static 'css/events.css' %}">
-{#  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">#}
+    <link rel="stylesheet" href="{% static 'css/events.css' %}">
+    {#  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">#}
 {% endblock style %}
 
 {% block head_title %}Attendance | {{ block.super }}{% endblock %}
@@ -12,161 +12,164 @@
 
 {% block content %}
 
-  <h1>Attendance - {{ event.title }}
-    <small>
-      <span class="responsive-wrap">{{ event.date }}</span>
-    </small>
-  </h1>
+    <h1>Attendance - {{ event.title }}
+        <small>
+            <span class="responsive-wrap">{{ event.date }}</span>
+        </small>
+    </h1>
 
-  <div class="hidden-print">
-    {% include 'events/event_single_table.html' with no_buttons=True %}
-  </div>
-  <br>
-
-  <p class="hidden-print">
-    {% if event.is_keypad_initialized %}
-    <a type="button" class="btn btn-success" data-toggle="modal" data-target="#keypadEntryModal">
-      <i class="fa fa-keyboard-o"></i> Launch Keypad Entry
-    </a>
-    <a type="button" class="btn btn-default" id="keypad_disable"
-       href="{% url 'events:attendance_keypad_disable' event.id %}">Disable Keypad Entry
-    </a>
-    {% else %}
-      <a class="btn btn-default" id="keypad_init" href="{% url 'events:attendance_keypad_init' event.id %}">
-        <i class="fa fa-keyboard-o"></i> Initialize Keypad Entry
-      </a>
-    {% endif %}
-  </p>
-
-  <div class="row">
-    <div class="col-sm-10 col-md-9 col-lg-7" role="navigation">
-      <ul class="nav nav-tabs">
-        {% for block in event.blocks.all %}
-        <li role="presentation" {% if block == active_block %}class="active"{% endif %}>
-          <a href="{% url 'events:attendance_by_block' event.id block.id %}"
-             aria-controls="flex1"
-             role="tab"
-          >
-            {{ block }}
-          </a>
-        </li>
-        {% endfor %}
-      </ul>
-
-          {% crispy formset1 helper %}
-
+    <div class="hidden-print">
+        {% include 'events/event_single_table.html' with no_buttons=True %}
     </div>
-  </div>
+    <br>
 
+    <p class="hidden-print">
+        {% if event.is_keypad_initialized %}
+            <a type="button" class="btn btn-success" data-toggle="modal" data-target="#keypadEntryModal">
+                <i class="fa fa-keyboard-o"></i> Launch Keypad Entry
+            </a>
+            <a type="button" class="btn btn-default" id="keypad_disable"
+               href="{% url 'events:attendance_keypad_disable' event.id %}">Disable Keypad Entry
+            </a>
+        {% else %}
+            <a class="btn btn-default" id="keypad_init" href="{% url 'events:attendance_keypad_init' event.id %}">
+                <i class="fa fa-keyboard-o"></i> Initialize Keypad Entry
+            </a>
+        {% endif %}
+    </p>
 
+    <div class="row">
+        <div class="col-sm-10 col-md-9 col-lg-7" role="navigation">
+            {% if not multi_block_save_option %}
+                <ul class="nav nav-tabs">
+                    {% for block in event.blocks.all %}
+                        <li role="presentation" {% if block == active_block %}class="active"{% endif %}>
+                            <a href="{% url 'events:attendance_by_block' event.id block.id %}"
+                               aria-controls="flex1"
+                               role="tab"
+                            >
+                                {{ block }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
 
-  <!-- Modal -->
-<div class="modal fade" id="keypadEntryModal" tabindex="-1" role="dialog" aria-labelledby="keypadEntryModal">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Attendance Keypad Entry for {{ event }}</h4>
-      </div>
-      <div class="modal-body">
-        <h1>Student Number</h1>
-        <input id="studentNumberField" type="text" name="studentNumber" class="form-control" value="99">
-        <h1 id="keypadResult"></h1>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" id="keypadEnter">Enter</button>
-      </div>
+            {% crispy formset1 helper %}
+
+        </div>
     </div>
-  </div>
-</div>
+
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="keypadEntryModal" tabindex="-1" role="dialog" aria-labelledby="keypadEntryModal">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Attendance Keypad Entry for {{ event }}</h4>
+                </div>
+                <div class="modal-body">
+                    <h1>Student Number</h1>
+                    <input id="studentNumberField" type="text" name="studentNumber" class="form-control" value="99">
+                    <h1 id="keypadResult"></h1>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="keypadEnter">Enter</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 {% endblock content %}
 
 {% block js %}
-  <script src="{% static 'js/confirm-bootstrap.js' %}"></script>
+    <script src="{% static 'js/confirm-bootstrap.js' %}"></script>
 
-  {% if not event.is_keypad_initialized %}
+    {% if not event.is_keypad_initialized %}
+        <script>
+            var confirmMessage = "<p>Keypad entry has not been initialized for this event yet.  This requires marking " +
+                "all students as absent for all blocks, which will overwrite any attendance already completed.</p>" +
+                "<p>You are still be able to manually edit the attendance.</p>" +
+                "<p>Are you sure you want to initialize keypad entry mode?</p>";
+
+            $('#keypad_init').confirmModal({
+                confirmTitle: 'Initialize keypad entry mode',
+                confirmMessage: confirmMessage,
+                confirmOk: 'Yes',
+                confirmCancel: 'Cancel',
+                confirmStyle: 'success',
+                confirmDismiss: true,
+                confirmAutoOpen: false
+            });
+        </script>
+    {% else %}
+        <script src="{% static 'js/events-attendance-keypad.js' %}"></script>
+        <script>
+            var confirmMessage = "<p>Disabling keypad entry will remove absense marks from all students for all blocks, " +
+                "which will overwrite any attendance already completed.</p>" +
+                "<p>Are you sure you want to disable keypad entry mode?</p>";
+
+            $('#keypad_disable').confirmModal({
+                confirmTitle: 'Disable keypad entry mode',
+                confirmMessage: confirmMessage,
+                confirmOk: 'Yes',
+                confirmCancel: 'Cancel',
+                confirmStyle: 'success',
+                confirmDismiss: true,
+                confirmAutoOpen: false
+            });
+        </script>
+    {% endif %}
+
+
+    {#  <!-- Bootstrap Tables:  http://bootstrap-table.wenzhixin.net.cn/ -->#}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
+    <script src="{% static 'js/bootstrap-table-mobile.js' %}"></script>
+
+    <script src="{% static 'js/jquery.are-you-sure.js' %}"></script>
+    <script src="{% static 'js/ays-beforeunload-shim.js' %}"></script>
     <script>
-      var confirmMessage = "<p>Keypad entry has not been initialized for this event yet.  This requires marking " +
-          "all students as absent for all blocks, which will overwrite any attendance already completed.</p>" +
-          "<p>You are still be able to manually edit the attendance.</p>" +
-          "<p>Are you sure you want to initialize keypad entry mode?</p>";
 
-      $('#keypad_init').confirmModal({
-        confirmTitle     : 'Initialize keypad entry mode',
-        confirmMessage   : confirmMessage,
-        confirmOk        : 'Yes',
-        confirmCancel    : 'Cancel',
-        confirmStyle     : 'success',
-        confirmDismiss   : true,
-        confirmAutoOpen  : false
-      });
+        $(document).ready(function () {
+
+            // PRINTING
+            $('a.print').click(function () {
+                window.print();
+            });
+
+
+            // https://github.com/codedance/jquery.AreYouSure
+            // warn if leaving page when unsaved form data
+            // the custom message doesn't seem to work...
+            $('form').areYouSure({'message': 'You have unsaved changes to your attendance.  If you continue you will lose these changes!'});
+            /*
+             *  Dirtyness Change Events
+             *  Are-You-Sure fires off "dirty" and "clean" events when the form's state
+             *  changes. You can bind() or on(), these events to implement your own form
+             *  state logic.  A good example is enabling/disabling a Save button.
+             *
+             *  "this" refers to the form that fired the event.
+             */
+            //$('form').find('input[type="submit"]').attr('disabled', 'disabled');  // disable submits initially
+            $(this).find('input[type="submit"]').removeAttr('disabled');
+            $(this).find('.change-notice').hide()
+            $('form').on('dirty.areYouSure', function () {
+                // Enable save button only as the form is dirty.
+                //$(this).find('input[type="submit"]').removeAttr('disabled');
+                $(this).find('.change-notice').show();
+            });
+            $('form').on('clean.areYouSure', function () {
+                // Form is clean so nothing to save - disable the save button.
+                //$(this).find('input[type="submit"]').attr('disabled', 'disabled');
+                $(this).find('.change-notice').hide()
+            });
+
+        });
     </script>
-  {% else %}
-    <script src="{% static 'js/events-attendance-keypad.js' %}"> </script>
-    <script>
-      var confirmMessage = "<p>Disabling keypad entry will remove absense marks from all students for all blocks, " +
-          "which will overwrite any attendance already completed.</p>" +
-          "<p>Are you sure you want to disable keypad entry mode?</p>";
-
-      $('#keypad_disable').confirmModal({
-        confirmTitle     : 'Disable keypad entry mode',
-        confirmMessage   : confirmMessage,
-        confirmOk        : 'Yes',
-        confirmCancel    : 'Cancel',
-        confirmStyle     : 'success',
-        confirmDismiss   : true,
-        confirmAutoOpen  : false
-      });
-    </script>
-  {% endif %}
-
-
-{#  <!-- Bootstrap Tables:  http://bootstrap-table.wenzhixin.net.cn/ -->#}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
-  <script src="{% static 'js/bootstrap-table-mobile.js' %}"></script>
-
-  <script src="{% static 'js/jquery.are-you-sure.js' %}"></script>
-  <script src="{% static 'js/ays-beforeunload-shim.js' %}"></script>
-  <script>
-
-    $(document).ready(function() {
-
-      // PRINTING
-      $('a.print').click(function(){
-        window.print();
-      });
-
-
-      // https://github.com/codedance/jquery.AreYouSure
-      // warn if leaving page when unsaved form data
-      // the custom message doesn't seem to work...
-      $('form').areYouSure( {'message':'You have unsaved changes to your attendance.  If you continue you will lose these changes!'} );
-      /*
-      *  Dirtyness Change Events
-      *  Are-You-Sure fires off "dirty" and "clean" events when the form's state
-      *  changes. You can bind() or on(), these events to implement your own form
-      *  state logic.  A good example is enabling/disabling a Save button.
-      *
-      *  "this" refers to the form that fired the event.
-      */
-      //$('form').find('input[type="submit"]').attr('disabled', 'disabled');  // disable submits initially
-      $(this).find('input[type="submit"]').removeAttr('disabled');
-      $(this).find('.change-notice').hide()
-      $('form').on('dirty.areYouSure', function() {
-        // Enable save button only as the form is dirty.
-        //$(this).find('input[type="submit"]').removeAttr('disabled');
-        $(this).find('.change-notice').show();
-      });
-      $('form').on('clean.areYouSure', function() {
-        // Form is clean so nothing to save - disable the save button.
-        //$(this).find('input[type="submit"]').attr('disabled', 'disabled');
-        $(this).find('.change-notice').hide()
-      });
-
-    });
-  </script>
 
 
 
