@@ -433,7 +433,7 @@ class Event(models.Model):
         else:  # check if the user is already registered for for something in the block
             regs = user.registration_set.filter(event__date=self.date)
             regs_count = regs.count()
-            print(regs_count)
+            #print(regs_count)
             for reg in regs:
                 already_reg, reason = reg.is_conflict(self, block, regs_count)
                 if reason is not None:
@@ -704,7 +704,7 @@ class Registration(models.Model):
         :param event_date: if None assume the same date
         :return: True if the event & block conflicts with this registration
         """
-        print(regs_count)
+        #print(regs_count)
         reason = None
         already_reg = False
         if (user and self.student is not user) or (event_date and event_date != self.event.date):

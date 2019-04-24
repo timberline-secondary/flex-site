@@ -492,11 +492,12 @@ def event_attendance(request, id=None, block_id=None):
 
     # https://docs.djangoproject.com/en/1.9/topics/forms/modelforms/#model-formsets
     AttendanceFormSet = modelformset_factory(Registration,
-                                              form=AttendanceForm,
-                                              extra=0)
-    helper = AttendanceFormSetHelper()
+                                             form=AttendanceForm,
+                                             extra=0)
 
-    if request.method =="POST":
+    helper = AttendanceFormSetHelper(save_both=multi_block_save_option)
+
+    if request.method == "POST":
         formset1 = AttendanceFormSet(
             request.POST, request.FILES,
             queryset=queryset1,
