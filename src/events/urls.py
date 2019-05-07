@@ -45,6 +45,7 @@ urlpatterns = [
     url(r'^registrations/homeroom/$', views.registrations_homeroom, name='registrations_homeroom'),
     url(r'^registrations/homeroom/(?P<employee_number>\d+)/$', views.registrations_homeroom, name='registrations_homeroom'),
     url(r'^registrations/manage/$', views.registrations_manage, name='registrations_manage'),
+    url(r'^registrations/user/(?P<username>\d+)$', views.registrations_user, name='registrations_user'),
     # url(r'^registrations/homeroom/$', views.homeroom, name='homeroom'),
 
 ]

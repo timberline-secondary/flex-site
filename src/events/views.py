@@ -873,11 +873,22 @@ def registrations_delete(request, id=None):
         return redirect('events:registrations_list')
 
 
+@staff_member_required
+def registrations_user(request, username):
+    student = get_object_or_404(User, username=username)
+    queryset = Registration.objects.filter(student=student)
+    context = {
+        "object_list": queryset,
+        "student_name": student.get_full_name()
+    }
+    return render(request, "events/registration_list.html", context)
+
 @login_required
 def registrations_manage(request):
     queryset = Registration.objects.filter(student=request.user)
     context = {
-        "object_list": queryset
+        "object_list": queryset,
+        "student_name": request.user.get_full_name()
     }
     return render(request, "events/registration_list.html", context)
 

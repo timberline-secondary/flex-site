@@ -49,7 +49,7 @@
     <tbody>
     {% for student in students %}
       <tr>
-        <td>{{ student.username }}</td>
+        <td><a href="{% url 'events:registrations_user' student.username  %}">{{ student.username }}</a></td>
         <td>{{ student.first_name }}</td>
         <td>{{ student.last_name }}</td>
         <td>{{ student.profile__grade }}</td>
