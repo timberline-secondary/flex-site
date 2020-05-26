@@ -614,7 +614,21 @@ def event_list(request, block_id=None):
         else:
             event.available = True
 
+    # COVID CUSTOM
+    if d.weekday() == 0:
+        heading = "Monday - Grade 12 Only"
+    elif d.weekday() == 1:
+        heading = "Tuesday - Grade 11 Only"
+    elif d.weekday() == 3:
+        heading = "Thursday - Grade 10 Only"
+    elif d.weekday() == 5:
+        heading = "Friday - Grade 9 Only"
+    else:
+        # shouldn't get here!
+        heading = "Flex Events"
+
     context = {
+        "heading": heading,
         "date_filter": date_query,
         "date_object": d,
         "title": "List",
