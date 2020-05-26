@@ -21,8 +21,9 @@ tcl/
 Include/
 Lib/
 
-# PyCharm
+# IDEs
 .idea
+.vscode
 
 # user uploaded media files
 media_cdn/
