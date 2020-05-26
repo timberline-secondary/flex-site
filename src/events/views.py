@@ -621,7 +621,7 @@ def event_list(request, block_id=None):
         heading = "Tuesday - Grade 11 Only"
     elif d.weekday() == 3:
         heading = "Thursday - Grade 10 Only"
-    elif d.weekday() == 5:
+    elif d.weekday() == 4:
         heading = "Friday - Grade 9 Only"
     else:
         # shouldn't get here!
