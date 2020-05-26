@@ -160,7 +160,7 @@ class EventForm(forms.ModelForm):
     category = CategoryModelChoiceField(
         queryset=Category.objects.all(),
         help_text=Event._meta.get_field('category').help_text,
-        #empty_label=None,
+        initial=Category.objects.get(name="Support"),  # opportunity
     )
 
     duplicate = forms.IntegerField(
@@ -184,11 +184,11 @@ class EventForm(forms.ModelForm):
             "blocks",
             "multi_block_event",
             "facilitators",
-            "category",
-            "competencies",
             "location",
             "max_capacity",
+            "category",
             "description",
+            "competencies",
             "description_image_file",
             "description_link",
             "registration_cut_off",
