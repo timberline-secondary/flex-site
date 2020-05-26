@@ -49,7 +49,14 @@ def location_create(request):
 
 @staff_member_required
 def event_create(request):
-    form = EventForm(request.POST or None, request.FILES or None)
+    form = EventForm(
+        request.POST or None,
+        request.FILES or None,
+        initial={
+            'allow_registration_after_event_has_started': True,
+            'registration_cut_off': timedelta(days=0, hours=2, minutes=30, seconds=0),
+        }
+    )
 
     if form.is_valid():
         event = form.save(commit=False)
