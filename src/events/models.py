@@ -536,8 +536,8 @@ class RegistrationManager(models.Manager):
         :return: a list of student dicts, including their events for each block and excuses, if any
         """
 
-        registrations_qs = self.get_queryset().filter(event__date=event_date)
-        students = User.objects.all().filter(is_staff=False, is_active=True)
+        registrations_qs = self.get_queryset().filter(event__date=event_date).select_related('event', 'block', 'student')
+        students = User.objects.filter(is_staff=False, is_active=True).select_related('profile', 'profile__homeroom_teacher')
         # excuses_qs = Excuse.objects.all_excused_on_day(date=event_date)
 
         if homeroom_teacher:
@@ -567,7 +567,8 @@ class RegistrationManager(models.Manager):
                 hr_teacher = User.objects.get(id=student_dict['profile__homeroom_teacher'])
                 student_dict['profile__homeroom_teacher'] = hr_teacher.get_full_name()
 
-            for block in Block.objects.all():
+            blocks = Block.objects.all()
+            for block in blocks:
                 event_str = None
                 event_url = "#"
                 try:
