@@ -204,7 +204,7 @@ def validate_location(request):
     block_ids = json.loads(request.GET.get('blocks[]', None))
     date_selected = datetime.strptime(date_selected, "%Y-%m-%d").date()
 
-    conflicts = None
+    conflicts = []
     if location_id:  # only need to check for conflicts if a location has been set
         location = get_object_or_404(Location, id=location_id)
         conflicts = location.event_set.filter(date=date_selected, blocks__id__in=block_ids)
