@@ -614,6 +614,11 @@ def event_list(request, block_id=None):
     #     if request.user.is_authenticated:
     #         event.availability, event.available = event.is_available_by_block(request.user)
 
+    # get total registration numbers:
+    counts_dict = {}
+    for block in blocks:
+        counts_dict[block] = Registration.objects.count_registered(date=d, block=block)
+
     for event in queryset:
         event.attendance = event.registration_set.filter(block=active_block).count()
         if request.user.is_authenticated:
@@ -645,6 +650,7 @@ def event_list(request, block_id=None):
         "blocks_json": blocks_json,
         "blocks": blocks,
         "active_block": active_block,
+        "counts_dict": counts_dict,
     }
     return render(request, "events/event_list.html", context)
 
@@ -949,6 +955,11 @@ def registrations_all(request):
 
     students = Registration.objects.registration_check(d)
 
+    # get total registration numbers:
+    counts_dict = {}
+    for block in Block.objects.all():
+        counts_dict[block] = Registration.objects.count_registered(date=d, block=block)
+
     context = {
         "heading": "All Student Registrations",
         "students": students,
@@ -956,6 +967,7 @@ def registrations_all(request):
         "date_object": d,
         "include_homeroom_teacher": 'true',
         "title": "All Students",
+        "counts_dict": counts_dict,
     }
     return render(request, "events/homeroom_list.html", context)
 

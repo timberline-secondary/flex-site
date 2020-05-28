@@ -528,6 +528,12 @@ class RegistrationManager(models.Manager):
     #
     #     return None
 
+    def count_registered(self, date, block=None):
+        qs = self.get_queryset().filter(event__date=date)
+        if block:
+            qs.filter(block=block)
+        return qs.count()
+
 
     def registration_check(self, event_date, homeroom_teacher=None):
         """

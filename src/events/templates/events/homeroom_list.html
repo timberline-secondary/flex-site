@@ -14,6 +14,12 @@
 
 {% block content %}
 
+  <p class="pull-right text-muted">
+    <br>Total registrations:
+    {% for key, value in counts_dict.items %}
+        {{value}} ({{key}}),
+    {% endfor %}
+  </p>
 
   <h1>{{ heading }}</h1>
 

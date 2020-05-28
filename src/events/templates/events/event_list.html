@@ -27,6 +27,13 @@
                 <i class="fa fa-plus-circle"></i> Create New Event
             </a>
         </div></h1>
+        <div class="clearfix"></div>
+        <p class="pull-right text-muted">
+            <br>Total registrations:
+            {% for key, value in counts_dict.items %}
+                {{value}} ({{key}}),
+            {% endfor %}
+        </p>
 
         {% else %}
         <div class="panel panel-info">
