@@ -616,8 +616,9 @@ def event_list(request, block_id=None):
 
     # get total registration numbers:
     counts_dict = {}
-    for block in blocks:
-        counts_dict[block] = Registration.objects.count_registered(date=d, block=block)
+    for block in Block.objects.all():
+        count = Registration.objects.count_registered(date=d, block=block)
+        counts_dict[block] = count
 
     for event in queryset:
         event.attendance = event.registration_set.filter(block=active_block).count()
@@ -958,7 +959,9 @@ def registrations_all(request):
     # get total registration numbers:
     counts_dict = {}
     for block in Block.objects.all():
+        print(block)
         counts_dict[block] = Registration.objects.count_registered(date=d, block=block)
+        
 
     context = {
         "heading": "All Student Registrations",

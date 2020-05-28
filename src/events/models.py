@@ -531,7 +531,7 @@ class RegistrationManager(models.Manager):
     def count_registered(self, date, block=None):
         qs = self.get_queryset().filter(event__date=date)
         if block:
-            qs.filter(block=block)
+            qs = qs.filter(block=block)
         return qs.count()
 
 
