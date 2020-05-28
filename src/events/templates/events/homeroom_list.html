@@ -43,7 +43,7 @@
       <th data-field="late" data-sortable="true">Flex 2</th>
       <th data-field="permission" data-sortable="true"
       title="Yearlong permission granted for low risk excursions.">Permission</th>
-      <th {% if include_homeroom_teacher %}data-visible="false"{% endif %}>Reset PW</th>
+      <th {% if include_homeroom_teacher and not request.user.is_superuser %}data-visible="false"{% endif %}>Reset PW</th>
     </tr>
     </thead>
     <tbody>
