@@ -50,7 +50,8 @@ def mass_update(request):
     num_deactivated = 0
     form = UserImportForm(request.POST or None, request.FILES or None)
 
-    positions_to_import = ["TEACH", "CL10", "ADM", "EA"]  # currently not included: EA, CUST
+    positions_to_import = ["TEACHER", "VICE-PRINCIPAL", "PRINCIPAL", "EA", "TOC", "DIST YOUTH WRK", "DIST YOUTH WRK", "CERLICAL"]  
+    # currently not included: ED ASSISTANT, IT TECHNICIAN, CUSTODIAL
     grades_to_ignore = ["AD", "HS", "RG", "NS"]  # ADult grad, Home Schooled, Returning Grad, Non Student
 
     if form.is_valid():
@@ -72,9 +73,9 @@ def mass_update(request):
                             user = User.objects.create_user(
                                 username=username,
                                 password="wolf",
-                                last_name=row[1],
-                                first_name=row[2],
-                                email=row[4],
+                                last_name=row[1].strip().upper(),
+                                first_name=row[2].strip().upper(),
+                                email=row[4].strip(),
                                 is_staff=True,
                             )
                             new_staff_list.append(user)
@@ -93,84 +94,149 @@ def mass_update(request):
 
             users_qs = User.objects.all()
 
-            for row in reader:
+            # important columns in csv
+            student_number_heading = "Login Student Number"
+            sn_regex_string = r"^(9[789])(\d{5})$"  # 7 digits beginning in 99 98 or 97
+            first_name_heading = "Usual first name"
+            last_name_heading = "Usual surname"
+            email_heading = "StudentEmail"
+            homeroom_teacher_heading = "Teacher ID"
+            phone_heading = "StudentHomePhoneNumber"
+            contact_email_heading = "EmergencyContactEmail1"
+            grade_heading = "Grade"
 
-                sn_regex_string = r"^(9[789])(\d{5})$"
+            student_number_col = None
+            first_name_col = None
+            last_name_col = None
+            email_col = None
+            homeroom_teacher_col = None
+            phone_col = None
+            contact_email_col = None
+            grade_col = None
+
+            for row in reader:
 
                 # skip empty rows and rows without proper number of fields
                 if row and len(row) >= 8:
-                    # check for student number
-                    if not re.match(sn_regex_string, row[0]):
-                        if row[0] != "Student Number":  # ignore the first header row?
-                            student_errors.append({'error': "Student number doesn't match pattern", 'row': row})
-                    else:
-                        # students should have one entry for each semester, only use semester indicated in form
-                        # also, ignore students with off grade entries
-                        # SEM 1 or SEM1, so remove spaces before comparison
-                        row_semester = row[5].replace(" ", "")
-                        if (row_semester == semester or row[5] == "LINEAR") and row[4] not in grades_to_ignore:
-                            username = row[0]
-                            first_name = row[1]
-                            last_name = row[2]
-                            homeroom_teacher = row[3]
-                            grade = row[4]
-                            phone = row[6]
-                            email = row[7]
 
-                            # validate data
-                            try:  # sometimes homeroom id shows up as 0, which doesn't exist
-                                homeroom_teacher = User.objects.get(username=homeroom_teacher)
-                            except User.DoesNotExist:
-                                student_errors.append({'warning': "Homeroom teacher with ID '" + homeroom_teacher +
-                                                                  "' not recognized", 'row': row})
-                                homeroom_teacher = None
-                            if not grade:  # needs an int so empty string is bad
+                    if email_heading in row:  # Heading row
+                        try:
+                            student_number_col = row.index(student_number_heading)
+                            first_name_col = row.index(first_name_heading)
+                            last_name_col = row.index(last_name_heading)
+                            email_col = row.index(email_heading)
+                            homeroom_teacher_col = row.index(homeroom_teacher_heading)
+                            phone_col = row.index(phone_heading)
+                            contact_email_col = row.index(homeroom_teacher_heading)
+                            grade_col = row.index(grade_heading)
+                        except ValueError:
+                            student_errors.append({'error': "Expected column header not found", 'row': row})
+                            break
+
+                    else:  # Student data row
+                        if not email_col:  # then we haven't got a header row yet
+                            student_errors.append({'error': "Heading row not found", 'row': row})
+                            break
+
+                        # Get username from student email and check if the user exists
+                        email = row[email_col]
+                        username = email.split("@")[0].strip().lower()
+                        first_name = row[first_name_col].strip().upper()
+                        last_name = row[last_name_col].strip().upper()
+                        homeroom_teacher = row[homeroom_teacher_col].strip()
+                        student_number = row[student_number_col].strip()
+                        phone = row[phone_col].strip()
+                        contact_email = row[contact_email_col].strip()
+                        grade = row[grade_col].strip()
+
+                        # validate username/email
+                        if not username:
+                            student_errors.append({'error': "No email/username found for student.  Account not created.", 'row': row})
+                            break
+
+                        # validate student number
+                        # if not re.match(sn_regex_string, student_number):
+                        #     student_errors.append({'error': "Student number doesn't match 99 pattern", 'row': row})
+
+                        # validate homeroom teacher
+                        try:  # sometimes homeroom id shows up as 0, which doesn't exist
+                            homeroom_teacher = User.objects.get(username=homeroom_teacher)
+                        except User.DoesNotExist:
+                            student_errors.append({'warning': "Homeroom teacher with ID '" + homeroom_teacher +
+                                                                "' not recognized", 'row': row})
+                            homeroom_teacher = None
+
+                        # clean grade
+                        if not grade:  # needs an int so empty string is bad
+                            grade = None
+                        else:
+                            try:
+                                int(grade)
+                            except ValueError:  # grade is text, not an integer
+                                student_errors.append({'warning': "Grade not recognized", 'row': row})
                                 grade = None
-                            else:
-                                try:
-                                    int(grade)
-                                except ValueError:  # grade is text, not an integer
-                                    student_errors.append({'warning': "Grade not recognized", 'row': row})
-                                    grade = None
-                            if not phone:
-                                phone = None
-                            if not email:
-                                email = None
 
-                            # check if user exists, else create new user
-                            if not users_qs.filter(username=username).exists():
+                        # change blank strings to None
+                        if not phone:
+                            phone = None
+                        if not contact_email:
+                            contact_email = None
+
+                        
+                        # Check if user exists with first.last as username
+                        try: 
+                            user = users_qs.get(username=username)
+                        except User.DoesNotExist: 
+                            # Check if their student number is a valid user (old usernames were student numbers)
+                            try:
+                                user = User.objects.get(username=student_number)
+                                user.username = username  # update username to first.last as username
+                                student_errors.append({'info': "Username updated from {} to {}".format(student_number, username), 'row': row})
+                            except User.DoesNotExist:
+                                # they are a new user!
                                 user = User.objects.create_user(
                                     username=username,
                                     password="wolf",
-                                    first_name=first_name,
-                                    last_name=last_name,
                                 )
                                 new_student_list.append(user.id)
-                            else:  # update
-                                user = User.objects.get(username=username)
-                                user.is_active = True
-                                user.first_name = first_name
-                                user.last_name = last_name
-                                user.save()
+                        
+                        # We have a user object now.  Update names and set active:
+                        user.is_active = True
+                        user.first_name = first_name
+                        user.last_name = last_name
+                        user.save()
 
-                            # A profile is created automatically when a new user is created.  Update it.
-                            # But sometimes errors cause a user to be created without a profile.  So just in case:
-                            profile, created = Profile.objects.get_or_create(user=user)
-                            homeroom_teacher = homeroom_teacher
-                            profile.homeroom_teacher = homeroom_teacher
-                            profile.grade = grade
-                            profile.phone = phone
-                            profile.email = email
-                            profile.save()
-                            count += 1
+                        # A profile is created automatically when a new user is created.  Update it.
+                        # But sometimes errors cause a user to be created without a profile.  So just in case:
+                        profile, created = Profile.objects.get_or_create(user=user)
+                        profile.homeroom_teacher = homeroom_teacher
+                        profile.grade = grade
+                        profile.phone = phone
+                        profile.email = contact_email
+                        profile.save()
+                        count += 1
 
-            new_student_list = User.objects.all().filter(id__in=new_student_list)
+            # passed to template
+            new_student_list = User.objects.filter(id__in=new_student_list)
 
             # Activate/Deactive students
             # If a student's profile wasn't updated, then they were not on the list and are no longer active.
-            students_qs = User.objects.all().filter(is_staff=False)
-            inactive_students = students_qs.filter(profile__updated__lt=update_start_time)
-            num_deactivated = inactive_students.update(is_active=False)
+            students_qs = User.objects.filter(is_staff=False)
+            inactive_students_qs = students_qs.filter(profile__updated__lt=update_start_time)
+            num_deactivated = inactive_students_qs.update(is_active=False)
+
+
+            # else:
+            #     # students should have one entry for each semester, only use semester indicated in form
+            #     # also, ignore students with off grade entries
+            #     # SEM 1 or SEM1, so remove spaces before comparison
+            #     # row_semester = row[5].replace(" ", "")
+            #     # if (row_semester == semester or row[5] == "LINEAR") and row[4] not in grades_to_ignore:
+            #     #     username = row[0]
+            #     #     first_name = row[1]
+            #     #     last_name = row[2]
+            #     #     homeroom_teacher = row[3]
+            #     #     grade = row[4]
 
     context = {
         "new_staff_list": new_staff_list,
