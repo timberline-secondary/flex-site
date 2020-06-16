@@ -92,10 +92,19 @@ class Location(models.Model):
 
 class BlockManager(models.Manager):
     def get_flex_1(self):
-        return self.get_queryset().get(id=1)
+        return self.get_queryset()[0]
 
     def get_flex_2(self):
-        return self.get_queryset().get(id=2)
+        return self.get_queryset()[1]
+
+    def single_block(self):
+        """Check if the site is set up with only a single block, returns True or False
+        """
+        return self.get_queryset().count() == 1
+
+    def get_only(self):
+        return self.get_queryset().first()
+
 
 
 class Block(models.Model):

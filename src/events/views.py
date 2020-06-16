@@ -78,7 +78,8 @@ def event_create(request):
         #     messages.warning(request, "Failed to properly cache your image.  Don't worry about it for now... unless "
         #                               "you didn't provide an image link, in which case please let Tylere know!")
 
-        block_id = event.blocks.all()[0].id
+        block_id = Block.objects.first().id
+
         date_query = event.date
         return redirect("%s?date=%s" % (reverse('events:list_by_block', args=(block_id,)), date_query))
 
@@ -132,7 +133,8 @@ def event_update(request, id=None):
             #     messages.warning(request, "Failed to properly cache your image.  Don't worry about it for now... unless "
             #                               "you didn't provide an image link, in which case please let Tylere know!")
 
-            block_id = event.blocks.all()[0].id
+            block_id = Block.objects.first().id
+
             date_query = event.date
             return redirect("%s?date=%s" % (reverse('events:list_by_block', args=(block_id,)), date_query))
 
@@ -184,7 +186,8 @@ def event_copy(request, id):
 
         messages.success(request, msg)
 
-        block_id = event.blocks.all()[0].id
+        block_id = Block.objects.first().id
+
         date_query = event.date
         return redirect("%s?date=%s" % (reverse('events:list_by_block', args=(block_id,)), date_query))
 

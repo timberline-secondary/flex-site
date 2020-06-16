@@ -10,7 +10,7 @@ from django.utils.safestring import mark_safe
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
-from .models import Event, Registration, Location, Category
+from .models import Event, Registration, Location, Category, Block
 
 
 class LocationForm(forms.ModelForm):
@@ -203,12 +203,9 @@ class EventForm(forms.ModelForm):
             # 'location': RelatedFieldWidgetCanAdd(Location, 'events:location_create'),
         }
 
-    # def __init__(self, *args, **kwargs):
-    #     super(EventForm, self).__init__(*args, **kwargs)
-    #     field = 'competencies'
-    #     popup_text = self.fields[field].help_text
-    #     self.fields[field].help_text = None
-    #     if popup_text != '':
-    #         self.fields[field].widget.attrs.update(
-    #             {'class': 'has-popover', 'data-content': popup_text, 'data-placement': 'top',
-    #              'data-container': 'body'})
+    def __init__(self, *args, **kwargs):
+        super(EventForm, self).__init__(*args, **kwargs)
+        if Block.objects.single_block():
+            self.fields.pop('blocks')
+            self.fields.pop('multi_block_event')
+
