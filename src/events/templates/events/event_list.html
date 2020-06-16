@@ -86,6 +86,7 @@
 
 <!-- Event lists -->
 <div id="toolbar">
+    {% if not single_block %}
     <ul class="nav nav-tabs">
         <li role="presentation" {% if not active_block %}class="active"{% endif %}>
             <a href="{% url 'events:list' %}?date={{ date_filter }}">All Blocks</a>
@@ -96,6 +97,7 @@
         </li>
         {% endfor %}
     </ul>
+    {% endif %}
 </div>
 
 <table data-toggle="table"
@@ -115,7 +117,7 @@
     <tr>
         <th data-field="id" data-visible="false">ID</th>
         <th data-field="date" data-visible="false">Date</th>
-        <th data-field="blocks" data-sortable="true">Blocks</th>
+        <th data-field="blocks" data-sortable="true" {% if single_block %}data-visible="false"{% endif %}>Blocks</th>
         <th data-field="blockselection" data-visible="false">Block Selection</th>
         <th data-field="title" data-sortable="true">Title</th>
         <th data-field="titletext" data-visible="false">Title Plain Text</th>

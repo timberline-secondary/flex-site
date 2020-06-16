@@ -62,6 +62,10 @@ def event_create(request):
         event = form.save(commit=False)
         event.creator = request.user
         event.save()
+
+        if Block.objects.single_block():
+            event.blocks.add(Block.objects.get_only())
+
         form.save_m2m()
 
         msg = "New event created for %s: <b>%s</b>" % (event.date, event.title)
@@ -118,6 +122,10 @@ def event_update(request, id=None):
         else:
             event = form.save(commit=False)
             event.save()
+
+            if Block.objects.single_block():
+                event.blocks.add(Block.objects.get_only())
+
             form.save_m2m()
 
             msg = "Edits saved for %s: <b>%s</b>" % (event.date, event.title)
@@ -291,8 +299,6 @@ def stats(request):
     date_query = request.GET.get("date", str(default_event_date()))
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
     blocks = Block.objects.all()
-
-
 
     registration_stats = {"Slots": {}, "Registrations": {}} #, "Excused": {}}
 
@@ -655,6 +661,7 @@ def event_list(request, block_id=None):
         "blocks": blocks,
         "active_block": active_block,
         "counts_dict": counts_dict,
+        "single_block": Block.objects.single_block,
     }
     return render(request, "events/event_list.html", context)
 
