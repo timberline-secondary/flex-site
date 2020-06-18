@@ -40,7 +40,7 @@
 
     <div class="row">
         <div class="col-sm-10 col-md-9 col-lg-7" role="navigation">
-            {% if not multi_block_save_option %}
+            {% if not multi_block_save_option and not single_block %}
                 <ul class="nav nav-tabs">
                     {% for block in event.blocks.all %}
                         <li role="presentation" {% if block == active_block %}class="active"{% endif %}>

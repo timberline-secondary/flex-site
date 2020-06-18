@@ -556,6 +556,7 @@ def event_attendance(request, id=None, block_id=None):
         "helper": helper,
         "active_block": active_block,
         "multi_block_save_option": multi_block_save_option,
+        "single_block": Block.objects.single_block,
     }
     return render(request, "events/attendance.html", context)
 
