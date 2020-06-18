@@ -160,7 +160,7 @@ class EventForm(forms.ModelForm):
     category = CategoryModelChoiceField(
         queryset=Category.objects.all(),
         help_text=Event._meta.get_field('category').help_text,
-        initial=Category.objects.get(name="Support"),  # opportunity
+        initial=Category.get_default(),  # opportunity
     )
 
     duplicate = forms.IntegerField(
