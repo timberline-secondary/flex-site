@@ -501,8 +501,10 @@ def event_attendance(request, id=None, block_id=None):
 
     if block_id:
         active_block = get_object_or_404(Block, id=block_id)
-    else:
+    elif blocks:
         active_block = blocks[0]
+    else:
+        active_block = Block.objects.get_only()
 
     queryset1 = Registration.objects.filter(event=event, block=active_block).order_by('student__last_name')
 

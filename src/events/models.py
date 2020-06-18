@@ -62,6 +62,13 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+    @classmethod
+    def get_default(cls):
+        if cls.objects.filter(name="Support").exists():
+            return cls.objects.get(name="Support")
+        else:
+            return cls.objects.all().first()
+
 
 class Location(models.Model):
     room_number = models.CharField(max_length=20, unique=True, help_text="e.g. B201")
