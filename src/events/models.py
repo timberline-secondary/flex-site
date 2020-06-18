@@ -277,32 +277,35 @@ class Event(models.Model):
 
         return True
 
-    def copy(self, num, copy_date=None, user=None, dates=[]):
+    def copy(self, num, user=None):
         """
         Create a copy of this event, one week later, recursively num times.
         """
+        dates = []
+        date = self.date
         if num > 0:
-            if copy_date:
-                new_date = copy_date
-            else:
-                new_date = self.date + timedelta(7)
-                #print(new_date)
+            for i in range(num):
+                date += timedelta(7)
+                dates.append(date)
 
-            facilitators = self.facilitators.all()
-            blocks = self.blocks.all()
-            competencies = self.competencies.all()
-            duplicate_event = self
-            # https://docs.djangoproject.com/en/1.10/topics/db/queries/#copying-model-instances
-            duplicate_event.pk = None  # autogen a new primary key (will create a new record)
-            duplicate_event.date = new_date
-            dates.append(new_date)
-            if user is not None:
-                duplicate_event.creator = user
-            duplicate_event.save()
-            duplicate_event.blocks.set(blocks)
-            duplicate_event.facilitators.set(facilitators)
-            duplicate_event.competencies.set(competencies)
-            dates = duplicate_event.copy(num - 1, dates=dates)  # recursive
+                # M2M relations
+                facilitators = self.facilitators.all()
+                blocks = self.blocks.all()
+                competencies = self.competencies.all()
+
+                duplicate_event = self
+                # https://docs.djangoproject.com/en/1.10/topics/db/queries/#copying-model-instances
+                duplicate_event.pk = None  # autogen a new primary key (will create a new record)
+                duplicate_event.date = date
+                
+                if user is not None:
+                    duplicate_event.creator = user
+
+                duplicate_event.save()
+                duplicate_event.blocks.set(blocks)
+                duplicate_event.facilitators.set(facilitators)
+                duplicate_event.competencies.set(competencies)
+
         return dates
 
     def get_video_embed_link(self, backend):
