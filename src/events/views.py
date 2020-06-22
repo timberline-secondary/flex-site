@@ -102,7 +102,7 @@ def event_update(request, id=None):
 
     if has_registrants:
         regs_dict_by_block = {}  # empty dict
-        for block in Block.objects.all():
+        for block in Block.objects.active():
             regs_dict_by_block[block.id] = block.registration_set.filter(event=event).count()
 
     form = EventForm(request.POST or None, request.FILES or None, instance=event)
@@ -162,7 +162,7 @@ def event_update(request, id=None):
 def event_copy(request, id):
     new_event = get_object_or_404(Event, id=id)
 
-    blocks = new_event.blocks.all()
+    blocks = new_event.blocks.filter(active=True)
     facilitators = new_event.facilitators.all()
     competencies = new_event.competencies.all()
 
@@ -233,7 +233,7 @@ def validate_location(request):
         msg = ''
 
     for conflict in conflicts:
-        msg += "\n\t {} in {}.".format(conflict.title, " & ".join([b.name for b in conflict.blocks.all()]))
+        msg += "\n\t {} in {}.".format(conflict.title, " & ".join([b.name for b in conflict.blocks.filter(active=True)]))
 
     msg += "\n\nThis is just a warning to prevent unintentionally double booking a room."
 
@@ -280,7 +280,7 @@ def event_manage(request):
     queryset = Event.objects.filter(facilitators=request.user)
 
     # for event in queryset:
-    #     for block in event.blocks.all():
+    #     for block in event.blocks.filter(active=True):
     #         event.attendance = {}
     #         event.attendance = event.registration_set.filter().count()
 
@@ -298,7 +298,7 @@ def event_manage(request):
 def stats(request):
     date_query = request.GET.get("date", str(default_event_date()))
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
-    blocks = Block.objects.all()
+    blocks = Block.objects.active()
 
     registration_stats = {"Slots": {}, "Registrations": {}} #, "Excused": {}}
 
@@ -327,7 +327,7 @@ def get_registration_stats(date, grade=None, students=None):
     :return: An OrderedDict like this:
     {["Count" : 123, "# Flex-1": 32, "% Flex-1": 26, ... "# Flex-n": 132, "% Flex-n": 26, "# all": 132, "% all": 26 ]}
     """
-    blocks = Block.objects.all()
+    blocks = Block.objects.active()
 
     if students is None:
         students = User.objects.filter(is_active=True, is_staff=False)
@@ -379,7 +379,7 @@ def get_registration_stats(date, grade=None, students=None):
 
 
 def get_attendance_stats(date, grade=None):
-    blocks = Block.objects.all()
+    blocks = Block.objects.active()
     students = User.objects.filter(is_active=True, is_staff=False)
     if grade:
         students = students.filter(profile__grade=grade)
@@ -412,7 +412,7 @@ def get_attendance_stats(date, grade=None):
 def stats2(request):
     date_query = request.GET.get("date", str(default_event_date()))
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
-    blocks = Block.objects.all()
+    blocks = Block.objects.active()
 
     registration_stats = OrderedDict()  # empty dicts
     attendance_stats = OrderedDict()
@@ -495,7 +495,7 @@ def event_attendance_keypad_disable(request, id, block_id=None):
 @staff_member_required
 def event_attendance(request, id=None, block_id=None):
     event = get_object_or_404(Event, id=id)
-    blocks = event.blocks.all()
+    blocks = event.blocks.filter(active=True)
 
     multi_block_save_option = blocks.count() > 1 and event.multi_block_event == Event.F1_AND_F2
 
@@ -586,7 +586,7 @@ def event_list(request, block_id=None):
     date_query = request.GET.get("date", str(default_event_date()))
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
 
-    blocks = Block.objects.all()
+    blocks = Block.objects.active()
     blocks_json = serializers.serialize('json', blocks, fields=('id', 'name',))
 
     # if a block is provided, we only need to worry about events for that block.
@@ -628,7 +628,7 @@ def event_list(request, block_id=None):
 
     # get total registration numbers:
     counts_dict = {}
-    for block in Block.objects.all():
+    for block in Block.objects.active():
         count = Registration.objects.count_registered(date=d, block=block)
         counts_dict[block] = count
 
@@ -688,7 +688,7 @@ def staff_locations(request):
     for user in users:
         user_events = events.filter(facilitators__id=user['id'])
 
-        for block in Block.objects.all():
+        for block in Block.objects.active():
             try:
                 block_events = user_events.filter(blocks=block)
                 user[block.constant_string()] = block_events
@@ -722,7 +722,7 @@ def staff_overview(request):
         user["dates"] = OrderedDict()
         for date in flex_dates:
             user["dates"][date] = {}
-            for block in Block.objects.all():
+            for block in Block.objects.active():
                 try:
                     block_events = user_events.filter(blocks=block, date=date)
                     user["dates"][date][block.constant_string()] = block_events
@@ -868,7 +868,7 @@ def register(request, id, block_id):
     both_on_or = False
     if block_id == '0':
         both_on_or = True
-        for block in event.blocks.all():
+        for block in event.blocks.filter(active=True):
             if available:
                 available, already, reason = event.is_available(request.user, block)
                 block_id = block.id  # need to give it a valid id for page redirection. 0 not valid!
@@ -879,7 +879,7 @@ def register(request, id, block_id):
     block_text = ""
     if available:
         if event.both_required() or both_on_or:
-            for block in event.blocks.all():
+            for block in event.blocks.filter(active=True):
                 Registration.objects.create_registration(event=event, student=request.user, block=block)
                 block_text += str(block) + " "
 
@@ -971,7 +971,7 @@ def registrations_all(request):
 
     # get total registration numbers:
     counts_dict = {}
-    for block in Block.objects.all():
+    for block in Block.objects.active():
         print(block)
         counts_dict[block] = Registration.objects.count_registered(date=d, block=block)
         
@@ -992,7 +992,7 @@ def registrations_all(request):
 def stats_staff(request):
     date_query = request.GET.get("date", str(default_event_date()))
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
-    blocks = Block.objects.all()
+    blocks = Block.objects.active()
 
     staff = User.objects.filter(is_staff=True, is_active=True)
     #staff = User.objects.filter(is_staff=True, is_active=True).prefetch_related('')

@@ -65,7 +65,7 @@ class ExcuseManager(models.Manager):
         # qs.filter(blocks__id=block.id)
         # for excuse in qs:
         #     print(block)
-        #     print(excuse.blocks.all())
+        #     print(excuse.blocks.filter(active=True))
 
         return qs
 

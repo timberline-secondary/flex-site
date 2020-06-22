@@ -45,7 +45,7 @@ class RegistrationAdmin(admin.ModelAdmin):
 
 
 class BlockAdmin(admin.ModelAdmin):
-    list_display = ["name", "start_time", "end_time"]
+    list_display = ["name", "start_time", "end_time", "active"]
 
     class Meta:
         model = Block

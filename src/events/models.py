@@ -98,26 +98,31 @@ class Location(models.Model):
 
 
 class BlockManager(models.Manager):
+
     def get_flex_1(self):
-        return self.get_queryset()[0]
+        return self.active()[0]
 
     def get_flex_2(self):
-        return self.get_queryset()[1]
+        return self.active()[1]
 
     def single_block(self):
         """Check if the site is set up with only a single block, returns True or False
         """
-        return self.get_queryset().count() == 1
+        return self.active().count() == 1
 
     def get_only(self):
-        return self.get_queryset().first()
+        return self.active().first()
 
+
+    def active(self):
+        return self.get_queryset().filter(active=True)
 
 
 class Block(models.Model):
     name = models.CharField(max_length=20)
     start_time = models.TimeField()
     end_time = models.TimeField()
+    active = models.BooleanField(default=True)
 
     objects = BlockManager()
 
@@ -290,7 +295,7 @@ class Event(models.Model):
 
                 # M2M relations
                 facilitators = self.facilitators.all()
-                blocks = self.blocks.all()
+                blocks = self.blocks.filter(active=True)
                 competencies = self.competencies.all()
 
                 duplicate_event = self
@@ -344,14 +349,14 @@ class Event(models.Model):
             return None
 
     def both_required(self):
-        blocks = self.blocks.all()
+        blocks = self.blocks.filter(active=True)
         if blocks.count() > 1 and self.multi_block_event == self.F1_AND_F2:
             return True
         else:
             return False
 
     def blocks_str(self):
-        blocks = self.blocks.all()
+        blocks = self.blocks.filter(active=True)
         bl_str = ""
         count = 1
         for block in blocks:
@@ -369,26 +374,26 @@ class Event(models.Model):
         return bl_str
 
     def blocks_str_explanation(self):
-        if self.blocks.all().count() > 1:
+        if self.blocks.filter(active=True).count() > 1:
             return dict(Event.MULTI_BLOCK_CHOICES).get(self.multi_block_event)
         else:
             return None
 
     def block_selection_guide(self):
-        blocks = self.blocks.all()
+        blocks = self.blocks.filter(active=True)
         if len(blocks) > 1:
             return self.multi_block_event
         elif blocks:  # only 1
             return blocks[0].constant_string()
 
     def flex1(self):
-        if Block.objects.get_flex_1() in self.blocks.all():
+        if Block.objects.get_flex_1() in self.blocks.filter(active=True):
             return True
         else:
             return False
 
     def flex2(self):
-        if Block.objects.get_flex_2() in self.blocks.all():
+        if Block.objects.get_flex_2() in self.blocks.filter(active=True):
             return True
         else:
             return False
@@ -423,7 +428,7 @@ class Event(models.Model):
     #     """
     #     d = {}  # dictionary of data
     #     available = False # if available in at least one block
-    #     for block in Block.objects.all():
+    #     for block in Block.objects.active():
     #         d[block] = {}
     #         d[block]["available"], d[block]["already"], d[block]["explanation"] = self.is_available(user, block)
     #         if d[block]["available"]:
@@ -463,7 +468,7 @@ class Event(models.Model):
 
     def is_registration_closed(self, block):
         if block is None:
-            block = Block.objects.all()[0]
+            block = Block.objects.get_flex_1()
 
         event_start = timezone.make_aware(datetime.combine(self.date, block.start_time))
         if self.allow_registration_after_event_has_started:
@@ -494,7 +499,7 @@ class Event(models.Model):
             result = self.registration_set.filter(block=block).count()
         else:
             result = []
-            for block in self.blocks.all():
+            for block in self.blocks.filter(active=True):
                 result.append(self.registration_set.filter(block=block).count())
         return result
 
@@ -584,7 +589,7 @@ class RegistrationManager(models.Manager):
             student = User.objects.get(id=student_dict['id'])
             excuses = student.excuse_set.all().date(event_date)
             for excuse in excuses:
-                for block in excuse.blocks.all():
+                for block in excuse.blocks.filter(active=True):
                     student_dict[block.constant_string() + "_excuse"] = excuse.reason
 
             # provide homeroom teacher's name instead of id
@@ -592,7 +597,7 @@ class RegistrationManager(models.Manager):
                 hr_teacher = User.objects.get(id=student_dict['profile__homeroom_teacher'])
                 student_dict['profile__homeroom_teacher'] = hr_teacher.get_full_name()
 
-            blocks = Block.objects.all()
+            blocks = Block.objects.active()
             for block in blocks:
                 event_str = None
                 event_url = "#"
@@ -661,7 +666,7 @@ class RegistrationManager(models.Manager):
                 hr_teacher = User.objects.get(id=student_dict['profile__homeroom_teacher'])
                 student_dict['profile__homeroom_teacher'] = hr_teacher.get_full_name()
 
-            for block in Block.objects.all():
+            for block in Block.objects.active():
                 check_if_excused = False
                 try:
                     reg = user_regs_qs.get(block=block)
@@ -746,7 +751,7 @@ class Registration(models.Model):
                          "This event only allows registration in one block."
                 already_reg = False
             elif self.event.both_required() or event.both_required() or \
-                    (event.is_single_block() and self.block == event.blocks.all()[0]) or \
+                    (event.is_single_block() and self.block == event.blocks.filter(active=True)[0]) or \
                     (regs_count == 2):
                 reason = "This event conflicts with another event you are already registered for. " \
                     "You will need to remove the conflicting event before you can register for this one."
@@ -762,7 +767,7 @@ class Registration(models.Model):
             #     print("cehcking all blocks for event: " + str(event) + " in block: " + str(block))
             #     # need to check if this registration conflicts with single block events.
             #     # Do it recursively by checking both blocks
-            #     for block in Block.objects.all():
+            #     for block in Block.objects.active():
             #         reason = self.is_conflict(event, block, user, event_date)
             #         if reason is not None:
             #             break
