@@ -191,6 +191,9 @@ def event_copy(request, id):
 
         messages.success(request, msg)
 
+        if Block.objects.single_block():
+            event.blocks.add(Block.objects.get_only())
+
         block_id = event.blocks.all().first().id
 
         date_query = event.date
@@ -210,6 +213,9 @@ def validate_location(request):
     date_selected = request.GET.get('date', None)
     event_id = request.GET.get('event_id', None)
     block_ids = json.loads(request.GET.get('blocks[]', None))
+
+    if Block.objects.single_block():
+        block_ids = [Block.objects.get_only().id]
 
     msg = ''
     conflicts = []
