@@ -1,7 +1,7 @@
 function WednesdaysOnly(date) {
     var day = date.getDay();
-    // no Sat, Sun, or Wed
-    if (day != 3 && day != 0 && day != 6) //Wednesday = 3
+    // if (day != 3 && day != 0 && day != 6) // no Sat, Sun, or Wed
+    if (day == 3) //Wednesday = 3
         return [true]
     else
         return [false]
