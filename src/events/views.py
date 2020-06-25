@@ -210,24 +210,24 @@ def validate_location(request):
     date_selected = request.GET.get('date', None)
     event_id = request.GET.get('event_id', None)
     block_ids = json.loads(request.GET.get('blocks[]', None))
-    date_selected = datetime.strptime(date_selected, "%Y-%m-%d").date()
 
+    msg = ''
     conflicts = []
-    if location_id:  # only need to check for conflicts if a location has been set
-        location = get_object_or_404(Location, id=location_id)
-        conflicts = location.event_set.filter(date=date_selected, blocks__id__in=block_ids)
 
-    if event_id:  # remove self as conflict.
-        event = get_object_or_404(Event, id=event_id)
-        conflicts = conflicts.exclude(id=event.id)
+    if date_selected:
+        date_selected = datetime.strptime(date_selected, "%Y-%m-%d").date()
+    
+        if location_id:  # only need to check for conflicts if a location has been set
+            location = get_object_or_404(Location, id=location_id)
+            conflicts = location.event_set.filter(date=date_selected, blocks__id__in=block_ids)
+            msg = 'WARNING! Potential location conflict on {}: \n\n {} is already in use for the event' \
+                .format(date_selected, location.get_detailed_name())
 
+        if event_id:  # remove self as conflict.
+            event = get_object_or_404(Event, id=event_id)
+            conflicts = conflicts.exclude(id=event.id)            
+    
     is_conflict = True if conflicts else False
-
-    if location_id:
-        msg = 'WARNING! Potential location conflict on {}: \n\n {} is already in use for the event' \
-            .format(date_selected, location.get_detailed_name())
-    else:
-        msg = ''
 
     for conflict in conflicts:
         msg += "\n\t {} in {}.".format(conflict.title, " & ".join([b.name for b in conflict.blocks.filter(active=True)]))
