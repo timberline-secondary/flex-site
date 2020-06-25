@@ -15,12 +15,11 @@ class UserImportForm(forms.Form):
 
     student_csv_file = forms.FileField(label="Student Data File",
                                        required=False,
-                                       help_text="A csv file without headings in the format: id, first_name, last_name, "
-                                                 "homeroom_teacher_id, grade, term, phone, email")
-
+                                       help_text="A csv file with at least these headings: Usual first name, Usual surname, Grade, StudentEmail, Teacher ID, StudentHomePhoneNumber, EmergencyContact1Email1
+    )
     staff_csv_file = forms.FileField(label="Staff Data File",
                                      required=False,
-                                     help_text="A csv file without headings in the format: id, first_name, last_name, position, email")
+                                     help_text="A csv file with these headings: id, first_name, last_name, position, email")
 
 
 class StudentsCustomTitleWidget(ModelSelect2MultipleWidget):
