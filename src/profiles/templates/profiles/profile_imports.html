@@ -66,9 +66,9 @@
         </thead>
         <tbody>
         {% for obj in student_errors %}
-          <tr class="{% if obj.error %}danger{% elif obj.warning %}warning{% endif %}">
+          <tr class="{% if obj.error %}danger{% elif obj.warning %}warning{% elif obj.info %}info{% endif %}">
             <td>{{ forloop.counter }}</td>
-            <td>{{ obj.error }}{{ obj.warning }}</td>
+            <td>{{ obj.error }}{{ obj.warning }}{{obj.info}}</td>
             <td>{{ obj.row }}</td>
           </tr>
         {% endfor %}

@@ -127,7 +127,7 @@ def mass_update(request):
                             email_col = row.index(email_heading)
                             homeroom_teacher_col = row.index(homeroom_teacher_heading)
                             phone_col = row.index(phone_heading)
-                            contact_email_col = row.index(homeroom_teacher_heading)
+                            contact_email_col = row.index(contact_email_heading)
                             grade_col = row.index(grade_heading)
                         except ValueError:
                             student_errors.append({'error': "Expected column header not found", 'row': row})
