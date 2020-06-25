@@ -159,11 +159,14 @@ def mass_update(request):
                         #     student_errors.append({'error': "Student number doesn't match 99 pattern", 'row': row})
 
                         # validate homeroom teacher
-                        try:  # sometimes homeroom id shows up as 0, which doesn't exist
-                            homeroom_teacher = User.objects.get(username=homeroom_teacher)
-                        except User.DoesNotExist:
-                            student_errors.append({'warning': "Homeroom teacher with ID '" + homeroom_teacher +
-                                                                "' not recognized", 'row': row})
+                        if homeroom_teacher:  # if they don't have one field will be blank string ''
+                            try:  # sometimes homeroom id shows up as 0, which doesn't exist
+                                homeroom_teacher = User.objects.get(username=homeroom_teacher)
+                            except User.DoesNotExist:
+                                student_errors.append({'warning': "Homeroom teacher with ID '" + homeroom_teacher +
+                                                                    "' not recognized", 'row': row})
+                                homeroom_teacher = None
+                        else:
                             homeroom_teacher = None
 
                         # clean grade
