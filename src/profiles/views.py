@@ -52,7 +52,7 @@ def mass_update(request):
 
     positions_to_import = ["TEACHER", "VICE-PRINCIPAL", "PRINCIPAL", "EA", "TOC", "DIST YOUTH WRK", "DIST YOUTH WRK", "CERLICAL"]  
     # currently not included: ED ASSISTANT, IT TECHNICIAN, CUSTODIAL
-    grades_to_ignore = ["AD", "HS", "RG", "NS"]  # ADult grad, Home Schooled, Returning Grad, Non Student
+    grades_to_ignore = ["AD", "HS", "RG", "NS"]  # Adult grad, Home Schooled, Returning Grad, Non Student
 
     if form.is_valid():
         if 'staff_csv_file' in request.FILES:
@@ -119,6 +119,7 @@ def mass_update(request):
                 # skip empty rows and rows without proper number of fields
                 if row and len(row) >= 8:
 
+
                     if email_heading in row:  # Heading row
                         try:
                             student_number_col = row.index(student_number_heading)
@@ -148,6 +149,10 @@ def mass_update(request):
                         phone = row[phone_col].strip()
                         contact_email = row[contact_email_col].strip()
                         grade = row[grade_col].strip()
+
+                        if grade in grades_to_ignore:
+                            # skip these students
+                            continue
 
                         # validate username/email
                         if not username:
