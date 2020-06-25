@@ -159,6 +159,10 @@ class EventManager(models.Manager):
     def all_for_facilitator(self, user):
         return user.event_set.all()
 
+    def all_active(self):
+        """ Only events with at least one active block """
+        return self.get_queryset().filter(blocks__in=Block.objects.active())
+
 
 class Event(models.Model):
 
@@ -248,7 +252,7 @@ class Event(models.Model):
         return reverse("events:detail", kwargs={"id": self.id})
 
     def is_single_block(self):
-        return self.blocks.count() == 1
+        return self.blocks.filter(active=true).count() == 1
 
     def cache_remote_image(self):
         """

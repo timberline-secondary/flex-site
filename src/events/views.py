@@ -567,10 +567,8 @@ def event_attendance(request, id=None, block_id=None):
 def event_list_export(request):
     date_query = request.GET.get("date", str(default_event_date()))
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
-
-    queryset = Event.objects.all()
-
-    queryset = Event.objects.all().filter(
+    
+    queryset = Event.objects.filter(
         date=d,
     ).select_related('location').prefetch_related('competencies')
 
@@ -594,7 +592,7 @@ def event_list(request, block_id=None):
         active_block = get_object_or_404(Block, id=block_id)
         queryset = active_block.event_set
     else:
-        queryset = Event.objects.all()
+        queryset = Event.objects.all_active()
         active_block = None
 
     queryset = queryset.filter(date=d, category__visible_in_event_list=True) \
