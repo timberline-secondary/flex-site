@@ -102,7 +102,7 @@ def mass_update(request):
             email_heading = "StudentEmail"
             homeroom_teacher_heading = "Teacher ID"
             phone_heading = "StudentHomePhoneNumber"
-            contact_email_heading = "EmergencyContactEmail1"
+            contact_email_heading = "EmergencyContact1Email1"
             grade_heading = "Grade"
 
             student_number_col = None
