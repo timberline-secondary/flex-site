@@ -128,7 +128,7 @@
 
             // Add listeners to check for location conflicts
             $location.change(validateLocation);
-            // $date.change(validateLocation); // needs to be done in events-datepicker-v2.js
+            // $date.change(validateLocation); // needs to be done in events-datepicker-v3.js
             // $blocks.change(...); this is done in updateMultiBlockEventField()
 
             /***************************************
@@ -262,6 +262,6 @@
         }); // $(document).ready()
     </script>
 
-    <script id="event-datepicker" data-date-input-id="id_date" src="{% static 'js/events-datepicker-v2.js' %}"></script>
+    <script id="event-datepicker" data-date-input-id="id_date" src="{% static 'js/events-datepicker-v3.js' %}"></script>
 
 {% endblock js %}
