@@ -12,6 +12,8 @@
         <p>To register for events you need to log in first.
           If you just want to browse events, you don't have to.
           You can also log in using the <i class="fa fa-bars visible-xs-inline"></i> menu at the top right</p>
+          <p><b>Username change:</b> student usernames have been changed to the same firstname.lastname as your regular school log in. 
+            Staff usernames are still their employee number.</p>
             <form method="POST" action="{% url 'auth_login' %}">{%  csrf_token %}
             <div class="form-group">
               <input type="text" class="form-control autofocus" name="username" placeholder="Username" />
