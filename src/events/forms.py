@@ -176,6 +176,11 @@ class EventForm(forms.ModelForm):
                   "number to create the duplicates.",
     )
 
+    blocks = forms.ModelMultipleChoiceField(
+        queryset=Block.objects.active(),
+        widget=CheckboxSelectMultiple,
+    )
+
     class Meta:
         model = Event
         fields = [
