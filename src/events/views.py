@@ -78,11 +78,10 @@ def event_create(request):
 
         messages.success(request, msg)
 
-  
-        block_id = event.blocks.all().first().id
+        block_num = Block.objects.get_num_from_id(event.blocks.all().first().id)
 
         date_query = event.date
-        return redirect("%s?date=%s" % (reverse('events:list_by_block', args=(block_id,)), date_query))
+        return redirect("%s?date=%s" % (reverse('events:list_by_block', args=(block_num,)), date_query))
 
     context = {
         "title": "Create Event",
@@ -293,6 +292,7 @@ def event_manage(request):
         "title": "Your Events",
         "object_list": queryset,
         # "date_filter": d,
+        "single_block": Block.objects.single_block(),
     }
     return render(request, "events/event_management.html", context)
 
@@ -561,7 +561,7 @@ def event_attendance(request, id=None, block_id=None):
         "helper": helper,
         "active_block": active_block,
         "multi_block_save_option": multi_block_save_option,
-        "single_block": Block.objects.single_block,
+        "single_block": Block.objects.single_block(),
     }
     return render(request, "events/attendance.html", context)
 
@@ -583,7 +583,7 @@ def event_list_export(request):
     return render(request, "events/event_list_export.html", context)
 
 
-def event_list(request, block_id=None):
+def event_list(request, block_num=None):
     date_query = request.GET.get("date", str(default_event_date()))
     d = datetime.strptime(date_query, "%Y-%m-%d").date()
 
@@ -591,8 +591,8 @@ def event_list(request, block_id=None):
     blocks_json = serializers.serialize('json', blocks, fields=('id', 'name',))
 
     # if a block is provided, we only need to worry about events for that block.
-    if block_id:
-        active_block = get_object_or_404(Block, id=block_id)
+    if block_num:
+        active_block = Block.objects.get_by_num(block_num)
         queryset = active_block.event_set
     else:
         queryset = Event.objects.all_active()
@@ -650,7 +650,6 @@ def event_list(request, block_id=None):
     elif d.weekday() == 4:
         heading = "Friday - Grade 9 Only"
     else:
-        # shouldn't get here!
         heading = "Flex Events"
 
     context = {
@@ -665,7 +664,7 @@ def event_list(request, block_id=None):
         "blocks": blocks,
         "active_block": active_block,
         "counts_dict": counts_dict,
-        "single_block": Block.objects.single_block,
+        "single_block": Block.objects.single_block(),
     }
     return render(request, "events/event_list.html", context)
 
@@ -859,7 +858,7 @@ def registrations_list(request):
 
 
 @login_required
-def register(request, id, block_id):
+def register(request, id, block_num):
     date_query = request.GET.get("date", str(default_event_date()))
     event = get_object_or_404(Event, id=id)
 
@@ -867,14 +866,16 @@ def register(request, id, block_id):
 
     # block_id = 0 indicates register for all block in an optional OR event.
     both_on_or = False
-    if block_id == '0':
+    print("Block num: ", block_num)
+
+    if block_num == '0':
         both_on_or = True
         for block in event.blocks.filter(active=True):
             if available:
                 available, already, reason = event.is_available(request.user, block)
-                block_id = block.id  # need to give it a valid id for page redirection. 0 not valid!
+                block = Block.objects.get_by_num(block_num)  # need to give it a valid id for page redirection. 0 not valid!
     else:
-        block = get_object_or_404(Block, id=block_id)
+        block = Block.objects.get_by_num(block_num)
         available, already, reason = event.is_available(request.user, block)
 
     block_text = ""
@@ -891,7 +892,9 @@ def register(request, id, block_id):
         messages.success(request, "Successfully registered for <b>%s</b> during <b>%s</b> " % (event, block_text))
     else:
         messages.warning(request, "<i class='fa fa-exclamation-triangle'></i> %s" % reason)
-    return redirect("%s?date=%s" % (reverse('events:list_by_block', args=(block_id,)), date_query))
+
+    block_num = Block.objects.get_num_from_id(block.id)
+    return redirect("%s?date=%s" % (reverse('events:list_by_block', args=(block_num,)), date_query))
 
 
 @login_required

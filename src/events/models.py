@@ -103,7 +103,10 @@ class BlockManager(models.Manager):
         return self.active()[0]
 
     def get_flex_2(self):
-        return self.active()[1]
+        if not self.single_block():
+            return self.active()[1]
+        else:
+            return None
 
     def single_block(self):
         """Check if the site is set up with only a single block, returns True or False
@@ -116,6 +119,25 @@ class BlockManager(models.Manager):
 
     def active(self):
         return self.get_queryset().filter(active=True)
+
+    def get_by_num(self, block_num):
+        """ Gets the 1st or second active block """
+        if int(block_num) == 1:
+            return self.get_flex_1()
+        elif not self.single_block() and block_num == 2:
+            return self.get_flex_2()
+        else:
+            return ValueError ("block_num was not 1 or 2.  Only two active blocks are currently supported")
+
+    def get_num_from_id(self, id):
+        """ Given a block object's ID, return 1 or 2 if it is the
+        1st or second active block """
+        if id == self.get_flex_1().id:
+            return 1
+        elif not self.single_block() and id == self.get_flex_2().id:
+            return 2
+        else:
+            return ValueError ("That block is not active.")
 
 
 class Block(models.Model):
@@ -133,7 +155,12 @@ class Block(models.Model):
         return self.name
 
     def constant_string(self):
-        return "FLEX" + str(self.id)
+        """ Return either  FLEX1 or FLEX2 based on whether this is the first or second active flex block
+        as there should only be one or two"""
+        if self == Block.objects.get_flex_1():
+            return "FLEX1"
+        else:
+            return "FLEX2"
 
     def synervoice_absent_string(self):
         return "F" + str(self.id) + "-ABS"
@@ -252,7 +279,7 @@ class Event(models.Model):
         return reverse("events:detail", kwargs={"id": self.id})
 
     def is_single_block(self):
-        return self.blocks.filter(active=true).count() == 1
+        return self.blocks.filter(active=True).count() == 1
 
     def cache_remote_image(self):
         """

@@ -12,7 +12,7 @@ urlpatterns = [
     url(r'^list/$', views.event_list, name='list'),
     url(r'^block/all/$', views.event_list, name='list'),
     url(r'^old', views.event_list, name='list_old'),
-    url(r'^block/(?P<block_id>\d+)/$', views.event_list, name='list_by_block'),
+    url(r'^block/(?P<block_num>\d+)/$', views.event_list, name='list_by_block'),
     url(r'^export/$', views.event_list_export, name='export'),
     url(r'^manage/$', views.event_manage, name='manage'),
     url(r'^create/$', views.event_create, name='create'),
@@ -40,7 +40,7 @@ urlpatterns = [
 
 
     # Registrations
-    url(r'^register/(?P<id>\d+)/block/(?P<block_id>\d+)/$', views.register, name='register'),
+    url(r'^register/(?P<id>\d+)/block/(?P<block_num>\d+)/$', views.register, name='register'),
     url(r'^registrations/$', views.registrations_list, name='registrations_list'),
     url(r'^registrations/(?P<id>\d+)/delete$', views.registrations_delete, name='registrations_delete'),
     url(r'^registrations/all/$', views.registrations_all, name='registrations_all'),
