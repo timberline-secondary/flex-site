@@ -1,10 +1,17 @@
 ## Hackerspace test environment installation (instructions for students)
 This guide assumes you are running Linux.  If not, then you can use the [Windows subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10) if you have Windows 10.  Another option is [Git Bash](https://git-for-windows.github.io/)
 
-#### Preparation
-1. Install Python 3: `sudo apt install python3`
+#### Prep if using Windows
+1. Intall git for Windows: https://git-scm.com/download/win
+1. Install VS Code: https://code.visualstudio.com/
+1. Install Python 3: https://www.python.org/downloads/ (Note, to access Python3, you may need to provide a full path such as `../../../../AppData/Local/Programs/Python/Python312/python.exe`)
+
+#### Preparation if using Ubuntu
 1. Install Git: `sudo apt install git`. 
+
+#### Common Prep:
 1. Pick/create a location for the project, e.g: `~/Developer`
+1. Install Postgresql: https://www.postgresql.org/download/
 
 #### Fork the repository
 1. Create a Github account.
@@ -20,23 +27,20 @@ This guide assumes you are running Linux.  If not, then you can use the [Windows
 3. This will download the project into ~/Developer/flex-site/
 
 #### Python Virtual Environment
-1. If on Windows, use the [Linux Bash Shell in Windows 10](https://www.howtogeek.com/249966/how-to-install-and-use-the-linux-bash-shell-on-windows-10/).  If using the Bash Shell in Windows 10, you can follow all the Linux instructions below.
-1. Install the Python package manager, pip: `sudo apt install python3-pip`
-3. Install [virtualenv](https://virtualenv.pypa.io/en/stable/userguide/) using pip3: `pip3 install virtualenv`
-1. If you are asked to upgrade pip: `pip3 install --upgrade pip`
-2. Move in to the directory of the project: `cd ~/Developer/flex-site` 
-2. Create a virtual environment within your project: `virtualenv .`
-3. Activate your virtual environment: Linux: `source bin/activate`
-4. You should now see "(hackerspace)" appear before your prompt.
+1. If on Windows, open a GitBash prompt within VS Code.
+2. Move in to the directory of the project if you aren't already there: `cd ~/Developer/flex-site` 
+2. Create a virtual environment within your project: `python -m venv flex-venv --prompt flex`
+3. Activate your virtual environment: Linux: `source venv/bin/activate` Windows: `source venv/Scripts/activate`
+4. You should now see "(flex)" appear before your prompt.
 5. Later (don't do it now), when you are finished you can leave the environment by typing: `deactivate`
 
 #### Installing required python packages
-1. `pip install -r requirements.txt` (now that we're in our Python3 virtual environment we can just use pip instead of pip3, since our environment will default to python3 for everything)
+1. `python -m pip install -r requirements.txt`
 
 #### Creating the SQLite database (Easy Option)
 1. A basic database to get started.  You can move to a more advanced PostgreSQL database later if you like, or try now (see next section)
 `./src/manage.py migrate`  This will create your database and create tables for all the thrid-party apps/requirements
-2. Now prepare tables for all of the flex-site models: `./src/manage.py makemigrations profiles events excuses` (you might get an error later on if I forget to keep this list of apps updated =)
+2. Now prepare tables for all of the flex-site models: `./src/manage.py makemigrations profiles events excuses utilities` (you might get an error later on if I forget to keep this list of apps updated =)
 2. Create the tables in your database: `./src/manage.py migrate`
 2. Create a cache table: `./src/manage.py createcachetable`
 2. Populate the database with some default data: `./src/manage.py loaddata src/initial_data`

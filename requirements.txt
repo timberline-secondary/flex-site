@@ -11,7 +11,7 @@ django-select2==7.4.2
 idna==2.9
 packaging==20.4
 pilkit==2.0
-Pillow==7.1.2
+Pillow
 psycopg2-binary==2.8.5
 pyparsing==2.4.7
 pytz==2020.1

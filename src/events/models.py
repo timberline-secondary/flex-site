@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
-from django.db import models
+from django.db import OperationalError, models
 from django.urls import reverse
 from django.db.models.signals import post_save
 from django.utils import timezone
@@ -64,10 +64,14 @@ class Category(models.Model):
 
     @classmethod
     def get_default(cls):
-        if cls.objects.filter(name="Support").exists():
-            return cls.objects.get(name="Support")
-        else:
-            return cls.objects.all().first()
+        try:
+            if cls.objects.filter(name="Support").exists():
+                return cls.objects.get(name="Support")
+            else:
+                return cls.objects.all().first()
+        except OperationalError:
+            pass  # tables don't exist, could happen when creating a new environment
+            
 
 
 class Location(models.Model):

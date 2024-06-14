@@ -19,8 +19,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-with open(os.path.expanduser('~/.flex-secret')) as secret_file:
-    SECRET_KEY = secret_file.read().strip()
+# with open(os.path.expanduser('~/.flex-secret')) as secret_file:
+#     SECRET_KEY = secret_file.read().strip()
+
+SECRET_KEY = "CdxIj8y95ma4wBX3FnUgofFsKbDg4tti64'"
 
 # Application definition
 
