@@ -128,7 +128,7 @@ class BlockManager(models.Manager):
         """ Gets the 1st or second active block """
         if int(block_num) == 1:
             return self.get_flex_1()
-        elif not self.single_block() and block_num == 2:
+        elif not self.single_block() and int(block_num) == 2:
             return self.get_flex_2()
         else:
             return ValueError ("block_num was not 1 or 2.  Only two active blocks are currently supported")

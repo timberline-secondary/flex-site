@@ -50,37 +50,39 @@ def mass_update(request):
     num_deactivated = 0
     form = UserImportForm(request.POST or None, request.FILES or None)
 
-    positions_to_import = ["TEACHER", "VICE-PRINCIPAL", "PRINCIPAL", "EA", "TOC", "DIST YOUTH WRK", "DIST YOUTH WRK", "CERLICAL"]  
+    # positions_to_import = ["TEACHER", "VICE-PRINCIPAL", "PRINCIPAL", "EA", "TOC", "DIST YOUTH WRK", "DIST YOUTH WRK", "CERLICAL"]  
+    positions_to_import = ["TOC", "Administrator", "Secretary", "Counsellor", "EA", "Support", "SD72 Student Teacher", "Teacher"]
     # currently not included: ED ASSISTANT, IT TECHNICIAN, CUSTODIAL
     grades_to_ignore = ["AD", "HS", "RG", "NS"]  # Adult grad, Home Schooled, Returning Grad, Non Student
 
     if form.is_valid():
         if 'staff_csv_file' in request.FILES:
             file = request.FILES['staff_csv_file']
-            reader = csv.reader(codecs.iterdecode(file, 'utf-8'))
+            reader = csv.reader(codecs.iterdecode(file, 'utf-8-sig'))
             staff_import = True
             for row in reader:
                 # check for blank rows, proper number of fields, and staff positions
                 if row and len(row) == 5 and row[3] in positions_to_import:
                     try:
-                        username = row[0]
-                        int(username)  # will throw an error if not an integer
-
-                        qs = User.objects.all()
-
-                        # check if user exists, else create new user
-                        if username and not qs.filter(username=username).exists():
-                            user = User.objects.create_user(
-                                username=username,
-                                password="wolf",
-                                last_name=row[1].strip().upper(),
-                                first_name=row[2].strip().upper(),
-                                email=row[4].strip(),
-                                is_staff=True,
-                            )
-                            new_staff_list.append(user)
+                        username = int(row[0])  # will throw an error if not an integer, including for header row
                     except ValueError:  # ID is not an integer
                         pass
+
+                    qs = User.objects.all()
+
+                    # check if user exists, else create new user
+                    if username and not qs.filter(username=username).exists():
+                        user = User.objects.create_user(
+                            username=username,
+                            password="tyee",
+                            first_name=row[1].strip().upper(),
+                            last_name=row[2].strip().upper(),
+                            # row[3] is staff type (TOC, Teacher,)
+                            email=row[4].strip(),
+                            is_staff=True,
+                        )
+                        new_staff_list.append(user)
+
 
         if 'student_csv_file' in request.FILES:
             update_start_time = timezone.now()
@@ -88,24 +90,25 @@ def mass_update(request):
             file = request.FILES['student_csv_file']
             semester = form.cleaned_data['semester']
 
-            reader = csv.reader(codecs.iterdecode(file, 'utf-8'))
+            reader = csv.reader(codecs.iterdecode(file, 'utf-8-sig'))
             student_import = True
             count = 0
 
             users_qs = User.objects.all()
 
             # important columns in csv
-            student_number_heading = "Login Student Number"
-            sn_regex_string = r"^(9[789])(\d{5})$"  # 7 digits beginning in 99 98 or 97
-            first_name_heading = "Usual first name"
-            last_name_heading = "Usual surname"
-            email_heading = "StudentEmail"
-            homeroom_teacher_heading = "Teacher ID"
-            phone_heading = "StudentHomePhoneNumber"
-            contact_email_heading = "EmergencyContact1Email1"
+            # student_number_heading = "Login Student Number"
+            # sn_regex_string = r"^(9[789])(\d{5})$"  # 7 digits beginning in 99 98 or 97
+            first_name_heading = "UsualFirst"
+            last_name_heading = "UsualLast"
             grade_heading = "Grade"
+            email_heading = "Email1"
+            homeroom_teacher_heading = "HR Teacher"
+            phone_heading = "CellPhone"
+            contact_email_heading = "Email1"
+            
 
-            student_number_col = None
+            # student_number_col = None
             first_name_col = None
             last_name_col = None
             email_col = None
@@ -117,12 +120,12 @@ def mass_update(request):
             for row in reader:
 
                 # skip empty rows and rows without proper number of fields
-                if row and len(row) >= 8:
+                if row and len(row) >= 7:
 
 
                     if email_heading in row:  # Heading row
                         try:
-                            student_number_col = row.index(student_number_heading)
+                            # student_number_col = row.index(student_number_heading)
                             first_name_col = row.index(first_name_heading)
                             last_name_col = row.index(last_name_heading)
                             email_col = row.index(email_heading)
@@ -140,12 +143,13 @@ def mass_update(request):
                             break
 
                         # Get username from student email and check if the user exists
-                        email = row[email_col]
-                        username = email.split("@")[0].strip().lower()
+                        email = row[email_col].strip()
+                        username = email.lower()
+                        # username = email.split("@")[0].strip().lower()
                         first_name = row[first_name_col].strip().upper()
                         last_name = row[last_name_col].strip().upper()
                         homeroom_teacher = row[homeroom_teacher_col].strip()
-                        student_number = row[student_number_col].strip()
+                        # student_number = row[student_number_col].strip()
                         phone = row[phone_col].strip()
                         contact_email = row[contact_email_col].strip()
                         grade = row[grade_col].strip()
@@ -166,7 +170,12 @@ def mass_update(request):
                         # validate homeroom teacher
                         if homeroom_teacher:  # if they don't have one field will be blank string ''
                             try:  # sometimes homeroom id shows up as 0, which doesn't exist
-                                homeroom_teacher = User.objects.get(username=homeroom_teacher)
+                                # print(homeroom_teacher)
+                                last, first_init = homeroom_teacher.split(";")[0].split(",")  # multiple seperated by ; so just take first: "smooth, t; smith, j"
+                                last = last.strip().upper()
+                                first_init = first_init.strip().upper()
+
+                                homeroom_teacher = User.objects.filter(is_staff=True).get(last_name=last, first_name__startswith=first_init)
                             except User.DoesNotExist:
                                 student_errors.append({'warning': "Homeroom teacher with ID '" + homeroom_teacher +
                                                                     "' not recognized", 'row': row})
@@ -192,21 +201,14 @@ def mass_update(request):
 
                         
                         # Check if user exists with first.last as username
-                        try: 
-                            user = users_qs.get(username=username)
-                        except User.DoesNotExist: 
-                            # Check if their student number is a valid user (old usernames were student numbers)
-                            try:
-                                user = User.objects.get(username=student_number)
-                                user.username = username  # update username to first.last as username
-                                student_errors.append({'info': "Username updated from {} to {}".format(student_number, username), 'row': row})
-                            except User.DoesNotExist:
-                                # they are a new user!
-                                user = User.objects.create_user(
-                                    username=username,
-                                    password="wolf",
-                                )
-                                new_student_list.append(user.id)
+                        user, created = User.objects.get_or_create(
+                            username=username,
+                        )
+
+                        if created:
+                            user.set_password("tyee")
+                            user.save()
+                            new_student_list.append(user.id)  
                         
                         # We have a user object now.  Update names and set active:
                         user.is_active = True

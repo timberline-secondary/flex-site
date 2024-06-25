@@ -592,7 +592,7 @@ def event_list(request, block_num=None):
 
     # if a block is provided, we only need to worry about events for that block.
     if block_num:
-        active_block = Block.objects.get_by_num(block_num)
+        active_block = Block.objects.get_by_num(int(block_num))
         queryset = active_block.event_set
     else:
         queryset = Event.objects.all_active()
