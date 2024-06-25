@@ -115,7 +115,7 @@ USE_L10N = True
 USE_TZ = True
 
 
-ADMIN_SITE_HEADER = 'Timberline Flex Site - Administration'
+ADMIN_SITE_HEADER = 'Carihi Win Site - Administration'
 
 
 # django-registration-redux

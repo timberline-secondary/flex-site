@@ -650,7 +650,7 @@ def event_list(request, block_num=None):
     elif d.weekday() == 4:
         heading = "Friday - Grade 9 Only"
     else:
-        heading = "Flex Events"
+        heading = "Win Events"
 
     context = {
         "heading": heading,
